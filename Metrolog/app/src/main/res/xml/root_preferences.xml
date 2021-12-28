@@ -1,0 +1,98 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/settings_activity_connect_header">
+
+        <EditTextPreference
+            android:defaultValue="http://192.168.0.23:8080/apiMobOp/"
+            android:key="server_ip_address"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="@string/settings_activity_ip_address_title"
+            app:icon="@drawable/ic_cast_connect_black_36dp"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_activity_chat_header">
+
+        <SeekBarPreference
+            android:max="15"
+            app:defaultValue="10"
+            app:icon="@drawable/ic_baseline_image_black_36dp"
+            app:key="image_max_size"
+            app:min="1"
+            app:showSeekBarValue="true"
+            app:summary="@string/settings_activity_max_size_summary"
+            app:title="@string/settings_activity_max_size_image_title" />
+        <SeekBarPreference
+            android:max="10"
+            app:defaultValue="3"
+            app:icon="@drawable/ic_baseline_file_black_36dp"
+            app:key="document_max_size"
+            app:min="1"
+            app:showSeekBarValue="true"
+            app:summary="@string/settings_activity_max_size_summary"
+            app:title="@string/settings_activity_max_size_document_title" />
+        <SeekBarPreference
+            android:max="32"
+            app:defaultValue="14"
+            app:icon="@drawable/ic_baseline_format_size_black_36dp"
+            app:key="message_text_size"
+            app:min="10"
+            app:showSeekBarValue="true"
+            app:title="@string/settings_activity_message_text_size_title" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="Уведомления">
+        <SwitchPreference
+            android:key="notification_vibrate"
+            android:summaryOff="Выбрация выключена"
+            android:summaryOn="Выбрация включена"
+            app:icon="@drawable/ic_baseline_vibration_black_36dp"
+            app:title="@string/settings_activity_notification_vibration_title" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="auth_tools_category"
+        app:title="Безопасность">
+
+        <SwitchPreference
+            android:key="auth_mode"
+            android:summaryOff="Биометрия выключена"
+            android:summaryOn="Биометрия включена"
+            app:icon="@drawable/ic_fingerprint_36"
+            app:title="@string/settings_activity_fingerprint_title" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Журналы работы">
+        <SwitchPreference
+            android:key="event_log_switch"
+            android:summaryOff="Запись выключена"
+            android:summaryOn="Запись включена"
+            app:icon="@drawable/ic_database_import_red_24dp"
+            app:title="@string/settings_activity_event_log_write_title" />
+
+        <Preference
+            android:key="save_event_log"
+            android:title="@string/settings_activity_event_log_export_title"
+            app:icon="@drawable/ic_database_export_red_36dp" />
+    </PreferenceCategory>
+    <PreferenceCategory app:title="База данных">
+        <Preference
+            android:key="backup_database_button"
+            android:title="Резервное копирование базы данных"
+            app:icon="@drawable/ic_database_export_red_36dp"/>
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Учетная запись">
+        <Preference
+            android:key="change_user_button"
+            android:title="@string/settings_activity_change_user_title"
+            app:icon="@drawable/ic_baseline_people_black_36dp" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="Информация">
+        <Preference
+            android:key="change_log_button"
+            android:title="@string/settings_activity_about_app"
+            app:icon="@drawable/ic_outline_info_36" />
+    </PreferenceCategory>
+</PreferenceScreen>

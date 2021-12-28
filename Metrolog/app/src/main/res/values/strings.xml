@@ -1,3 +1,38 @@
 <resources>
     <string name="app_name">Metrolog</string>
+    <string name="app_version_title">Версия приложения: %s</string>
+    <string name="login_activity_app_title">Мобильный метролог</string>
+    <string name="no_data">Нет данных</string>
+
+    <string name="exit_message">Нажмите еще раз для выхода</string>
+
+    <string name="login_activity_user_name_hint">Имя пользователя</string>
+    <string name="login_activity_password_hint">Пароль</string>
+    <string name="login_activity_remember_me_checkbox_title">Запомнить меня</string>
+    <string name="login_activity_sign_in_title">Войти</string>
+    <string name="login_activity_settings_title">Настройки</string>
+
+    <string name="settings_activity_title">Настройки</string>
+    <string name="settings_activity_connect_header">Соединение с сервером</string>
+    <string name="settings_activity_ip_address_title">Параметры подключения</string>
+    <string name="settings_activity_ip_address_default_value">http://192.168.0.23:8080/apiMobOp/</string>
+    <string name="settings_activity_fingerprint_title">Вход по отпечатку пальца</string>
+    <string name="settings_activity_change_user_title">Сменить пользователя</string>
+    <string name="settings_activity_about_app">О приложении</string>
+    <string name="settings_activity_event_log_write_title">Запись данных</string>
+    <string name="settings_activity_event_log_export_title">Экспорт данных</string>
+
+    <string name="pin_activity_input_pin_code">Введите пин код</string>
+    <string name="pin_activity_input_pin_code_again">Введите пин код еще раз</string>
+    <string name="pin_activity_pins_not_valid">Пароли не совпадают. Попробуйте еще раз.</string>
+    <string name="pin_activity_pin_not_valid_last_try">Введен неправильный PIN код. Последняя попытка</string>
+    <string name="pin_activity_pin_not_valid_attempts_left">Введен неправильный PIN код. Осталось %s попытки</string>
+    <string name="pin_activity_pin_reset_log_in_again">PIN код сброшен. Авторизуйтесь заново.</string>
+    <string name="pin_activity_dialog_title">Забыли код доступа?</string>
+    <string name="pin_activity_dialog_text">Нажмите кнопку выйти, чтобы сбросить старый код доступа и создать новый</string>
+    <string name="pin_activity_dialog_positive_button">Выйти</string>
+    <string name="pin_activity_dialog_negative_button">Отмена</string>
+
+    <string name="prompt_info_title">Вход в АРМ Метролога</string>
+    <string name="prompt_info_description">Отсканируйте отпечаток пальца</string>
 </resources>
