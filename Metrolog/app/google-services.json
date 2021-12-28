@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "236787121712",
+    "project_id": "arm-metrolog-e019c",
+    "storage_bucket": "arm-metrolog-e019c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:236787121712:android:0b01adfc5724a5b4fcb7f5",
+        "android_client_info": {
+          "package_name": "com.intas.metrolog"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "236787121712-1gejqlvmth28mlqjs7dfr58uc07ftn3d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDStTJuXNVhhfqKbnPhu-AHxGMzZqBb-2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "236787121712-1gejqlvmth28mlqjs7dfr58uc07ftn3d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
