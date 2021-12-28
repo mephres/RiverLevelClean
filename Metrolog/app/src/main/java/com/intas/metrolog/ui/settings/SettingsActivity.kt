@@ -1,4 +1,4 @@
-package com.intas.moboperator.ui.settings
+package com.intas.metrolog.ui.settings
 
 import android.app.Activity
 import android.content.DialogInterface
@@ -7,7 +7,6 @@ import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Color
 import android.os.*
 import android.provider.Settings
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
@@ -18,13 +17,15 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.util.Pair
+import androidx.core.view.isVisible
 import androidx.preference.*
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.intas.moboperator.BuildConfig
-import com.intas.moboperator.databinding.SettingsActivityBinding
-import com.intas.moboperator.ui.login.LoginActivity
-import com.intas.moboperator.util.*
+import com.intas.metrolog.BuildConfig
+import com.intas.metrolog.R
+import com.intas.metrolog.databinding.SettingsActivityBinding
+import com.intas.metrolog.ui.login.LoginActivity
+import com.intas.metrolog.util.*
 import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
 import java.io.File
@@ -53,9 +54,6 @@ class SettingsActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         title = getString(R.string.settings_activity_title)
-
-        initCheckAppBackground()
-
 
         binding.settingsProgressIndicator.visibility = View.GONE
         binding.shadowView.isVisible = false
@@ -383,25 +381,5 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        MobileOperator.stopAppTransitionTimer()
-    }
-
-    /**
-     * Ининициализация проверки - было ли приложение в фоне
-     * Если было в фоне - закрываем активити и вызываем активити авторизации
-     */
-    private fun initCheckAppBackground() {
-        MobileOperator.wasInBackground.observe(this, {
-            if (it) {
-                finish()
-                startActivity(Intent(this, LoginActivity::class.java))
-            } else {
-                Log.d("MO_WAS_IN_BACKGROUND", it.toString())
-            }
-        })
     }
 }

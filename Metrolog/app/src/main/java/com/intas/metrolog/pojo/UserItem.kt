@@ -16,30 +16,65 @@ data class UserItem(
      * Идентификатор записи
      */
     @PrimaryKey
-    @SerializedName("id")
+    @SerializedName("userId")
     @Expose
-    val id: Int,
+    val id: Int = 0,
     /**
      * ФИО пользователя
      */
+    @SerializedName("fio")
+    @Expose
+    val fio: String? = null,
+    /**
+     * Имя пользователя
+     */
     @SerializedName("name")
     @Expose
-    val fullName: String?,
+    val name: String? = null,
+    /**
+     * Фамилия пользователя
+     */
+    @SerializedName("surname")
+    @Expose
+    val surname: String? = null,
+    /**
+     * Отчество пользователя
+     */
+    @SerializedName("middleName")
+    @Expose
+    val middleName: String? = null,
+    /**
+     * Номер телефона
+     */
+    @SerializedName("telephone")
+    @Expose
+    val telephone: String? = null,
+    /**
+     * Электронный почтовый адрес
+     */
+    @SerializedName("email")
+    @Expose
+    val email: String? = null,
+    /**
+     * идентификатор должности
+     */
+    @SerializedName("positionId")
+    @Expose
+    val positionId: String? = null,
     /**
      * Должность пользователя
      */
     @SerializedName("position")
     @Expose
-    val position: String? = null,
-    /**
-     * Ссылка на изображение/аватар пользователя
-     */
-    @SerializedName("imageUrl")
-    @Expose
-    val avatar: String? = null,
-): Parcelable {
+    val position: String? = null
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
+        parcel.readString(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString()
@@ -47,10 +82,15 @@ data class UserItem(
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeValue(id)
-        parcel.writeString(fullName)
+        parcel.writeInt(id)
+        parcel.writeString(fio)
+        parcel.writeString(name)
+        parcel.writeString(surname)
+        parcel.writeString(middleName)
+        parcel.writeString(telephone)
+        parcel.writeString(email)
+        parcel.writeString(positionId)
         parcel.writeString(position)
-        parcel.writeString(avatar)
     }
 
     override fun describeContents(): Int {
@@ -67,3 +107,4 @@ data class UserItem(
         }
     }
 }
+

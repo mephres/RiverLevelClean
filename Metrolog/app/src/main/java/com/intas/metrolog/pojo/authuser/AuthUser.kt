@@ -8,7 +8,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 /**
- * Авторизованный поьзователь
+ * Авторизованный пользователь
  */
 @Entity(tableName = "auth_user")
 data class AuthUser(
@@ -43,36 +43,14 @@ data class AuthUser(
     @SerializedName("middleName")
     @Expose
     val middleName: String? = null,
-    /**
-     * Должность пользователя
-     */
-    @SerializedName("position")
-    @Expose
-    val position: String? = null,
-    /**
-     * ссылка на аватар пользователя
-     */
-    @SerializedName("avatarUrl")
-    @Expose
-    val avatarUrl: String? = null,
-    /**
-     * Роль пользователя в системе
-     * 0 - оператор
-     * 1 - инженер
-     */
-    @SerializedName("role")
-    @Expose
-    var role: Int? = 0
+
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString(),
         parcel.readString(),
         parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readValue(Int::class.java.classLoader) as? Int
+        parcel.readString()
     ) {
     }
 
@@ -82,9 +60,6 @@ data class AuthUser(
         parcel.writeString(name)
         parcel.writeString(surname)
         parcel.writeString(middleName)
-        parcel.writeString(position)
-        parcel.writeString(avatarUrl)
-        parcel.writeValue(role)
     }
 
     override fun describeContents(): Int {
@@ -99,15 +74,5 @@ data class AuthUser(
         override fun newArray(size: Int): Array<AuthUser?> {
             return arrayOfNulls(size)
         }
-
-        /**
-         * Оператор
-         */
-        val USER_ROLE_OPERATOR = 0
-
-        /**
-         * Инженер
-         */
-        val USER_ROLE_INGENEER = 1
     }
 }

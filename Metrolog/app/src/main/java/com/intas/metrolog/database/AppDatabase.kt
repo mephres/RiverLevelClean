@@ -5,12 +5,14 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.intas.metrolog.pojo.JournalItem
+import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.authuser.AuthUser
 import com.intas.metrolog.pojo.userlocation.UserLocation
+import com.intas.moboperator.database.UserDao
 
 
 @Database(
-    entities = [AuthUser::class, UserLocation::class, JournalItem::class],
+    entities = [AuthUser::class, UserLocation::class, JournalItem::class, UserItem::class],
     version = 1, exportSchema = false
 )
 
@@ -43,4 +45,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun authUserDao(): AuthUserDao
     abstract fun userLocationDao(): UserLocationDao
     abstract fun journalDao(): JournalDao
+    abstract fun userDao(): UserDao
 }

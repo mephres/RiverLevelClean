@@ -1,9 +1,12 @@
 package com.intas.metrolog.util
 
+import android.Manifest
 import android.app.Activity
 import android.content.IntentSender.SendIntentException
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
@@ -89,10 +92,29 @@ class DeviceLocation(val activity: Activity) {
         isLocationUpdatesActive = true
         settingsClient.checkLocationSettings(locationSettingsRequest)
             .addOnSuccessListener(activity) { locationSettingsResponse ->
-                fusedLocationClient.requestLocationUpdates(
-                    locationRequest,
-                    locationCallback, Looper.myLooper()
-                )
+                if (ActivityCompat.checkSelfPermission(
+                        activity.applicationContext,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        activity.applicationContext,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return@addOnSuccessListener
+                }
+                Looper.myLooper()?.let {
+                    fusedLocationClient.requestLocationUpdates(
+                        locationRequest,
+                        locationCallback, it
+                    )
+                }
                 updateLocationUi()
             }.addOnFailureListener(activity) { e ->
                 val statusCode = (e as ApiException).statusCode

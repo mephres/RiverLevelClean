@@ -3,9 +3,12 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/drawable/ic_metrolog_ico.xml" value="0.21458333333333332" />
+        <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/drawable/ic_metrolog_ico_512dp.xml" value="0.21458333333333332" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_login.xml" value="0.19479166666666667" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_main.xml" value="0.27898550724637683" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_pin_code.xml" value="0.19479166666666667" />
+        <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/settings_activity.xml" value="0.1984375" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/xml/root_preferences.xml" value="0.33" />
       </map>
     </option>

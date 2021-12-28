@@ -30,12 +30,12 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityLoginBinding
 import com.intas.metrolog.ui.login.pin.PinCodeActivity
 import com.intas.metrolog.ui.main.MainActivity
+import com.intas.metrolog.ui.settings.SettingsActivity
 import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.ChangeLogXmlParser
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.Util.Companion.PERMISSION_REQUEST_CODE
-import com.intas.moboperator.ui.settings.SettingsActivity
 import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
 import java.util.*
