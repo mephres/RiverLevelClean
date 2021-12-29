@@ -32,6 +32,18 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         initDeviceLocationObserver()
+        initNotSendedUserLocationObserver()
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных записей с местоположением пользователя
+     */
+    private fun initNotSendedUserLocationObserver() {
+        viewModel.notSendedUserLocationList.observe(this, {
+            for (userLocation in it) {
+                viewModel.sendUserLocation(userLocation)
+            }
+        })
     }
 
     /**
@@ -57,7 +69,7 @@ class MainActivity : AppCompatActivity() {
                 userLocation.time = (it.time / 1000).toLong()
                 userLocation.userId = Util.authUser?.userId ?: 0
 
-                //viewModel.insertUserLocation(userLocation)
+                viewModel.insertUserLocation(userLocation)
             }
     }
 }

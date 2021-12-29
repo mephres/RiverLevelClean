@@ -1,12 +1,10 @@
 package com.intas.metrolog.util
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.IntentSender.SendIntentException
-import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Looper
-import androidx.core.app.ActivityCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
@@ -88,27 +86,11 @@ class DeviceLocation(val activity: Activity) {
     /**
      * Запуск отслеживания изменения местоположения
      */
+    @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
         isLocationUpdatesActive = true
         settingsClient.checkLocationSettings(locationSettingsRequest)
             .addOnSuccessListener(activity) { locationSettingsResponse ->
-                if (ActivityCompat.checkSelfPermission(
-                        activity.applicationContext,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                        activity.applicationContext,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return@addOnSuccessListener
-                }
                 Looper.myLooper()?.let {
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
@@ -182,7 +164,7 @@ class DeviceLocation(val activity: Activity) {
 
         with(locationRequest) {
             this.let {
-                it.interval = 60000 * 5
+                it.interval = 60000 * 1
                 it.fastestInterval = 3000
                 it.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }

@@ -22,19 +22,5 @@ data class RequestSuccess(
     @SerializedName("serverId")
     @Expose
     val serverId: String? = null,
-    /**
-     * Идентификатор комнаты чата
-     */
-    @SerializedName("roomId")
-    @Expose
-    val roomId: Int? = null,
-    /**
-     * Признак загрузки файла с мобильного устройства на сервер
-     * true - файл загружен
-     * false - файл не загружен
-     */
-    @SerializedName("upload")
-    @Expose
-    val upload: String? = null
 ) {
 }

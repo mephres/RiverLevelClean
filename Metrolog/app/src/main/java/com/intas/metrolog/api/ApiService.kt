@@ -37,6 +37,7 @@ interface ApiService {
     @GET("getUserList")
     fun getUserList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<UserItem>>
 
+
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
         const val QUERY_PARAM_PASSWORD = "pass"
