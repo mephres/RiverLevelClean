@@ -35,4 +35,9 @@
 
     <string name="prompt_info_title">Вход в АРМ Метролога</string>
     <string name="prompt_info_description">Отсканируйте отпечаток пальца</string>
+    <string name="bottom_menu_events_title">Мероприятия</string>
+    <string name="bottom_menu_requests_title">Заявки</string>
+    <string name="bottom_menu_events_equip">Оборудование</string>
+    <string name="bottom_menu_events_chat">Чат</string>
+    <string name="bottom_menu_more_title">Еще</string>
 </resources>

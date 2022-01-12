@@ -1,4 +1,4 @@
-package com.intas.moboperator.database
+package com.intas.metrolog.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
