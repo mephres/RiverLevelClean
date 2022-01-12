@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityMainBinding
@@ -31,8 +33,17 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        initBottomNavigation()
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
+    }
+
+    /**
+     * Инициализация нижнего меню
+     */
+    private fun initBottomNavigation() {
+        val navigationController = findNavController(R.id.nav_host_fragment_activity_main)
+        binding.bottomNavigationView.setupWithNavController(navigationController)
     }
 
     /**

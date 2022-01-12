@@ -22,10 +22,10 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
 
 @Database(
     entities = [AuthUser::class, UserLocation::class, JournalItem::class, UserItem::class,
-        EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
+               EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
                EventOperationItem::class, DocumentType::class, EquipInfoPriority::class,
                EventStatus::class, EventPriority::class, EventComment::class],
-    version = 7, exportSchema = false
+    version = 2, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
