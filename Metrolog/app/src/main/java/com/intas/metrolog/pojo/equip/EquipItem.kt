@@ -87,7 +87,7 @@ data class EquipItem(
      */
     @SerializedName("equipTagActual")
     @Expose
-    var equipTagActual: Long = 0,
+    var equipTagActual: Int = 0,
     /**
      * Признак отсылки метки на сервер ЦНО
      * 0 - не отослана
@@ -128,7 +128,7 @@ data class EquipItem(
         equipVidIzm: String?,
         lastCalibr: String?,
         lastVerif: String?,
-        equipTagActual: Long = 0,
+        equipTagActual: Int = 0,
         isSendRFID: Int = 1,
         latitude: String?,
         longitude: String?,

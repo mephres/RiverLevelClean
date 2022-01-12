@@ -26,7 +26,8 @@ interface EquipDao {
     @Query("SELECT * FROM equip")
     fun getAllEquip(): LiveData<List<EquipItem>>
 
-
+    @Query("SELECT COUNT(*) FROM equip")
+    fun getEquipCount(): LiveData<Int>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEquipInfoList(equipInfoList: List<EquipInfo>)

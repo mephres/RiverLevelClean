@@ -51,4 +51,6 @@
     <string name="equip_Calibration_label">Калибровка:</string>
     <string name="equip_Verification_label">Поверка:</string>
     <string name="equip_Installation_Location_label">Место установки:</string>
+    <string name="equip_add_rfid_label">Добавить метку</string>
+    <string name="equip_create_document_label">Создать PDF</string>
 </resources>

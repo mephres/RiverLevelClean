@@ -260,7 +260,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider"
-            tools:text="Добавить метку" />
+            android:text="@string/equip_add_rfid_label" />
 
         <Button
             android:id="@+id/createDocumentButton"
@@ -270,7 +270,7 @@
             app:layout_constraintBottom_toBottomOf="@+id/addRFIDButton"
             app:layout_constraintEnd_toEndOf="@+id/divider"
             app:layout_constraintTop_toTopOf="@+id/addRFIDButton"
-            tools:text="Создать PDF" />
+            android:text="@string/equip_create_document_label" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

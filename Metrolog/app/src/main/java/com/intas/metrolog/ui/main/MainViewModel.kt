@@ -92,7 +92,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Получение списка оборудования
      */
-    private fun getEquip() {
+    fun getEquip() {
         Util.authUser?.userId?.let {
             val disposable = ApiFactory.apiService.getEquip(it)
                 .retryWhen { f: Flowable<Throwable?> ->
