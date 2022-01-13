@@ -3,6 +3,8 @@ package com.intas.metrolog.ui.main
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.api.ApiFactory
@@ -31,6 +33,7 @@ import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
+import com.intas.metrolog.util.SingleLiveEvent
 import com.intas.metrolog.util.Util
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -50,6 +53,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendEquipRFIDDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
+
+    val onErrorMessage = SingleLiveEvent<String>()
 
     init {
         getEquip()
@@ -95,9 +100,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getEquip() {
         Util.authUser?.userId?.let {
             val disposable = ApiFactory.apiService.getEquip(it)
-                .retryWhen { f: Flowable<Throwable?> ->
-                    f.delay(1, TimeUnit.MINUTES)
-                }
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { equip ->
@@ -108,6 +110,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     }
                 }, {
+                    onErrorMessage.postValue("При получении списка оборудования с сервера произошла ошибка - " +
+                            "${it.message}")
                     it.printStackTrace()
                 })
             compositeDisposable.add(disposable)

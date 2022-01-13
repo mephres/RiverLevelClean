@@ -6,10 +6,13 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.widget.SearchView
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.snackbar.Snackbar
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.equip.EquipItem
@@ -62,11 +65,16 @@ class EquipFragment : Fragment() {
             val handler = Handler(Looper.getMainLooper())
             override fun onQueryTextChange(newText: String): Boolean {
                 handler.removeCallbacksAndMessages(null)
-                handler.postDelayed(Runnable {
-                    val result = equipList.filter {
-                        it.equipName?.contains(other = newText, ignoreCase = true) ?: false
-                    }
-                    equipListAdapter.submitList(result)
+                handler.postDelayed({
+                    equipListAdapter.submitList(equipList.filter {
+                        it.equipName?.contains(other = newText.trim(), ignoreCase = true) == true ||
+                                it.equipZavNum?.contains(other = newText.trim(), ignoreCase = true) == true ||
+                                it.equipTag?.contains(other = newText.trim(), ignoreCase = true) == true ||
+                                it.equipGRSI?.contains(other = newText.trim(), ignoreCase = true) == true ||
+                                it.equipVidIzm?.contains(other = newText.trim(), ignoreCase = true) == true ||
+                                it.equipZavodIzg?.contains(other = newText.trim(), ignoreCase = true) == true ||
+                                it.mestUstan?.contains(other = newText.trim(), ignoreCase = true) == true
+                    })
                 },200)
                 return true
             }
@@ -78,9 +86,26 @@ class EquipFragment : Fragment() {
         equipViewModel.getEquipList().observe(viewLifecycleOwner, {
             binding.equipProgressBar.visibility = View.GONE
             binding.equipSwipeRefreshLayout.isRefreshing = false
-            equipListAdapter.submitList(it)
             equipList = it.toMutableList()
+            equipListAdapter.submitList(equipList)
         })
+
+        mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
+            showSnackBar(it)
+            binding.equipSwipeRefreshLayout.isRefreshing = false
+        })
+    }
+
+    private fun showSnackBar(message: String) {
+        val snackbar =
+            Snackbar.make(binding.root, message, Snackbar.LENGTH_INDEFINITE)
+        snackbar.setAction("OK") {
+            snackbar.dismiss()
+        }
+        val messageView: TextView = snackbar.view.findViewById(R.id.snackbar_text)
+        messageView.maxLines = 20
+        snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.md_white_1000))
+        snackbar.show()
     }
 
     private fun setUI() {
@@ -113,4 +138,5 @@ class EquipFragment : Fragment() {
 
         }
     }
+
 }
