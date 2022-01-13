@@ -3,8 +3,6 @@ package com.intas.metrolog.ui.main
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.api.ApiFactory
@@ -12,6 +10,8 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_BEARING
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ELAPSED_REALTIME_NANOS
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_RFID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
@@ -19,8 +19,6 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PROVIDER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SPEED
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_ID
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_RFID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
@@ -77,7 +75,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_INSERT_EQUIP", equipList.toString())
 
         viewModelScope.launch {
-            db.equipDao().insertEquipList(equipList)
+            for (equip in equipList) {
+                val equipItem = db.equipDao().getEquipItemById(equip.equipId)
+                if (equipItem != null && equipItem.isSendRFID == 0) {
+                    continue
+                }
+                db.equipDao().insertEquipItem(equip)
+            }
         }
     }
 
@@ -101,17 +105,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Util.authUser?.userId?.let {
             val disposable = ApiFactory.apiService.getEquip(it)
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .repeatWhen { completed ->
+                    completed.delay(10, TimeUnit.SECONDS)
+                }
+                .retryWhen { f: Flowable<Throwable?> ->
+                    f.delay(1, TimeUnit.MINUTES)
+                }
                 .subscribe({
-                    it.list?.let { equip ->
-                        insertEquipList(equip)
+                    it.list?.let { equipList ->
+                        insertEquipList(equipList)
 
-                        equip.forEach {
-                            if(it.equipInfoList.isNotEmpty()) insertEquipInfoList(it.equipInfoList)
+                        equipList.forEach {
+                            if (it.equipInfoList?.isNotEmpty() == true) insertEquipInfoList(it.equipInfoList!!)
                         }
                     }
                 }, {
-                    onErrorMessage.postValue("При получении списка оборудования с сервера произошла ошибка - " +
-                            "${it.message}")
+                    onErrorMessage.postValue(
+                        "При получении списка оборудования с сервера произошла ошибка - " +
+                                "${it.message}"
+                    )
                     it.printStackTrace()
                 })
             compositeDisposable.add(disposable)

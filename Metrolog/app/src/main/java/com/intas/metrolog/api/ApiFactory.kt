@@ -71,8 +71,8 @@ object ApiFactory {
             connectionPool(ConnectionPool(50, 5, TimeUnit.SECONDS))
 
             okHttpClient = this.connectTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS).build()
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES).build()
         }
 
         return okHttpClient

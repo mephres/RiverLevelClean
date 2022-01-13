@@ -89,7 +89,7 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
                 holder.equipTagActualImageView.setColorFilter(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorAccent
+                        R.color.colorPrimary
                     ), PorterDuff.Mode.MULTIPLY
                 )
             }

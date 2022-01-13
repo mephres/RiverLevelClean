@@ -107,32 +107,18 @@ data class EquipItem(
      * 0 - не отосланы
      * 1 - отосланы
      */
-    var isSendGeo: Int = 1,
+    var isSendGeo: Int = 1
+) : Parcelable {
+
     /**
      * Список информации по оборудованию
      */
     @Ignore
     @SerializedName("priorityInfo")
     @Expose
-    var equipInfoList: List<EquipInfo>,
-) : Parcelable {
-    constructor(
-        equipId: Long,
-        equipName: String?,
-        mestUstan: String?,
-        equipZavNum: String?,
-        equipRFID: String?,
-        equipTag: String?,
-        equipGRSI: String?,
-        equipZavodIzg: String?,
-        equipVidIzm: String?,
-        lastCalibr: String?,
-        lastVerif: String?,
-        equipTagActual: Int = 0,
-        isSendRFID: Int = 1,
-        latitude: String?,
-        longitude: String?,
-        isSendGeo: Int = 1,
-    ) : this(equipId, equipName,mestUstan,equipZavNum,equipRFID,equipTag,equipGRSI,equipZavodIzg,
-        equipVidIzm,lastCalibr,lastVerif,equipTagActual,isSendRFID,latitude,longitude,isSendGeo, listOf())
+    var equipInfoList: List<EquipInfo>? = null
+
+    constructor() : this(0, "","","","","","","",
+    "","","",0,1,"","",1)
+
 }

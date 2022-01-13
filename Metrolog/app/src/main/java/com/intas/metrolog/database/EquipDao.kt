@@ -32,4 +32,7 @@ interface EquipDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEquipInfoList(equipInfoList: List<EquipInfo>)
 
+    @Query("SELECT * FROM equip WHERE equipId = :id")
+    fun getEquipItemById(id: Long): EquipItem?
+
 }
