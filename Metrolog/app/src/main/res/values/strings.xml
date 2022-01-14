@@ -35,4 +35,22 @@
 
     <string name="prompt_info_title">Вход в АРМ Метролога</string>
     <string name="prompt_info_description">Отсканируйте отпечаток пальца</string>
+
+    <string name="bottom_menu_events_title">Мероприятия</string>
+    <string name="bottom_menu_requests_title">Заявки</string>
+    <string name="bottom_menu_events_equip">Оборудование</string>
+    <string name="bottom_menu_events_chat">Чат</string>
+    <string name="bottom_menu_more_title">Еще</string>
+
+    <string name="equip_ZavNum_label">Заводской номер:</string>
+    <string name="equip_RFIDlabel">Метка:</string>
+    <string name="equip_Tag_label">Тэг:</string>
+    <string name="equip_GRSI_label">ГРСИ:</string>
+    <string name="equip_Manufacturer_label">Изготовитель:</string>
+    <string name="equip_Metering_Type_label">Вид измерений:</string>
+    <string name="equip_Calibration_label">Калибровка:</string>
+    <string name="equip_Verification_label">Поверка:</string>
+    <string name="equip_Installation_Location_label">Место установки:</string>
+    <string name="equip_add_rfid_label">Добавить метку</string>
+    <string name="equip_create_document_label">Создать PDF</string>
 </resources>

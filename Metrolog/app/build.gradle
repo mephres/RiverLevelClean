@@ -2,18 +2,18 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-kapt'
-    id("kotlin-parcelize")
+    id "kotlin-parcelize"
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
 }
 
 android {
-    compileSdk 32
+    compileSdk 31
 
     defaultConfig {
         applicationId "com.intas.metrolog"
         minSdk 21
-        targetSdk 32
+        targetSdk 31
         versionCode 100
         versionName "1.0.0"
 

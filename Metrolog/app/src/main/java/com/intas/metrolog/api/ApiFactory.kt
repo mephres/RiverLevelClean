@@ -70,9 +70,9 @@ object ApiFactory {
             }
             connectionPool(ConnectionPool(50, 5, TimeUnit.SECONDS))
 
-            okHttpClient = this.connectTimeout(10, TimeUnit.SECONDS)
-                .writeTimeout(10, TimeUnit.SECONDS)
-                .readTimeout(10, TimeUnit.SECONDS).build()
+            okHttpClient = this.connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(1, TimeUnit.MINUTES)
+                .readTimeout(1, TimeUnit.MINUTES).build()
         }
 
         return okHttpClient
