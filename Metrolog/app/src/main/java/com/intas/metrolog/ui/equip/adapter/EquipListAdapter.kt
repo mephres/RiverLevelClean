@@ -12,7 +12,6 @@ import com.intas.metrolog.R
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.callback.EquipItemDiffCallback
 
-
 class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDiffCallback()) {
 
     lateinit var context: Context
