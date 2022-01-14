@@ -42,7 +42,7 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
             holder.equipRFIDTextView.setBackgroundResource(R.drawable.rounded_corner_area_green)
             holder.equipRFIDTextView.setTextColor(Color.WHITE)
         } else {
-            holder.equipRFIDTextView.text = ("  " + "Нет данных" + "  ")
+            holder.equipRFIDTextView.text = context.getString(R.string.no_data)
             holder.equipRFIDTextView.setBackgroundResource(R.drawable.rounded_corner_area_red)
             holder.equipRFIDTextView.setTextColor(Color.WHITE)
         }
@@ -59,7 +59,7 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
                 )
             )
         } else {
-            holder.equipTagTextView.text = ("  " + "Нет данных" + "  ")
+            holder.equipTagTextView.text = context.getString(R.string.no_data)
             holder.equipTagTextView.setBackgroundResource(R.drawable.rounded_corner_area_red)
             holder.equipTagTextView.setTextColor(Color.WHITE)
         }
@@ -119,7 +119,7 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
                 )
             )
         } else {
-            holder.equipLocationTextView.text = ("  " + "Нет данных" + "  ")
+            holder.equipLocationTextView.text = context.getString(R.string.no_data)
             holder.equipLocationTextView.setBackgroundResource(R.drawable.rounded_corner_area_red)
             holder.equipLocationTextView.setTextColor(Color.WHITE)
         }

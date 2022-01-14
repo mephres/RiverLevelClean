@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -51,6 +52,8 @@ class EquipFragment : Fragment() {
         setSearchViewListener()
 
         binding.equipSwipeRefreshLayout.setOnRefreshListener {
+            binding.equipSwipeRefreshLayout.isRefreshing = false
+            binding.equipProgressIndicator.visibility = View.VISIBLE
             mainViewModel.getEquip()
         }
     }
@@ -66,25 +69,47 @@ class EquipFragment : Fragment() {
             override fun onQueryTextChange(newText: String): Boolean {
                 handler.removeCallbacksAndMessages(null)
                 handler.postDelayed({
-                    equipListAdapter.submitList(equipList.filter {
-                        it.equipName?.contains(other = newText.trim(), ignoreCase = true) == true ||
-                                it.equipZavNum?.contains(other = newText.trim(), ignoreCase = true) == true ||
-                                it.equipTag?.contains(other = newText.trim(), ignoreCase = true) == true ||
-                                it.equipGRSI?.contains(other = newText.trim(), ignoreCase = true) == true ||
-                                it.equipVidIzm?.contains(other = newText.trim(), ignoreCase = true) == true ||
-                                it.equipZavodIzg?.contains(other = newText.trim(), ignoreCase = true) == true ||
-                                it.mestUstan?.contains(other = newText.trim(), ignoreCase = true) == true
-                    })
-                },200)
+                    setFilter(newText.trim())
+                }, 300)
                 return true
             }
-
         })
+    }
+
+    private fun setFilter(filter: String) {
+        if (equipList.isNullOrEmpty()) {
+            return
+        }
+
+        if (filter.isEmpty()) {
+            if (equipListAdapter.currentList.size != equipList.size) {
+                equipListAdapter.submitList(null)
+            }
+            equipListAdapter.submitList(equipList)
+
+            return
+        }
+
+        val filterEquipList = mutableListOf<EquipItem>()
+        for (equip in equipList) {
+            if (equip.equipName?.contains(filter, true) == true ||
+                equip.equipZavNum?.contains(filter, true) == true ||
+                equip.equipTag?.contains(filter, true) == true ||
+                equip.equipGRSI?.contains(filter, true) == true ||
+                equip.equipVidIzm?.contains(filter, true) == true ||
+                equip.equipZavodIzg?.contains(filter, true) == true ||
+                equip.mestUstan?.contains(filter, true) == true
+            ) {
+                filterEquipList.add(equip)
+            }
+        }
+        equipListAdapter.submitList(null)
+        equipListAdapter.submitList(filterEquipList)
     }
 
     private fun initObserver() {
         equipViewModel.getEquipList().observe(viewLifecycleOwner, {
-            binding.equipProgressBar.visibility = View.GONE
+            binding.equipProgressIndicator.visibility = View.GONE
             binding.equipSwipeRefreshLayout.isRefreshing = false
             equipList = it.toMutableList()
             equipListAdapter.submitList(equipList)
@@ -102,18 +127,18 @@ class EquipFragment : Fragment() {
         snackbar.setAction("OK") {
             snackbar.dismiss()
         }
-        val messageView: TextView = snackbar.view.findViewById(R.id.snackbar_text)
+        val messageView = snackbar.view.findViewById(R.id.snackbar_text) as TextView
         messageView.maxLines = 20
         snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.md_white_1000))
         snackbar.show()
     }
 
     private fun setUI() {
-        binding.equipProgressBar.visibility = View.VISIBLE
+        binding.equipProgressIndicator.visibility = View.VISIBLE
         binding.equipSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
-        binding.include.toolbar.title = "Оборудование"
+        binding.includeToolbar.toolbar.title = "Оборудование"
 
-        val menu = binding.include.toolbar.menu
+        val menu = binding.includeToolbar.toolbar.menu
         val menuItemSearch = menu?.findItem(R.id.action_search)
 
         searchView = menuItemSearch?.actionView as SearchView

@@ -49,6 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendUserLocationDisposable: Disposable? = null
     private var sendEquipLocationDisposable: Disposable? = null
     private var sendEquipRFIDDisposable: Disposable? = null
+    private var getEquipDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
 
@@ -81,6 +82,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     continue
                 }
                 db.equipDao().insertEquipItem(equip)
+
+                equip.equipInfoList?.let {eil ->
+                    if (eil.isNotEmpty()) {
+                        insertEquipInfoList(eil)
+                    }
+                }
             }
         }
     }
@@ -103,22 +110,23 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun getEquip() {
         Util.authUser?.userId?.let {
-            val disposable = ApiFactory.apiService.getEquip(it)
+
+            getEquipDisposable?.let {
+                compositeDisposable.remove(it)
+            }
+
+            getEquipDisposable = ApiFactory.apiService.getEquip(it)
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .repeatWhen { completed ->
-                    completed.delay(10, TimeUnit.SECONDS)
+                    completed.delay(10, TimeUnit.MINUTES)
                 }
                 .retryWhen { f: Flowable<Throwable?> ->
-                    f.delay(1, TimeUnit.MINUTES)
+                    f.take(600).delay(1, TimeUnit.MINUTES)
                 }
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let { equipList ->
                         insertEquipList(equipList)
-
-                        equipList.forEach {
-                            if (it.equipInfoList?.isNotEmpty() == true) insertEquipInfoList(it.equipInfoList!!)
-                        }
                     }
                 }, {
                     onErrorMessage.postValue(
@@ -127,7 +135,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     )
                     it.printStackTrace()
                 })
-            compositeDisposable.add(disposable)
+            getEquipDisposable?.let {
+                compositeDisposable.add(it)
+            }
         }
     }
 
