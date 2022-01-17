@@ -175,22 +175,26 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
 
     private fun parseIntent() {
         if (!intent.hasExtra(SCANNER_MODE)) {
+            finish()
             return
         }
 
         val mode = intent.getStringExtra(SCANNER_MODE)
         if (!modes.contains(mode)) {
+            finish()
             return
         }
         mode?.let { scannerMode = it }
 
         if (scannerMode == MODE_ADD_TAG_FOR_EQUIP) {
             if (!intent.hasExtra(EQUIP_ITEM)) {
+                finish()
                 return
             }
             equipItem = intent.getParcelableExtra(EQUIP_ITEM)
 
             if (equipItem == null) {
+                finish()
                 return
             }
         }
