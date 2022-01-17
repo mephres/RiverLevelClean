@@ -3,6 +3,7 @@ package com.intas.metrolog.ui.main
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -40,6 +41,7 @@ class MainActivity : AppCompatActivity() {
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
         initNotSendedEquipRFIDObserver()
+        initEquipReplaceObserver()
     }
 
     /**
@@ -67,8 +69,19 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEquipRFIDObserver() {
         viewModel.notSendedEquipRFIDList.observe(this, {
             for (equip in it) {
-               viewModel.sendEquipRFID(equip)
+                viewModel.sendEquipRFID(equip)
             }
+        })
+    }
+
+    /**
+     * Сохранение списка, неотправленных на сервер (измененных) данных оборудований
+     *
+     * Для последующей вставки и актуализации в БД
+     */
+    private fun initEquipReplaceObserver() {
+        viewModel.equipReplaceLiveDataList.observe(this, {
+            if(it.isNotEmpty()) viewModel.equipReplaceList = it
         })
     }
 
