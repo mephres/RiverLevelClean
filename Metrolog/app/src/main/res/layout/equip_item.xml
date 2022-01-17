@@ -29,6 +29,17 @@
             app:srcCompat="@drawable/ic_baseline_check_circle_black_24dp"
             app:tint="@color/colorAccent" />
 
+        <ImageView
+            android:id="@+id/equipIsNotSendImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/equipNameTextView"
+            app:layout_constraintEnd_toStartOf="@+id/equipTagActualImageView"
+            app:layout_constraintTop_toTopOf="@+id/equipNameTextView"
+            app:srcCompat="@drawable/ic_baseline_sync_problem_24"
+            app:tint="@color/md_red_900" />
+
         <TextView
             android:id="@+id/equipLocationLabelTextView"
             android:layout_width="wrap_content"
@@ -192,7 +203,7 @@
             android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/equipTagActualImageView"
+            app:layout_constraintEnd_toStartOf="@+id/equipIsNotSendImageView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="HardcodedText" />
