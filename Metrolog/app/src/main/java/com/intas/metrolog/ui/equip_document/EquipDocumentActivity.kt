@@ -11,16 +11,19 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.MenuItem
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.ViewModelProvider
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.BuildConfig
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityEquipDocumentBinding
 import com.intas.metrolog.pojo.document_type.DocumentType
+import com.intas.metrolog.pojo.equip.EquipDocument
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.equip_document.adapter.DocumentTypeAdapter
@@ -29,6 +32,7 @@ import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.Util.Companion.CAMERA_CAPTURE
 import com.intas.metrolog.util.Util.Companion.GALLERY_REQUEST
 import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
+import com.intas.metrolog.util.ViewUtil
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -37,7 +41,7 @@ import java.util.*
 class EquipDocumentActivity : AppCompatActivity() {
 
     private val binding by lazy {
-       ActivityEquipDocumentBinding.inflate(layoutInflater)
+        ActivityEquipDocumentBinding.inflate(layoutInflater)
     }
 
     private val viewModel by lazy {
@@ -58,11 +62,11 @@ class EquipDocumentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-            binding.equipDocumentTitleTextView.text = "Генератор PDF"
-            val intent = intent
-            if (intent != null) {
-                equipItem = intent.getParcelableExtra<EquipItem>(EXTRA_EQUIP_ITEM) as EquipItem
-            }
+        this.title = "Генератор PDF"
+        val intent = intent
+        if (intent != null) {
+            equipItem = intent.getParcelableExtra<EquipItem>(EXTRA_EQUIP_ITEM) as EquipItem
+        }
         supportActionBar?.let { actionBar ->
             actionBar.setHomeButtonEnabled(true)
             actionBar.setDisplayHomeAsUpEnabled(true)
@@ -70,7 +74,7 @@ class EquipDocumentActivity : AppCompatActivity() {
                 ColorDrawable(
                     ContextCompat.getColor(
                         this,
-                        R.color.design_default_color_background
+                        R.color.colorAccent
                     )
                 )
             )
@@ -88,9 +92,6 @@ class EquipDocumentActivity : AppCompatActivity() {
 
         configureDocumentTypeSpinner()
 
-        binding.equipDocumentBackImageButton.setOnClickListener {
-            onBackPressed()
-        }
 
         binding.equipDocumentPhotoButton.setOnClickListener {
             createPhoto()
@@ -119,13 +120,62 @@ class EquipDocumentActivity : AppCompatActivity() {
         }
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+
+            android.R.id.home -> {
+                onBackPressed()
+            }
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+
     private fun generatePDF() {
-        Util.safeLet(uriList, selectDocumentType) {uriList, selectDocumentType ->
+
+        if (selectDocumentType == null) {
+            Toast.makeText(this, "Необходимо выбрать тип документа", Toast.LENGTH_LONG).show()
+        }
+
+        Util.safeLet(uriList, selectDocumentType) { uriList, selectDocumentType ->
             viewModel.generatePDF(uriList, equipItem.equipId, selectDocumentType)
         }
 
-        viewModel.savePDFCompleted.observe(this) {
-            val b = 1
+        viewModel.onSavePDFCompleted = {
+            showPDFViewDialog(it)
+        }
+    }
+
+    private fun showPDFViewDialog(equipDocument: EquipDocument) {
+
+        val dialogSheet = BottomDialogSheet.newInstance(
+            getString(R.string.equip_document_activity_pdf_view_dialog_title),
+            String.format(
+                getString(R.string.equip_document_activity_pdf_view_dialog_text),
+                selectDocumentType?.name,
+                equipItem.equipName
+            ),
+            getString(R.string.equip_document_activity_pdf_view_dialog_positive_button),
+            getString(R.string.pequip_document_activity_pdf_view_dialog_negative_button)
+        )
+        dialogSheet.isCancelable = false
+        dialogSheet.show(supportFragmentManager, Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG)
+        dialogSheet.onPositiveClickListener = {
+            try {
+
+                equipDocument.filePath?.let { path ->
+                    viewPDF(path)
+                }
+
+                clearAll()
+            } catch (e: Exception) {
+                showToast("При открытии файла произошла ошибка. " + e.message)
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
+
+        dialogSheet.onNegativeClickListener = {
+            clearAll()
         }
     }
 
@@ -162,7 +212,8 @@ class EquipDocumentActivity : AppCompatActivity() {
         val intent =
             Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
+        intent.flags =
+            Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         intent.type = "image/*"
         startActivityForResult(intent, GALLERY_REQUEST)
     }
@@ -255,6 +306,7 @@ class EquipDocumentActivity : AppCompatActivity() {
             selectDocumentType?.let {
                 binding.equipDocumentTypeList.setText(it.name)
             }
+            ViewUtil.hideKeyboard(this)
         }
     }
 
@@ -284,6 +336,24 @@ class EquipDocumentActivity : AppCompatActivity() {
             }
 
         }
+    }
+
+    private fun viewPDF(filepath: String) {
+        val intent = Intent(Intent.ACTION_VIEW)
+        val file = File(filepath)
+        val localUri =
+            FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.provider", file)
+        intent.setDataAndType(localUri, "application/pdf")
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        startActivity(intent)
+    }
+
+    private fun clearAll() {
+        uriList = emptyList()
+        imageSliderAdapter = ImageSliderViewAdapter(emptyList())
+        binding.equipDocumentImageSliderView.setSliderAdapter(imageSliderAdapter)
+        binding.equipDocumentTypeList.text.clear()
+        selectDocumentType = null
     }
 
     companion object {

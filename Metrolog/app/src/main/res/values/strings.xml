@@ -66,5 +66,10 @@
     <string name="equip_document_activity_delete_image_dialog_positive_button">Удалить</string>
     <string name="pequip_document_activity_delete_image_dialog_negative_button">Отмена</string>
 
+    <string name="equip_document_activity_pdf_view_dialog_title">PDF</string>
+    <string name="equip_document_activity_pdf_view_dialog_text">"Создан %s для %s"</string>
+    <string name="equip_document_activity_pdf_view_dialog_positive_button">Просмотр</string>
+    <string name="pequip_document_activity_pdf_view_dialog_negative_button">Выйти</string>
+
 
 </resources>

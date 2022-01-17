@@ -6,36 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".ui.equip_document.EquipDocumentActivity">
 
-    <ImageButton
-        android:id="@+id/equipDocumentBackImageButton"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/md_white_1000"
-        android:elevation="0dp"
-        android:scaleX="1.2"
-        android:scaleY="1.2"
-        app:layout_constraintDimensionRatio="1:1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_baseline_arrow_back_24dp"
-        app:tint="@color/md_black_1000" />
-
-    <TextView
-        android:id="@+id/equipDocumentTitleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="TextView"
-        android:textColor="@color/md_black_1000"
-        android:textSize="22sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/equipDocumentBackImageButton"
-        app:layout_constraintStart_toEndOf="@+id/equipDocumentBackImageButton"
-        app:layout_constraintTop_toTopOf="@+id/equipDocumentBackImageButton"
-        tools:text="Генератор PDF" />
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/equipDocumentTypeSpinner"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
@@ -48,11 +18,11 @@
         android:hint="@string/equip_document_activity_document_type_spinner_hint"
         android:textColorHint="@color/colorPrimary"
         app:boxBackgroundColor="@color/md_white_1000"
-        app:hintTextColor="@color/colorPrimary"
 
+        app:hintTextColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/equipDocumentBackImageButton">
+        app:layout_constraintTop_toTopOf="parent">
 
         <AutoCompleteTextView
             android:id="@+id/equipDocumentTypeList"
@@ -156,7 +126,7 @@
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/equipDocumentSavePdfButton"
-        style="?attr/materialButtonOutlinedStyle"
+        style="?attr/materialButtonStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -164,7 +134,8 @@
         android:layout_marginEnd="24dp"
         android:text="@string/equip_document_activity_save_pdf_button_title"
         android:textAllCaps="false"
-        android:textColor="@color/colorPrimary"
+        app:cornerRadius="4dp"
+        android:textColor="@color/md_white_1000"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"

@@ -2,18 +2,19 @@ package com.intas.metrolog.ui.equip_document
 
 import android.app.Application
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.graphics.pdf.PdfDocument.PageInfo
 import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.intas.metrolog.R
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
@@ -33,16 +34,14 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
     private val db = AppDatabase.getInstance(application)
     private val context = application.applicationContext
 
+    var onSavePDFCompleted: ((EquipDocument) -> Unit)? = null
+
     //список типов документа для оборудования
     val documentTypeList = db.documentTypeDao().getDocumentTypes()
 
-    var _uriList = MutableLiveData<List<Uri>>()
+    private var _uriList = MutableLiveData<List<Uri>>()
     val uriList: LiveData<List<Uri>>
         get() = _uriList
-
-    var _savePDFCompleted = MutableLiveData<Boolean>()
-    val savePDFCompleted: LiveData<Boolean>
-        get() = _savePDFCompleted
 
     fun addImage(uri: Uri) {
         val list = _uriList.value
@@ -60,18 +59,17 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
 
     fun generatePDF(uriList: List<Uri>, equipId: Long, documentType: DocumentType) {
         viewModelScope.launch {
-            _savePDFCompleted.value = false
 
             val document = PdfDocument()
             var pageCount = 0
             uriList.forEach { uri ->
                 val imageBitmap =  MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-                imageBitmap?.let { bitmap->
+                imageBitmap?.let { imageBitmap->
                     var tempWidth = 0
                     var tempHeight = 0
                     try {
-                        tempWidth = bitmap.getWidth() / 1 //Util.getInstance().getImageSizeScalePDF()
-                        tempHeight = bitmap.getHeight() / 1//Util.getInstance().getImageSizeScalePDF()
+                        tempWidth = imageBitmap.getWidth() / 1 //Util.getInstance().getImageSizeScalePDF()
+                        tempHeight = imageBitmap.getHeight() / 1//Util.getInstance().getImageSizeScalePDF()
                     } catch (e: Exception) {
                         tempWidth = 240
                         tempHeight = 320
@@ -83,17 +81,14 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
                     val canvas = page.canvas
 
                     val paint = Paint()
-                    paint.color = Color.parseColor("#ffffff")
+                    paint.color = ContextCompat.getColor(context, R.color.md_white_1000)
                     canvas.drawPaint(paint)
 
-                    var bitmap = Bitmap.createScaledBitmap(bitmap, tempWidth, tempHeight, true)
+                    val bitmap = Bitmap.createScaledBitmap(imageBitmap, tempWidth, tempHeight, true)
 
-                    paint.color = Color.BLUE
-                    canvas.drawBitmap(bitmap, 25f, 25f, null)
+                    paint.color = ContextCompat.getColor(context, R.color.colorAccent)
+                    canvas.drawBitmap(bitmap, 25f, 25f, paint)
 
-                    if (bitmap != null) {
-                        bitmap = null
-                    }
                     document.finishPage(page)
                     pageCount++
                 }
@@ -112,11 +107,11 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
                     equipId = equipId,
                     documentTypeId = documentType.id,
                     filename = fileName,
-                    filePath = Objects.requireNonNull(storageDir)?.path
+                    filePath = targetPDF
                 )
 
                 db.equipDocumentDao().insertEquipDocument(equipDocument)
-                _savePDFCompleted.value = true
+                onSavePDFCompleted?.invoke(equipDocument)
             } catch (e: IOException) {
                 FirebaseCrashlytics.getInstance().recordException(e)
             }
