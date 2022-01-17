@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit
 
 object ApiFactory {
 
-    //private const val BASE_URL = "http://92.50.140.66:8081/apiMobOp/"
+    private const val BASE_URL = "http://92.50.140.66:8008/cno/mobileAPI/"
     private const val TEST_BASE_URL = "http://192.168.0.23:8080/apiMobOp/"
     private var sClient: OkHttpClient? = null
     private val LOCK = Any()
@@ -21,8 +21,8 @@ object ApiFactory {
     val retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create(GsonBuilder().setLenient().create()))
         .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .baseUrl(Util.serverIpAddress)
-        //.baseUrl(TEST_BASE_URL)
+        //.baseUrl(Util.serverIpAddress)
+        .baseUrl(BASE_URL)
         .client(getClient())
         .build()
 
