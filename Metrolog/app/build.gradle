@@ -142,4 +142,10 @@ dependencies {
 
     // WhatsNew
     implementation 'io.github.tonnyl:whatsnew:0.1.7'
+
+    //QRcode сканер
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'me.dm7.barcodescanner:core:1.9.13'
+    implementation 'me.dm7.barcodescanner:zbar:1.9.13'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
 }

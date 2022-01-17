@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +18,7 @@ import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
+import com.intas.metrolog.ui.scanner.ScannerActivity
 
 class EquipFragment : Fragment() {
     private lateinit var equipListAdapter: EquipListAdapter
@@ -157,7 +157,9 @@ class EquipFragment : Fragment() {
 
     private fun setClickListener() {
         equipListAdapter.onAddRFIDButtonClickListener = {
-
+            val equip = it
+            val intent = ScannerActivity.newIntentAddTag(requireContext(), equip)
+            startActivity(intent)
         }
         equipListAdapter.onCreateDocumentButtonListener = {
 
