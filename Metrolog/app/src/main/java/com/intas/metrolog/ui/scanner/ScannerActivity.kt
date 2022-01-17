@@ -172,6 +172,11 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
             Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
             this.finish()
         }
+        scannerViewModel.onError = {
+            binding.scannerProgressIndicator.visibility = View.GONE
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            this.finish()
+        }
     }
 
     private fun parseIntent() {

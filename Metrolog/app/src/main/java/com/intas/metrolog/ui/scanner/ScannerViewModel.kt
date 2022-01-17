@@ -13,6 +13,7 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
     private val compositeDisposable = CompositeDisposable()
     var onFailure: ((String) -> Unit)? = null
     var onSuccess: ((Int) -> Unit)? = null
+    var onError: ((String) -> Unit)? = null
 
     /**
      * Установка метки для оборудования. Ведем поиск оборудования по метке, если список пуст, то считаем, что метка никому не принадлежит.
@@ -37,7 +38,7 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
                     onSuccess?.invoke(db.equipDao().updateEquip(equip))
                 }
             }, {
-
+                onError?.invoke("При установке метки возникла ошибка")
             })
         compositeDisposable.add(disposable)
     }
