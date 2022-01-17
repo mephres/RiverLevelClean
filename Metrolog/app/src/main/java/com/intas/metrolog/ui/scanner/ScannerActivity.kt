@@ -119,7 +119,7 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
             it.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
             it.setHomeButtonEnabled(true)
             it.setDisplayHomeAsUpEnabled(true)
-            it.title = "Сканирование метки"
+            it.title = getString(R.string.nfc_activity_title)
         }
     }
 
@@ -158,17 +158,18 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
         scannerViewModel.setRFIDtoEquip(equip, rfid)
         scannerViewModel.onSuccess = {
             binding.scannerProgressIndicator.visibility = View.GONE
-            Toast.makeText(this, "Метка установлена", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.nfc_tag_is_set), Toast.LENGTH_SHORT).show()
             this.finish()
         }
         scannerViewModel.onFailure = {
             binding.scannerProgressIndicator.visibility = View.GONE
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            val tagSetFailure = getString(R.string.nfc_tag_set_failure)
+            Toast.makeText(this, String.format(tagSetFailure, it), Toast.LENGTH_SHORT).show()
             this.finish()
         }
         scannerViewModel.onError = {
             binding.scannerProgressIndicator.visibility = View.GONE
-            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.nfc_tag_set_error), Toast.LENGTH_SHORT).show()
             this.finish()
         }
     }

@@ -29,7 +29,7 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 if (!it.isNullOrEmpty()) {
-                    onFailure?.invoke("Метка $rfid принадлежит другому оборудованию. Выберите другую метку.")
+                    onFailure?.invoke(rfid)
                 } else {
                     equip.apply {
                         equipRFID = rfid
@@ -38,7 +38,7 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
                     onSuccess?.invoke(db.equipDao().updateEquip(equip))
                 }
             }, {
-                onError?.invoke("При установке метки возникла ошибка")
+                onError?.invoke(it.localizedMessage)
             })
         compositeDisposable.add(disposable)
     }
