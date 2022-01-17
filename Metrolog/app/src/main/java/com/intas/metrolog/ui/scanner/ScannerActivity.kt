@@ -2,18 +2,13 @@ package com.intas.metrolog.ui.scanner
 
 import android.animation.ArgbEvaluator
 import android.animation.ValueAnimator
-import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.graphics.Color
-import android.graphics.PorterDuff
-import android.graphics.drawable.Drawable
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -25,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityScannerBinding
 import com.intas.metrolog.pojo.equip.EquipItem
-import com.intas.metrolog.ui.equip.EquipViewModel
 import com.intas.metrolog.util.Util
 
 class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
