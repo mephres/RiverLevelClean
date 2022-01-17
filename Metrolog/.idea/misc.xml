@@ -4,21 +4,27 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/flash_selector.xml" value="0.2703125" />
+        <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.3314814814814815" />
+        <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_bug_report_red_24.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_cancel_black_24dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_chat_bubble_outline_24.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_check_circle_24.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_check_circle_black_24dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_event_note_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_flash_off_24.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_flash_on_24.xml" value="0.2703125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_more_horiz_24.xml" value="0.3828125" />
+        <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_qr_code_24.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_baseline_warning_24.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_cast_connect_black_36dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_clear_symbol_black_256dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_database_export_red_36dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_database_import_red_24dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_equip_red_24dp.xml" value="0.3828125" />
+        <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_flash_off_black_24dp.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_metrolog_ico_512dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_outline_info_36.xml" value="0.3828125" />
+        <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_qrcode_scan.xml" value="0.3314814814814815" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_search.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_warning_red_24dp.xml" value="0.3828125" />
         <entry key="..\:/Users/INTAS/StudioProjects/metrolog/Metrolog/app/src/main/res/drawable/ic_whatshot_red_24dp.xml" value="0.3828125" />

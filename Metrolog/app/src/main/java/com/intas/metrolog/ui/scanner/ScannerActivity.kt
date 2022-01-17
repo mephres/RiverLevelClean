@@ -1,27 +1,46 @@
 package com.intas.metrolog.ui.scanner
 
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
+import android.animation.ValueAnimator.AnimatorUpdateListener
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.Drawable
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.commit
+import androidx.lifecycle.ViewModelProvider
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityScannerBinding
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.ui.equip.EquipViewModel
 import com.intas.metrolog.util.Util
 
 class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
     private var nfcAdapter: NfcAdapter? = null
     private var nfcPendingIntent: PendingIntent? = null
     private var scannerMode: String = MODE_UNKNOWN
-    private var equipSerialNumber: String = MODE_UNKNOWN
+    private var equipSerialNumber: String? = null
+    private var equipItem: EquipItem? = null
 
     private val binding by lazy {
         ActivityScannerBinding.inflate(layoutInflater)
+    }
+
+    private val scannerViewModel by lazy {
+        ViewModelProvider(this)[ScannerViewModel::class.java]
     }
 
     private val modes = arrayOf(
@@ -34,6 +53,7 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
         setContentView(binding.root)
         parseIntent()
         setToolbar()
+        setUI()
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this)
         nfcPendingIntent = PendingIntent.getActivity(
@@ -57,10 +77,12 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_qr -> {
-                supportFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.qrScannerView, QrFragment.newInstance())
-                    .commit()
+                supportFragmentManager.commit {
+                    setCustomAnimations(R.anim.slide_in, R.anim.fade_out,
+                        R.anim.fade_in, R.anim.slide_out)
+                    replace(R.id.qrScannerView, QrFragment.newInstance())
+                    addToBackStack(null)
+                }
                 return true
             }
 
@@ -80,7 +102,11 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
 
     override fun onResume() {
         super.onResume()
-        nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, null, null)
+        val tagDetected = IntentFilter(NfcAdapter.ACTION_TAG_DISCOVERED)
+        val ndefDetected = IntentFilter(NfcAdapter.ACTION_NDEF_DISCOVERED)
+        val techDetected = IntentFilter(NfcAdapter.ACTION_TECH_DISCOVERED)
+        val nfcIntentFilter = arrayOf(techDetected, tagDetected, ndefDetected)
+        nfcAdapter?.enableForegroundDispatch(this, nfcPendingIntent, nfcIntentFilter, null)
     }
 
     override fun onPause() {
@@ -96,6 +122,7 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
     private fun setToolbar() {
         setSupportActionBar(binding.includeToolbar.toolbar)
         supportActionBar?.let {
+            it.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24)
             it.setHomeButtonEnabled(true)
             it.setDisplayHomeAsUpEnabled(true)
             it.title = "Сканирование метки"
@@ -122,7 +149,9 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
 
             }
             MODE_ADD_TAG_FOR_EQUIP -> {
-
+                Util.safeLet(equipItem, equipSerialNumber) { equipItem, equipNumber ->
+                    setRFIDtoEquip(equipItem, equipNumber)
+                }
             }
             MODE_ADD_NEW_REQUEST -> {
 
@@ -130,6 +159,20 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
         }
     }
 
+    private fun setRFIDtoEquip(equip: EquipItem, rfid: String) {
+        binding.scannerProgressIndicator.visibility = View.VISIBLE
+        scannerViewModel.setRFIDtoEquip(equip, rfid)
+        scannerViewModel.onSuccess = {
+            binding.scannerProgressIndicator.visibility = View.GONE
+            Toast.makeText(this, "Метка установлена", Toast.LENGTH_SHORT).show()
+            this.finish()
+        }
+        scannerViewModel.onFailure = {
+            binding.scannerProgressIndicator.visibility = View.GONE
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+            this.finish()
+        }
+    }
 
     private fun parseIntent() {
         if (!intent.hasExtra(SCANNER_MODE)) {
@@ -141,6 +184,31 @@ class ScannerActivity : AppCompatActivity(), QrFragment.OnResultListener {
             return
         }
         mode?.let { scannerMode = it }
+
+        if (scannerMode == MODE_ADD_TAG_FOR_EQUIP) {
+            if (!intent.hasExtra(EQUIP_ITEM)) {
+                return
+            }
+            equipItem = intent.getParcelableExtra(EQUIP_ITEM)
+
+            if (equipItem == null) {
+                return
+            }
+        }
+    }
+
+    private fun setUI() {
+        val colorFrom = ContextCompat.getColor(this, R.color.colorAccent)
+        val colorTo = ContextCompat.getColor(this, R.color.md_white_1000)
+        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom)
+        colorAnimation.duration = 3000 // milliseconds
+        colorAnimation.repeatCount = 100
+        colorAnimation.addUpdateListener { valueAnimator: ValueAnimator ->
+            binding.logoImageView.setColorFilter(
+                valueAnimator.animatedValue as Int
+            )
+        }
+        colorAnimation.start()
     }
 
     companion object {

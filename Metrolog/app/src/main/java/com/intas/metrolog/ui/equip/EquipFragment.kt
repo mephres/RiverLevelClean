@@ -28,8 +28,12 @@ class EquipFragment : Fragment() {
     private val binding by lazy {
         FragmentEquipBinding.inflate(layoutInflater)
     }
+
+    private val equipViewModel by lazy {
+        ViewModelProvider(this)[EquipViewModel::class.java]
+    }
+
     private val mainViewModel: MainViewModel by activityViewModels()
-    private lateinit var equipViewModel: EquipViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +44,6 @@ class EquipFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        equipViewModel = ViewModelProvider(this)[EquipViewModel::class.java]
         return binding.root
     }
 

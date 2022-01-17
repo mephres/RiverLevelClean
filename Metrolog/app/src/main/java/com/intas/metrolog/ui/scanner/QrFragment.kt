@@ -2,6 +2,8 @@ package com.intas.metrolog.ui.scanner
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.core.content.ContextCompat
@@ -41,12 +43,15 @@ class QrFragment : Fragment(), ZXingScannerView.ResultHandler {
 
     override fun onResume() {
         super.onResume()
-        mScannerView.setBorderColor(ContextCompat.getColor(requireContext(), R.color.colorAccent))
-        mScannerView.setIsBorderCornerRounded(true)
-        mScannerView.setBorderCornerRadius(8)
-        mScannerView.setResultHandler(this)
-        mScannerView.startCamera()
-        mScannerView.setAutoFocus(true)
+        Handler(Looper.getMainLooper()).postDelayed({
+            mScannerView.setBorderColor(ContextCompat.getColor(requireContext(), R.color.colorAccent))
+            mScannerView.setIsBorderCornerRounded(true)
+            mScannerView.setBorderCornerRadius(8)
+            mScannerView.setResultHandler(this)
+            mScannerView.setAutoFocus(true)
+            mScannerView.startCamera()
+        }, 200)
+
     }
 
     override fun onPause() {
@@ -86,9 +91,9 @@ class QrFragment : Fragment(), ZXingScannerView.ResultHandler {
     private fun setFlash() {
         flash = !flash
         if (flash) {
-            flashItem?.setIcon(R.drawable.ic_baseline_flash_off_24)
+            flashItem?.setIcon(R.drawable.ic_flash_off_black_24dp)
         } else {
-            flashItem?.setIcon(R.drawable.ic_baseline_flash_on_24)
+            flashItem?.setIcon(R.drawable.ic_flash_on_black_24dp)
         }
         mScannerView.flash = flash
     }

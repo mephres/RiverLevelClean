@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         initBottomNavigation()
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
+        initNotSendedEquipRFIDObserver()
     }
 
     /**
@@ -56,6 +57,17 @@ class MainActivity : AppCompatActivity() {
         viewModel.notSendedUserLocationList.observe(this, {
             for (userLocation in it) {
                 viewModel.sendUserLocation(userLocation)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер списка оборудования с проставленными RFID-метками
+     */
+    private fun initNotSendedEquipRFIDObserver() {
+        viewModel.notSendedEquipRFIDList.observe(this, {
+            for (equip in it) {
+               viewModel.sendEquipRFID(equip)
             }
         })
     }

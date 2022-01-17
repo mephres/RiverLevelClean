@@ -52,6 +52,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var getEquipDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
+    val notSendedEquipRFIDList = db.equipDao().getEquipNotSendRFID()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -473,6 +474,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param equip оборудование, экземпляр класса [EquipItem]
      */
     fun sendEquipRFID(equip: EquipItem) {
+        sendEquipRFIDDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_EQUIP_ID] = equip.equipId.toString()
@@ -501,7 +506,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         sendEquipRFIDDisposable?.let {
             compositeDisposable.add(it)
         }
-
     }
 
     /**
@@ -593,5 +597,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             db.userLocationDao().setUserLocationSendedById(id)
         }
+    }
+
+    override fun onCleared() {
+        compositeDisposable.dispose()
+        super.onCleared()
     }
 }
