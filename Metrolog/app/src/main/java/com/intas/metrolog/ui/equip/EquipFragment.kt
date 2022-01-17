@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -18,6 +17,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
+import com.intas.metrolog.ui.equip_document.EquipDocumentActivity
 import com.intas.metrolog.ui.main.MainViewModel
 
 class EquipFragment : Fragment() {
@@ -160,7 +160,7 @@ class EquipFragment : Fragment() {
 
         }
         equipListAdapter.onCreateDocumentButtonListener = {
-
+            startActivity(EquipDocumentActivity.newIntent(requireContext(), it))
         }
     }
 

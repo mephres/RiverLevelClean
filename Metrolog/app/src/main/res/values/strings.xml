@@ -53,4 +53,18 @@
     <string name="equip_Installation_Location_label">Место установки:</string>
     <string name="equip_add_rfid_label">Добавить метку</string>
     <string name="equip_create_document_label">Создать PDF</string>
+
+
+    <string name="equip_document_activity_document_type_spinner_hint">Тип документа</string>
+    <string name="equip_document_activity_save_pdf_button_title">Создать PDF</string>
+
+    <string name="no_support_camera_message">Ваше устройство не поддерживает работу с камерой</string>
+    <string name="no_permission_camera_message">Нет разрешения на работу с камерой</string>
+
+    <string name="equip_document_activity_delete_image_dialog_title">Удаление изображения</string>
+    <string name="equip_document_activity_delete_image_dialog_text">Выбранное фото/изображение будет удалено. Продолжить?</string>
+    <string name="equip_document_activity_delete_image_dialog_positive_button">Удалить</string>
+    <string name="pequip_document_activity_delete_image_dialog_negative_button">Отмена</string>
+
+
 </resources>

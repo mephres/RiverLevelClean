@@ -7,7 +7,7 @@ import com.intas.metrolog.pojo.document_type.DocumentType
 @Dao
 interface DocumentTypeDao {
     @Query("SELECT * FROM documentType order by name asc")
-    fun getAllDocumentType(): LiveData<List<DocumentType>>
+    fun getDocumentTypes(): LiveData<List<DocumentType>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateDocumentType(documentType: DocumentType)
