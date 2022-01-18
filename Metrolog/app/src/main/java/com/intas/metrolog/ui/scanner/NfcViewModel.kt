@@ -8,7 +8,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
-class ScannerViewModel(application: Application) : AndroidViewModel(application) {
+class NfcViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getInstance(application)
     private val compositeDisposable = CompositeDisposable()
     var onFailure: ((String) -> Unit)? = null
@@ -35,7 +35,8 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
                         equipRFID = rfid
                         isSendRFID = 0
                     }
-                    onSuccess?.invoke(db.equipDao().updateEquip(equip))
+                    val update = db.equipDao().updateEquip(equip)
+                    onSuccess?.invoke(update)
                 }
             }, {
                 onError?.invoke(it.localizedMessage)

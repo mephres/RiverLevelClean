@@ -18,7 +18,7 @@ import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
-import com.intas.metrolog.ui.scanner.ScannerActivity
+import com.intas.metrolog.ui.scanner.NfcFragment
 
 class EquipFragment : Fragment() {
     private lateinit var equipListAdapter: EquipListAdapter
@@ -163,8 +163,8 @@ class EquipFragment : Fragment() {
     private fun setClickListener() {
         equipListAdapter.onAddRFIDButtonClickListener = {
             val equip = it
-            val intent = ScannerActivity.newIntentAddTag(requireContext(), equip)
-            startActivity(intent)
+            val nfcFragment = NfcFragment.newInstanceAddTag(equip)
+            nfcFragment.show(requireActivity().supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
         }
         equipListAdapter.onCreateDocumentButtonListener = {
 

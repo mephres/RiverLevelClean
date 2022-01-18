@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -18,7 +17,7 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
 import com.intas.metrolog.util.DeviceLocation
 import com.intas.metrolog.util.Util
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), QrFragment.OnResultListener {
     private var doubleBackToExitPressedOnce = false
 
     private val binding by lazy {
@@ -152,5 +151,9 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
             return
         }
+    }
+
+    override fun onResult(result: String) {
+
     }
 }

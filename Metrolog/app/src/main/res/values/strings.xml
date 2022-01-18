@@ -60,7 +60,7 @@
     <string name="nfc_label_not_defined_text">Метка не определена</string>
     <string name="nfc_tag_detected">Обнаружена RFID метка</string>
     <string name="nfc_serial_number_message">Серийный номер: </string>
-    <string name="nfc_tag_is_set">Метка установлена</string>
+    <string name="nfc_tag_is_set">Метка %s установлена</string>
     <string name="nfc_tag_set_error">При установке метки возникла ошибка</string>
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
 </resources>
