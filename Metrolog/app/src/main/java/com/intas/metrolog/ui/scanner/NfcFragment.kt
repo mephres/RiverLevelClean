@@ -81,6 +81,7 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
 
     override fun onPause() {
         super.onPause()
+        mScannerView.stopCamera()
         nfcAdapter?.disableReaderMode(requireActivity())
     }
 
