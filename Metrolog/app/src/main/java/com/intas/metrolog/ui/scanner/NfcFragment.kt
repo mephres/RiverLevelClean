@@ -205,7 +205,7 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
     }
 
     /**
-     * Функция обработки тэга в строковый вид
+     * Функция обработки RFID-тэга в строковый вид
      * @param tag - отсканированный RFID-тэг
      */
     private fun receivedInput(tag: Tag) {
