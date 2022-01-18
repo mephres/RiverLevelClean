@@ -33,6 +33,7 @@ import com.intas.metrolog.util.Util.Companion.CAMERA_CAPTURE
 import com.intas.metrolog.util.Util.Companion.GALLERY_REQUEST
 import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
 import com.intas.metrolog.util.ViewUtil
+import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -181,6 +182,56 @@ class EquipDocumentActivity : AppCompatActivity() {
 
     private fun editImage() {
 
+        ViewUtil.hideKeyboard(this)
+
+        try {
+            val timeStamp = SimpleDateFormat(YYYYMMDD_HHMMSS, Locale.getDefault()).format(Date())
+            val imageFileName = "JPEG_" + timeStamp + "_"
+            val storageDir = applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val image = File.createTempFile(imageFileName, ".jpg", storageDir)
+
+            //Сохраняем позицию редактируемого файла для передачи ее в активити
+            val position = binding.equipDocumentImageSliderView.getCurrentPagePosition()
+
+            val options = UCrop.Options()
+            options.setToolbarTitle("Редактирование")
+            options.setLogoColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.design_default_color_background
+                )
+            )
+            options.setCropFrameColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            options.setActiveControlsWidgetColor(ContextCompat.getColor(this, R.color.colorPrimary))
+            options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            options.setToolbarColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.design_default_color_background
+                )
+            )
+            options.setRootViewBackgroundColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.design_default_color_background
+                )
+            )
+            options.setCropFrameColor(
+                ContextCompat.getColor(
+                    this,
+                    R.color.design_default_color_background
+                )
+            )
+            uriList?.let {
+                UCrop.of(it[position], Uri.fromFile(image))
+                    .withOptions(options)
+                    .start(this)
+            }
+
+        } catch (e: java.lang.Exception) {
+            //showErrorToast("Ошибка при создании файла - " + e.message)
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
     }
 
     private fun deleteImage() {

@@ -48,6 +48,11 @@
         </provider>
 
         <activity
+            tools:ignore="LockedOrientationActivity"
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"/>
+        <activity
             android:name=".ui.equip_document.EquipDocumentActivity"
             android:exported="false"
             android:theme="@style/AppTheme.DarkActionBar"/>
