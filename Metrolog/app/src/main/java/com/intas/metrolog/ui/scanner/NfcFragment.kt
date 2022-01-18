@@ -184,9 +184,9 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
     private fun setFlash() {
         flash = !flash
         if (flash) {
-            binding.flash.setImageDrawable(context?.getDrawable(R.drawable.ic_flash_off_black_24dp))
+            binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_off_black_24dp))
         } else {
-            binding.flash.setImageDrawable(context?.getDrawable(R.drawable.ic_flash_on_black_24dp))
+            binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_on_black_24dp))
         }
         mScannerView.flash = flash
     }
