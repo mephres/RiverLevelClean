@@ -168,7 +168,7 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
             holder.equipVerificationTextView.visibility = View.GONE
         }
 
-        if (equipItem.isSendRFID == 0) {
+        if (equipItem.isSendRFID == 0 || equipItem.isSendGeo == 0) {
             holder.equipIsNotSendImageView.visibility = View.VISIBLE
         } else {
             holder.equipIsNotSendImageView.visibility = View.GONE

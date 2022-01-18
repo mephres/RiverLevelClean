@@ -17,7 +17,7 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
 import com.intas.metrolog.util.DeviceLocation
 import com.intas.metrolog.util.Util
 
-class MainActivity : AppCompatActivity(), QrFragment.OnResultListener {
+class MainActivity : AppCompatActivity() {
     private var doubleBackToExitPressedOnce = false
 
     private val binding by lazy {
@@ -151,9 +151,5 @@ class MainActivity : AppCompatActivity(), QrFragment.OnResultListener {
             super.onBackPressed()
             return
         }
-    }
-
-    override fun onResult(result: String) {
-
     }
 }

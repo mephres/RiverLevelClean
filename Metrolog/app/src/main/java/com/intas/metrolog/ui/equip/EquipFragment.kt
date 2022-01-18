@@ -111,12 +111,12 @@ class EquipFragment : Fragment() {
     }
 
     private fun initObserver() {
-        equipViewModel.getEquipList().observe(viewLifecycleOwner, {
+        equipViewModel.equipList.observe(viewLifecycleOwner, {
             if (it.isNotEmpty()) {
                 binding.equipProgressIndicator.visibility = View.GONE
                 binding.equipSwipeRefreshLayout.isRefreshing = false
                 equipList = it.toMutableList()
-                equipListAdapter.submitList(equipList)
+                equipListAdapter.submitList(it)
             }
         })
 
