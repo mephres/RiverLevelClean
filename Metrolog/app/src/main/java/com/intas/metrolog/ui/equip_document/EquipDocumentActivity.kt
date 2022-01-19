@@ -59,6 +59,8 @@ class EquipDocumentActivity : AppCompatActivity() {
     private var photoPath: String? = null
     private var uriList: List<Uri>? = null
 
+    private var cropImagePosition = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -191,7 +193,7 @@ class EquipDocumentActivity : AppCompatActivity() {
             val image = File.createTempFile(imageFileName, ".jpg", storageDir)
 
             //Сохраняем позицию редактируемого файла для передачи ее в активити
-            val position = binding.equipDocumentImageSliderView.getCurrentPagePosition()
+            cropImagePosition = binding.equipDocumentImageSliderView.getCurrentPagePosition()
 
             val options = UCrop.Options()
             options.setToolbarTitle("Редактирование")
@@ -223,7 +225,7 @@ class EquipDocumentActivity : AppCompatActivity() {
                 )
             )
             uriList?.let {
-                UCrop.of(it[position], Uri.fromFile(image))
+                UCrop.of(it[cropImagePosition], Uri.fromFile(image))
                     .withOptions(options)
                     .start(this)
             }
@@ -368,6 +370,25 @@ class EquipDocumentActivity : AppCompatActivity() {
             var imageBitmap: Bitmap? = null
 
             when (requestCode) {
+                UCrop.REQUEST_CROP -> {
+                    data?.let { intentData ->
+                        val imageUri = UCrop.getOutput(intentData)
+                        try {
+                            imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
+                        } catch (e: IOException) {
+                            FirebaseCrashlytics.getInstance().recordException(e)
+                        }
+                        imageUri?.let{
+                            viewModel.replaceImage(cropImagePosition, imageUri)
+                        }
+                    }
+                }
+                UCrop.RESULT_ERROR -> {
+                    data?.let {
+                        val cropError = UCrop.getError(it)
+                        showToast("Ошибка при редактировании изображения - " + cropError?.message)
+                    }
+                }
                 CAMERA_CAPTURE -> {
                     try {
                         imageBitmap =

@@ -57,6 +57,14 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
         _uriList.value = mutableList.toList()
     }
 
+    fun replaceImage(index: Int, uri: Uri) {
+        val list = _uriList.value
+        val mutableList = list?.toMutableList() ?: mutableListOf()
+        mutableList.removeAt(index)
+        mutableList.add(index, uri)
+        _uriList.value = mutableList.toList()
+    }
+
     fun generatePDF(uriList: List<Uri>, equipId: Long, documentType: DocumentType) {
         viewModelScope.launch {
 
