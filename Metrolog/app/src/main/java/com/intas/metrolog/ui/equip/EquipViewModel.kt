@@ -9,8 +9,5 @@ import com.intas.metrolog.pojo.equip.EquipItem
 class EquipViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getInstance(application)
 
-    fun getEquipList(): LiveData<List<EquipItem>> {
-        return db.equipDao().getAllEquip()
-    }
-
+    val equipList = db.equipDao().getAllEquip()
 }

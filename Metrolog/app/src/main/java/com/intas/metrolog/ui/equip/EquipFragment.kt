@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +18,7 @@ import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
+import com.intas.metrolog.ui.scanner.NfcFragment
 
 class EquipFragment : Fragment() {
     private lateinit var equipListAdapter: EquipListAdapter
@@ -28,8 +28,12 @@ class EquipFragment : Fragment() {
     private val binding by lazy {
         FragmentEquipBinding.inflate(layoutInflater)
     }
+
+    private val equipViewModel by lazy {
+        ViewModelProvider(this)[EquipViewModel::class.java]
+    }
+
     private val mainViewModel: MainViewModel by activityViewModels()
-    private lateinit var equipViewModel: EquipViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +44,6 @@ class EquipFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        equipViewModel = ViewModelProvider(this)[EquipViewModel::class.java]
         return binding.root
     }
 
@@ -108,11 +111,13 @@ class EquipFragment : Fragment() {
     }
 
     private fun initObserver() {
-        equipViewModel.getEquipList().observe(viewLifecycleOwner, {
-            binding.equipProgressIndicator.visibility = View.GONE
-            binding.equipSwipeRefreshLayout.isRefreshing = false
-            equipList = it.toMutableList()
-            equipListAdapter.submitList(equipList)
+        equipViewModel.equipList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                binding.equipProgressIndicator.visibility = View.GONE
+                binding.equipSwipeRefreshLayout.isRefreshing = false
+                equipList = it.toMutableList()
+                equipListAdapter.submitList(it)
+            }
         })
 
         mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
@@ -136,13 +141,13 @@ class EquipFragment : Fragment() {
     private fun setUI() {
         binding.equipProgressIndicator.visibility = View.VISIBLE
         binding.equipSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
-        binding.includeToolbar.toolbar.title = "Оборудование"
+        binding.includeToolbar.toolbar.title = getString(R.string.bottom_menu_events_equip)
 
         val menu = binding.includeToolbar.toolbar.menu
         val menuItemSearch = menu?.findItem(R.id.action_search)
 
         searchView = menuItemSearch?.actionView as SearchView
-        searchView?.queryHint = "Поиск оборудования"
+        searchView?.queryHint = getString(R.string.equip_search_bar_hint)
     }
 
     private fun setRecyclerView() {
@@ -157,7 +162,9 @@ class EquipFragment : Fragment() {
 
     private fun setClickListener() {
         equipListAdapter.onAddRFIDButtonClickListener = {
-
+            val equip = it
+            val nfcFragment = NfcFragment.newInstanceAddTag(equip)
+            nfcFragment.show(requireActivity().supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
         }
         equipListAdapter.onCreateDocumentButtonListener = {
 

@@ -43,6 +43,7 @@
     <string name="bottom_menu_more_title">Еще</string>
 
     <string name="equip_ZavNum_label">Заводской номер:</string>
+    <string name="equip_search_bar_hint">Поиск оборудования</string>
     <string name="equip_RFIDlabel">Метка:</string>
     <string name="equip_Tag_label">Тэг:</string>
     <string name="equip_GRSI_label">ГРСИ:</string>
@@ -53,4 +54,16 @@
     <string name="equip_Installation_Location_label">Место установки:</string>
     <string name="equip_add_rfid_label">Добавить метку</string>
     <string name="equip_create_document_label">Создать PDF</string>
+
+    <string name="nfc_activity_title">Сканирование метки</string>
+    <string name="nfc_activity_read_nfc_text">Сканирование RFID метки</string>
+    <string name="nfc_activity_todo_text">Поднесите устройство к метке</string>
+    <string name="nfc_label_not_defined_text">Метка не определена</string>
+    <string name="nfc_tag_detected">Обнаружена RFID метка</string>
+    <string name="nfc_serial_number_message">Серийный номер: </string>
+    <string name="nfc_tag_is_set">Метка %s установлена</string>
+    <string name="nfc_tag_set_error">При установке метки возникла ошибка</string>
+    <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
+
+    <string name="request_search_bar_hint">Поиск заявок</string>
 </resources>

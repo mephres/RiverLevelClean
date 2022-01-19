@@ -49,6 +49,8 @@ class Util {
         var unreadMessageCount = 0
         var unreadSystemEventCount = 0
 
+        private val hexArray = "0123456789ABCDEF".toCharArray()
+
         fun <T1 : Any, T2 : Any, R : Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2) -> R?): R? {
             return if (p1 != null && p2 != null) block(p1, p2) else null
         }
@@ -104,6 +106,16 @@ class Util {
             } catch (e: Exception) {
                 -1
             }
+        }
+
+        fun bytesToHex(bytes: ByteArray): String {
+            val hexChars = CharArray(bytes.size * 2)
+            for (i in bytes.indices) {
+                val v = bytes[i].toInt() and 0xFF
+                hexChars[i * 2] = hexArray[v ushr 4]
+                hexChars[i * 2 + 1] = hexArray[v and 0x0F]
+            }
+            return String(hexChars)
         }
     }
 }

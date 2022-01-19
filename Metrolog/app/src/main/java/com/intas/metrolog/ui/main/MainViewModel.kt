@@ -31,6 +31,7 @@ import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
+import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.SingleLiveEvent
 import com.intas.metrolog.util.Util
 import io.reactivex.Flowable
@@ -52,8 +53,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var getEquipDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
+    val notSendedEquipRFIDList = db.equipDao().getEquipNotSendRFID()
+    val equipReplaceLiveDataList = db.equipDao().getEquipReplaceList()
 
     val onErrorMessage = SingleLiveEvent<String>()
+
+    var equipReplaceList: MutableList<EquipItem> = mutableListOf()
 
     init {
         getEquip()
@@ -76,6 +81,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_INSERT_EQUIP", equipList.toString())
 
         viewModelScope.launch {
+            db.equipDao().insertEquipList(equipList)
+
+            for (equip in equipList) {
+                equip.equipInfoList?.let { eil ->
+                    if (eil.isNotEmpty()) {
+                        insertEquipInfoList(eil)
+                    }
+                }
+            }
+
+            if (equipReplaceList.isNotEmpty()) {
+                Log.d("MM_REPLACE_EQUIP", equipReplaceList.toString())
+                db.equipDao().insertEquipList(equipReplaceList)
+                equipReplaceList.clear()
+            }
+        }
+    }
+
+    private fun insertEquipList2(equipList: List<EquipItem>) {
+
+        Log.d("MM_INSERT_EQUIP2", equipList.toString())
+        Log.d(
+            "MM_INSERT_EQUIP2",
+            DateTimeUtil.getLongDateFromMili(DateTimeUtil.getUnixDateTimeNow())
+        )
+
+        viewModelScope.launch {
             for (equip in equipList) {
                 val equipItem = db.equipDao().getEquipItemById(equip.equipId)
                 if (equipItem != null && equipItem.isSendRFID == 0) {
@@ -83,12 +115,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 db.equipDao().insertEquipItem(equip)
 
-                equip.equipInfoList?.let {eil ->
+                equip.equipInfoList?.let { eil ->
                     if (eil.isNotEmpty()) {
                         insertEquipInfoList(eil)
                     }
                 }
             }
+            Log.d(
+                "MM_INSERT_EQUIP2",
+                DateTimeUtil.getLongDateFromMili(DateTimeUtil.getUnixDateTimeNow())
+            )
         }
     }
 
@@ -473,6 +509,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param equip оборудование, экземпляр класса [EquipItem]
      */
     fun sendEquipRFID(equip: EquipItem) {
+        sendEquipRFIDDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_EQUIP_ID] = equip.equipId.toString()
@@ -501,7 +541,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         sendEquipRFIDDisposable?.let {
             compositeDisposable.add(it)
         }
-
     }
 
     /**
@@ -593,5 +632,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             db.userLocationDao().setUserLocationSendedById(id)
         }
+    }
+
+    override fun onCleared() {
+        compositeDisposable.dispose()
+        super.onCleared()
     }
 }
