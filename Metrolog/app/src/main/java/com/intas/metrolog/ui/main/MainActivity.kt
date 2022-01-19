@@ -40,6 +40,9 @@ class MainActivity : AppCompatActivity() {
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
         initNotSendedEquipDocumentObserver()
+        initNotSendedEquipRFIDObserver()
+        initEquipReplaceObserver()
+
     }
 
     /**

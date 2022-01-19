@@ -60,6 +60,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
     val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
+    val notSendedEquipRFIDList = db.equipDao().getEquipNotSendRFID()
+    val equipReplaceLiveDataList = db.equipDao().getEquipReplaceList()
+
 
     val onErrorMessage = SingleLiveEvent<String>()
 

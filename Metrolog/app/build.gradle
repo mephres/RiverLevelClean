@@ -148,4 +148,11 @@ dependencies {
 
     // Image Cropping Library for Android
     implementation 'com.github.yalantis:ucrop:2.2.6-native'
+
+    //QRcode сканер
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+    implementation 'me.dm7.barcodescanner:core:1.9.13'
+    implementation 'me.dm7.barcodescanner:zbar:1.9.13'
+    implementation 'me.dm7.barcodescanner:zxing:1.9.13'
+
 }
