@@ -22,6 +22,7 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
+import com.intas.metrolog.pojo.equip.EquipDocument
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
@@ -39,6 +40,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -50,8 +56,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendEquipLocationDisposable: Disposable? = null
     private var sendEquipRFIDDisposable: Disposable? = null
     private var getEquipDisposable: Disposable? = null
+    private var sendEquipDocumentDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
+    val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -83,7 +91,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 db.equipDao().insertEquipItem(equip)
 
-                equip.equipInfoList?.let {eil ->
+                equip.equipInfoList?.let { eil ->
                     if (eil.isNotEmpty()) {
                         insertEquipInfoList(eil)
                     }
@@ -592,6 +600,83 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.userLocationDao().setUserLocationSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка документа оборудования на сервер
+     * @param equipDocument - документ оборудования
+     */
+    fun sendEquipDocument(equipDocument: EquipDocument) {
+
+        sendEquipDocumentDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        var multipartFile: MultipartBody.Part? = null
+
+        equipDocument.filePath?.let {
+
+            val file = File(it)
+
+            val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+
+            multipartFile = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        }
+
+        val multipartId = equipDocument.id.toString().toRequestBody(MultipartBody.FORM)
+        val multipartUserId = Util.authUser?.userId.toString().toRequestBody(MultipartBody.FORM)
+        val multipartEquipId = equipDocument.equipId.toString().toRequestBody(MultipartBody.FORM)
+        val multipartType =
+            equipDocument.documentTypeId.toString().toRequestBody(MultipartBody.FORM)
+        val multipartDoc = equipDocument.filename.toString().toRequestBody(MultipartBody.FORM)
+
+        sendEquipDocumentDisposable = ApiFactory.apiService.addEquipDocument(
+            file = multipartFile,
+            id = multipartId,
+            userId = multipartUserId,
+            equipId = multipartEquipId,
+            type = multipartType,
+            doc = multipartDoc
+        )
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EQUIP_DOCUMENT", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEquipDocumentSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_EQUIP_DOCUMENT", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_EQUIP_DOCUMENT", it.message.toString())
+                })
+        sendEquipDocumentDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки данных на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setEquipDocumentSendedById(id: Long) {
+
+        Log.d("MM_SET_EQUIP_DOC_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.equipDocumentDao().setEquipDocumentSendedById(id)
         }
     }
 }

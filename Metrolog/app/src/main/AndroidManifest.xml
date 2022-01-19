@@ -55,7 +55,7 @@
         <activity
             android:name=".ui.equip_document.EquipDocumentActivity"
             android:exported="false"
-            android:theme="@style/AppTheme.DarkActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".ui.settings.SettingsActivity"
             android:exported="true"

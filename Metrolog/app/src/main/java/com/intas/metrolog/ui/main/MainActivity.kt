@@ -39,6 +39,7 @@ class MainActivity : AppCompatActivity() {
         initBottomNavigation()
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
+        initNotSendedEquipDocumentObserver()
     }
 
     /**
@@ -85,6 +86,17 @@ class MainActivity : AppCompatActivity() {
 
                 viewModel.insertUserLocation(userLocation)
             }
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных документов оборудования
+     */
+    private fun initNotSendedEquipDocumentObserver() {
+        viewModel.notSendedEquipDocumentList.observe(this, {
+            for (equipDocument in it) {
+                viewModel.sendEquipDocument(equipDocument)
+            }
+        })
     }
 
     private fun showToast(text: String) {

@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -70,18 +69,13 @@ class EquipDocumentActivity : AppCompatActivity() {
         if (intent != null) {
             equipItem = intent.getParcelableExtra<EquipItem>(EXTRA_EQUIP_ITEM) as EquipItem
         }
-        supportActionBar?.let { actionBar ->
-            actionBar.setHomeButtonEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.setBackgroundDrawable(
-                ColorDrawable(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.colorAccent
-                    )
-                )
-            )
-            //init()
+
+        setSupportActionBar(binding.equipDocumentToolbar)
+        binding.equipDocumentToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.md_black))
+        binding.equipDocumentToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.md_white))
+        supportActionBar?.let {
+            it.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24dp)
+            it.setDisplayHomeAsUpEnabled(true)
         }
 
         viewModel.documentTypeList.observe(this, {
