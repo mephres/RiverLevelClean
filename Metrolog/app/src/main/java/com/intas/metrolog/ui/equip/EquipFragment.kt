@@ -17,6 +17,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
+import com.intas.metrolog.ui.equip_document.EquipDocumentActivity
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.scanner.NfcFragment
 
@@ -167,7 +168,7 @@ class EquipFragment : Fragment() {
             nfcFragment.show(requireActivity().supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
         }
         equipListAdapter.onCreateDocumentButtonListener = {
-
+            startActivity(EquipDocumentActivity.newIntent(requireContext(), it))
         }
     }
 

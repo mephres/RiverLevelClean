@@ -14,6 +14,8 @@ import com.intas.metrolog.pojo.http.UpdateResponse
 import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import io.reactivex.Single
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface ApiService {
@@ -147,6 +149,32 @@ interface ApiService {
     @POST("addEquipLocation")
     fun updateEquipGeo(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
+    /*@FormUrlEncoded
+    @POST("addEquipDoc")
+    Call<UpdateDataResponse> addEquipDocument(@FieldMap Map<String, String> fields);*/
+    /**
+     * Добавление документа для оборудования на сервер ЦНО
+     *
+     * @param file    файл документа для оборудования
+     * @param id      id записи из таблицы [EquipDocument]
+     * @param userId  id авторизованного пользователя
+     * @param equipId id оборудования
+     * @param type    тип документа из справочника [DocumentType]
+     * @param doc     произвольная информация
+     * @return ответ сервера [UpdateDataResponse]
+     */
+    @Streaming
+    @Multipart
+    @POST("addEquipDoc")
+    fun addEquipDocument(
+        @Part file: MultipartBody.Part?,
+        @Part(QUERY_PARAM_ID) id: RequestBody,
+        @Part(QUERY_PARAM_USER_ID) userId: RequestBody,
+        @Part(QUERY_PARAM_EQUIP_ID) equipId: RequestBody,
+        @Part(QUERY_PARAM_TYPE) type: RequestBody,
+        @Part(QUERY_PARAM_EQUIP_DOCUMENT) doc: RequestBody
+    ): Single<UpdateResponse>
+
 
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
@@ -168,5 +196,9 @@ interface ApiService {
         const val QUERY_PARAM_LAST_ID = "lastId"
         const val QUERY_PARAM_EQUIP_ID = "equipId"
         const val QUERY_PARAM_EQUIP_RFID = "equipRFID"
+        const val QUERY_PARAM_TYPE = "type"
+        const val QUERY_PARAM_EQUIP_DOCUMENT = "doc"
+
+        const val QUERY_PARAM_DATETIME = "dateTime"
     }
 }

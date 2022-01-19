@@ -9,6 +9,7 @@ import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.authuser.AuthUser
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
+import com.intas.metrolog.pojo.equip.EquipDocument
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
@@ -24,8 +25,8 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
     entities = [AuthUser::class, UserLocation::class, JournalItem::class, UserItem::class,
                EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
                EventOperationItem::class, DocumentType::class, EquipInfoPriority::class,
-               EventStatus::class, EventPriority::class, EventComment::class],
-    version = 2, exportSchema = false
+               EventStatus::class, EventPriority::class, EventComment::class, EquipDocument::class],
+    version = 3, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -67,4 +68,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventStatusDao(): EventStatusDao
     abstract fun eventPriorityDao(): EventPriorityDao
     abstract fun eventCommentDao(): EventCommentDao
+    abstract fun equipDocumentDao(): EquipDocumentDao
 }

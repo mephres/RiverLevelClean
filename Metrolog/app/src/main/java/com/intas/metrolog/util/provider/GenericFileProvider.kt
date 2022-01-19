@@ -1,4 +1,4 @@
-package com.intas.moboperator.util.provider
+package com.intas.metrolog.util.provider
 
 import androidx.core.content.FileProvider
 

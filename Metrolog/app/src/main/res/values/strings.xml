@@ -66,4 +66,21 @@
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
 
     <string name="request_search_bar_hint">Поиск заявок</string>
+
+    <string name="equip_document_activity_document_type_spinner_hint">Тип документа</string>
+    <string name="equip_document_activity_save_pdf_button_title">Создать PDF</string>
+
+    <string name="no_support_camera_message">Ваше устройство не поддерживает работу с камерой</string>
+    <string name="no_permission_camera_message">Нет разрешения на работу с камерой</string>
+
+    <string name="equip_document_activity_delete_image_dialog_title">Удаление изображения</string>
+    <string name="equip_document_activity_delete_image_dialog_text">Выбранное фото/изображение будет удалено. Продолжить?</string>
+    <string name="equip_document_activity_delete_image_dialog_positive_button">Удалить</string>
+    <string name="pequip_document_activity_delete_image_dialog_negative_button">Отмена</string>
+
+    <string name="equip_document_activity_pdf_view_dialog_title">PDF</string>
+    <string name="equip_document_activity_pdf_view_dialog_text">"Создан %s для %s"</string>
+    <string name="equip_document_activity_pdf_view_dialog_positive_button">Просмотр</string>
+    <string name="pequip_document_activity_pdf_view_dialog_negative_button">Выйти</string>
+
 </resources>
