@@ -11,7 +11,7 @@ import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.ui.requests.callback.RequestItemDiffCallback
 import com.intas.metrolog.util.DateTimeUtil
-import java.lang.String
+import java.lang.Exception
 
 class RequestListAdapter :
     ListAdapter<RequestItem, RequestItemViewHolder>(RequestItemDiffCallback()) {
@@ -41,7 +41,13 @@ class RequestListAdapter :
         val operation = db.eventOperationDao().getEventOperationById(requestItem.operationType)
         val equip = db.equipDao().getEquipItemById(requestItem.equipId.toLong())
         val sender = db.userDao().getUserById(requestItem.senderId)
-        val executor = db.userDao().getUserById(requestItem.executorId?.toInt() ?: 0)
+
+        val executorId = try {
+            requestItem.executorId?.toInt()
+        } catch (e: Exception) {
+            -1
+        }
+        val executor = db.userDao().getUserById(executorId ?: -1)
 
         holder.requestDateTextView.text =
             DateTimeUtil.getShortDataFromMili(requestItem.creationDate)
@@ -89,6 +95,18 @@ class RequestListAdapter :
         } else {
             holder.requestExecutorTextView.visibility = View.GONE
             holder.requestExecutorLabelTextView.visibility = View.GONE
+        }
+
+        when(requestItem.typeRequest) {
+            0 -> {
+                holder.requestTypeImageView.visibility = View.GONE
+            }
+            1 -> {
+                holder.requestTypeImageView.visibility = View.VISIBLE
+            }
+            else -> {
+                holder.requestTypeImageView.visibility = View.GONE
+            }
         }
 
         when (status?.id) {

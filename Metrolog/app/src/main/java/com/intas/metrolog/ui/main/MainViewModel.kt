@@ -105,7 +105,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Получение списка пользователей
      */
-    fun getUserList() {
+    private fun getUserList() {
         Util.authUser?.userId?.let {
 
             val disposable = ApiFactory.apiService.getUserList(it)

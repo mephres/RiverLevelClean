@@ -58,6 +58,7 @@ class RequestsFragment : Fragment() {
         setRecyclerView()
         setUI()
         initObserver()
+        setSearchViewListener()
 
         binding.requestSwipeRefreshLayout.setOnRefreshListener {
             binding.requestSwipeRefreshLayout.isRefreshing = false

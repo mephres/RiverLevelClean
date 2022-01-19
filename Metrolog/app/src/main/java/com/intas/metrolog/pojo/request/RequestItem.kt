@@ -66,7 +66,7 @@ data class RequestItem(
     @Expose
     val typeRequest: Int,
     /**
-     * дата-время закрытия завки в UNIX формате
+     * дата-время закрытия заявки в UNIX формате
      */
     @SerializedName("dueDate")
     @Expose
