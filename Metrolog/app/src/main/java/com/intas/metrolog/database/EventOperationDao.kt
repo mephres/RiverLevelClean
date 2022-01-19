@@ -9,6 +9,9 @@ interface EventOperationDao {
     @Query("SELECT * FROM eventOperation order by name asc")
     fun getAllEventOperation(): LiveData<List<EventOperationItem>>
 
+    @Query("SELECT * FROM eventOperation WHERE id = :id")
+    fun getEventOperationById(id: Int): EventOperationItem?
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateEventOperation(eventOperation: EventOperationItem?)
 

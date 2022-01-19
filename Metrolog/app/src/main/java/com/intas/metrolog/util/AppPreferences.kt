@@ -29,6 +29,11 @@ object AppPreferences {
     private const val TASK_FILTER_STATUS_LIST = "taskFilterStatusList"
     private const val OBJECT_FILTER_STATUS_LIST = "objectFilterStatusList"
 
+    private const val REQUEST_FILTER_DISC_LIST = "requestFilterDiscList"
+    private const val REQUEST_FILTER_STATUS_LIST = "requestFilterStatusList"
+    private const val REQUEST_FILTER_DATE_START = "requestFilterDateStart"
+    private const val REQUEST_FILTER_DATE_END = "requestFilterDateEnd"
+
     private const val VERSION_KEY = "versionKey"
     private const val LAST_DATE_JOB = "lastDateJob"
 
@@ -144,6 +149,56 @@ object AppPreferences {
                 it.putString(PREF_AUTH_USER, userText)
             }
         }
+
+    /**
+     * Фильтр для отображения заявок по выбранным дисциплинам
+     */
+    var requestFilterDiscList: ArrayList<Int>
+        get() {
+            val gson = Gson()
+            val json: String? = preferences.getString(REQUEST_FILTER_DISC_LIST, "")
+            val type: Type = object : TypeToken<java.util.ArrayList<Int?>?>() {}.type
+            return gson.fromJson(json, type)
+        }
+        set(value) {
+            val textList: List<Int> = ArrayList(value)
+            val jsonText = Gson().toJson(textList)
+            preferences.edit {
+                it.putString(REQUEST_FILTER_DISC_LIST, jsonText)
+            }
+        }
+
+    /**
+     * Фильтр для отображения заявок по выбранным статусам
+     */
+    var requestFilterStatusList: ArrayList<Int>
+        get() {
+            val gson = Gson()
+            val json: String? = preferences.getString(REQUEST_FILTER_STATUS_LIST, "")
+            val type: Type = object : TypeToken<java.util.ArrayList<Int?>?>() {}.type
+            return gson.fromJson(json, type)
+        }
+        set(value) {
+            val textList: List<Int> = ArrayList(value)
+            val jsonText = Gson().toJson(textList)
+            preferences.edit {
+                it.putString(REQUEST_FILTER_STATUS_LIST, jsonText)
+            }
+        }
+
+    /**
+     * Фильтр для отображения заявок по выбранному периоду - начальная дата
+     */
+    var requestFilterDateStart: Long?
+        get() = preferences.getLong(REQUEST_FILTER_DATE_START, 0)
+        set(value) = preferences.edit { it.putLong(REQUEST_FILTER_DATE_START, value ?: 0) }
+
+    /**
+     * Фильтр для отображения заявок по выбранному периоду - конечная дата
+     */
+    var requestFilterDateEnd: Long?
+        get() = preferences.getLong(REQUEST_FILTER_DATE_END, 0)
+        set(value) = preferences.edit { it.putLong(REQUEST_FILTER_DATE_END, value ?: 0) }
 
     /**
      * Фильтр для отображения задач по выбранным месторождениям

@@ -66,4 +66,12 @@
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
 
     <string name="request_search_bar_hint">Поиск заявок</string>
+
+    <string name="filter_title">Фильтр</string>
+    <string name="period_title">Период:</string>
+    <string name="status_title">Статус</string>
+    <string name="apply_title">Применить</string>
+    <string name="discipline_title">Дисциплина</string>
+    <string name="no_chosen_filter_title">Не выбрано</string>
+    <string name="date_range_placeholder">%s - %s</string>
 </resources>

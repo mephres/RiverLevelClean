@@ -12,8 +12,10 @@ import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.http.ResponseApi
 import com.intas.metrolog.pojo.http.UpdateResponse
 import com.intas.metrolog.pojo.operation.EventOperationItem
+import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import io.reactivex.Single
+import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiService {
@@ -43,7 +45,7 @@ interface ApiService {
     /**
      * Получение списка пользователей
      */
-    @GET("getUserList")
+    @GET("getChatUser")
     fun getUserList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<UserItem>>
 
     /**
@@ -146,6 +148,15 @@ interface ApiService {
     @FormUrlEncoded
     @POST("addEquipLocation")
     fun updateEquipGeo(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Получение списка заявок для авторизованного пользователя с сервера ЦНО
+     *
+     * @param userId параметр для запроса
+     * @return список заявок [RequestItem]
+     */
+    @GET("getRequest")
+    fun getRequestList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<RequestItem>>
 
 
     companion object {

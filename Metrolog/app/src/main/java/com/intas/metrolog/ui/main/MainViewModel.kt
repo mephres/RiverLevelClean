@@ -3,6 +3,8 @@ package com.intas.metrolog.ui.main
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.api.ApiFactory
@@ -20,6 +22,7 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SPEED
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
+import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipInfo
@@ -29,8 +32,11 @@ import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.event_priority.EventPriority
 import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.operation.EventOperationItem
+import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
+import com.intas.metrolog.ui.requests.filter.RequestFilter
+import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.SingleLiveEvent
 import com.intas.metrolog.util.Util
@@ -51,6 +57,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendEquipLocationDisposable: Disposable? = null
     private var sendEquipRFIDDisposable: Disposable? = null
     private var getEquipDisposable: Disposable? = null
+    private var getRequestDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
     val notSendedEquipRFIDList = db.equipDao().getEquipNotSendRFID()
@@ -60,7 +67,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     var equipReplaceList: MutableList<EquipItem> = mutableListOf()
 
+    private var _requestFilter = MutableLiveData<RequestFilter>()
+    val requestFilter: LiveData<RequestFilter>
+        get() = _requestFilter
+
     init {
+        getUserList()
+        getRequestList()
         getEquip()
         getRequestStatus()
         getDiscipline()
@@ -70,6 +83,98 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getEventStatus()
         getEventPriority()
         getEventComment()
+    }
+
+    fun addRequestFilter(requestFilter: RequestFilter) {
+        _requestFilter.value = requestFilter
+    }
+
+    /**
+     * Сохранение списка пользователей в БД
+     * @param userList - списка пользователей
+     */
+    private fun insertUserList(userList: List<UserItem>) {
+
+        Log.d("MM_INSERT_USERS", userList.toString())
+
+        viewModelScope.launch {
+            db.userDao().insertUserList(userList)
+        }
+    }
+
+    /**
+     * Получение списка пользователей
+     */
+    fun getUserList() {
+        Util.authUser?.userId?.let {
+
+            val disposable = ApiFactory.apiService.getUserList(it)
+                .subscribeOn(Schedulers.io())
+                .repeatWhen { completed ->
+                    completed.delay(10, TimeUnit.MINUTES)
+                }
+                .retryWhen { f: Flowable<Throwable?> ->
+                    f.take(600).delay(1, TimeUnit.MINUTES)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    it.list?.let { userList ->
+                        insertUserList(userList)
+                    }
+                }, {
+                    it.printStackTrace()
+                })
+            compositeDisposable.add(disposable)
+        }
+    }
+
+    /**
+     * Сохранение списка заявок в БД
+     * @param requestList - список заявок
+     */
+    private fun insertRequestList(requestList: List<RequestItem>) {
+
+        Log.d("MM_INSERT_REQUEST", requestList.toString())
+
+        viewModelScope.launch {
+            db.requestDao().insertRequestList(requestList)
+        }
+    }
+
+    /**
+     * Получение списка заявок
+     */
+    fun getRequestList() {
+        Util.authUser?.userId?.let {
+
+            getRequestDisposable?.let {
+                compositeDisposable.remove(it)
+            }
+
+            getRequestDisposable = ApiFactory.apiService.getRequestList(it)
+                .subscribeOn(Schedulers.io())
+                .repeatWhen { completed ->
+                    completed.delay(10, TimeUnit.MINUTES)
+                }
+                .retryWhen { f: Flowable<Throwable?> ->
+                    f.take(600).delay(1, TimeUnit.MINUTES)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    it.list?.let { requestList ->
+                        insertRequestList(requestList)
+                    }
+                }, {
+                    onErrorMessage.postValue(
+                        "При получении списка заявок с сервера произошла ошибка - " +
+                                "${it.message}"
+                    )
+                    it.printStackTrace()
+                })
+            getRequestDisposable?.let {
+                compositeDisposable.add(it)
+            }
+        }
     }
 
     /**
@@ -96,35 +201,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 db.equipDao().insertEquipList(equipReplaceList)
                 equipReplaceList.clear()
             }
-        }
-    }
-
-    private fun insertEquipList2(equipList: List<EquipItem>) {
-
-        Log.d("MM_INSERT_EQUIP2", equipList.toString())
-        Log.d(
-            "MM_INSERT_EQUIP2",
-            DateTimeUtil.getLongDateFromMili(DateTimeUtil.getUnixDateTimeNow())
-        )
-
-        viewModelScope.launch {
-            for (equip in equipList) {
-                val equipItem = db.equipDao().getEquipItemById(equip.equipId)
-                if (equipItem != null && equipItem.isSendRFID == 0) {
-                    continue
-                }
-                db.equipDao().insertEquipItem(equip)
-
-                equip.equipInfoList?.let { eil ->
-                    if (eil.isNotEmpty()) {
-                        insertEquipInfoList(eil)
-                    }
-                }
-            }
-            Log.d(
-                "MM_INSERT_EQUIP2",
-                DateTimeUtil.getLongDateFromMili(DateTimeUtil.getUnixDateTimeNow())
-            )
         }
     }
 
@@ -405,8 +481,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    it.list?.let { discipline ->
-                        insertDisciplineList(discipline)
+                    it.list?.let { disciplineList ->
+                        insertDisciplineList(disciplineList)
+
+                        val list = mutableListOf<Int>()
+                        for (disc in disciplineList) {
+                            list.add(disc.id)
+                        }
+                        AppPreferences.requestFilterDiscList = list as ArrayList<Int>
                     }
                 }, {
                     it.printStackTrace()
@@ -439,8 +521,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    it.list?.let { status ->
-                        insertRequestStatusList(status)
+                    it.list?.let { statusList ->
+                        insertRequestStatusList(statusList)
+
+                        val list = mutableListOf<Int>()
+                        for (disc in statusList) {
+                            list.add(disc.id)
+                        }
+                        AppPreferences.requestFilterStatusList = list as ArrayList<Int>
                     }
                 }, {
                     it.printStackTrace()
