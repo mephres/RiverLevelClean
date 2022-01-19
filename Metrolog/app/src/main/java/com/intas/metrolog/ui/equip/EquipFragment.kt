@@ -141,13 +141,13 @@ class EquipFragment : Fragment() {
     private fun setUI() {
         binding.equipProgressIndicator.visibility = View.VISIBLE
         binding.equipSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary)
-        binding.includeToolbar.toolbar.title = "Оборудование"
+        binding.includeToolbar.toolbar.title = getString(R.string.bottom_menu_events_equip)
 
         val menu = binding.includeToolbar.toolbar.menu
         val menuItemSearch = menu?.findItem(R.id.action_search)
 
         searchView = menuItemSearch?.actionView as SearchView
-        searchView?.queryHint = "Поиск оборудования"
+        searchView?.queryHint = getString(R.string.equip_search_bar_hint)
     }
 
     private fun setRecyclerView() {

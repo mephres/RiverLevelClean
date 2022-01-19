@@ -43,6 +43,7 @@
     <string name="bottom_menu_more_title">Еще</string>
 
     <string name="equip_ZavNum_label">Заводской номер:</string>
+    <string name="equip_search_bar_hint">Поиск оборудования</string>
     <string name="equip_RFIDlabel">Метка:</string>
     <string name="equip_Tag_label">Тэг:</string>
     <string name="equip_GRSI_label">ГРСИ:</string>
@@ -63,4 +64,6 @@
     <string name="nfc_tag_is_set">Метка %s установлена</string>
     <string name="nfc_tag_set_error">При установке метки возникла ошибка</string>
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
+
+    <string name="request_search_bar_hint">Поиск заявок</string>
 </resources>

@@ -37,12 +37,12 @@ class RequestsFragment : Fragment() {
     }
 
     private fun setUI() {
-        binding.include.toolbar.title = "Заявки"
+        binding.include.toolbar.title = getString(R.string.bottom_menu_requests_title)
 
         val menu = binding.include.toolbar.menu
         val menuItemSearch = menu?.findItem(R.id.action_search)
 
         searchView = menuItemSearch?.actionView as SearchView
-        searchView?.queryHint = "Поиск зявок"
+        searchView?.queryHint = getString(R.string.request_search_bar_hint)
     }
 }
