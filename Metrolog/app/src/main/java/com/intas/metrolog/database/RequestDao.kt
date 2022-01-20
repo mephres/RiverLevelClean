@@ -14,4 +14,7 @@ interface RequestDao {
 
     @Query("SELECT * FROM request ORDER BY id DESC")
     fun getAllRequest(): LiveData<List<RequestItem>>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRequest(requestItem: RequestItem)
 }

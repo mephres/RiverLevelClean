@@ -16,7 +16,7 @@ data class EventComment(
     @PrimaryKey
     @SerializedName("id")
     @Expose
-    val id: Long,
+    val id: Int,
     /**
      * Текст комментария
      */
@@ -29,5 +29,5 @@ data class EventComment(
      */
     @SerializedName("type")
     @Expose
-    val type: Long
+    val type: Int
 )

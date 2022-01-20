@@ -18,5 +18,6 @@ class RequestItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val requestDisciplineOperationTextView: TextView = view.findViewById(R.id.requestDisciplineOperationTextView)
     val requestCommentTextView: TextView = view.findViewById(R.id.requestCommentTextView)
     val requestTypeImageView: ImageView = view.findViewById(R.id.requestTypeImageView)
+    val requestIsNotSendImageView: ImageView = view.findViewById(R.id.requestIsNotSendImageView)
 
 }

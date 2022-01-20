@@ -158,6 +158,16 @@ interface ApiService {
     @GET("getRequest")
     fun getRequestList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<RequestItem>>
 
+    /**
+     * Добавление заявки на сервер
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addRequest")
+    fun addRequest(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
 
     companion object {
         const val QUERY_PARAM_LOGIN = "login"

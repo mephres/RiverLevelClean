@@ -15,7 +15,7 @@ data class EventOperationItem(
     @PrimaryKey
     @SerializedName("id")
     @Expose
-    val id: Long,
+    val id: Int,
     /**
      * наименование типа операции
      */

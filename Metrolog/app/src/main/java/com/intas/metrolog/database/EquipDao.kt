@@ -37,7 +37,7 @@ interface EquipDao {
     fun getEquipItemById(id: Long): EquipItem?
 
     @Query("SELECT * FROM equip WHERE equipRFID = :equipRFID")
-    fun getEquipItemByRFID(equipRFID: String): Single<EquipItem?>
+    fun getEquipItemByRFID(equipRFID: String): Single<EquipItem>
 
     @Query("SELECT * FROM equip WHERE equipRFID = :equipRFID")
     fun getEquipByRFID(equipRFID: String): Single<List<EquipItem>>

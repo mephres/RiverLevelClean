@@ -1,6 +1,7 @@
 package com.intas.metrolog.ui.scanner
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
@@ -43,22 +44,30 @@ class NfcViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }, {
                 onError?.invoke(it.localizedMessage)
+                it.printStackTrace()
             })
         compositeDisposable.add(disposable)
     }
 
+    /**
+     * Получение одного экземпляра оборудования из базы по метке
+     *
+     * @param rfid метка оборудования
+     */
     fun getEquipByRFID(rfid: String) {
         val disposable = db.equipDao().getEquipItemByRFID(rfid)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                if (it != null) {
-                    onEquipItemSuccess?.invoke(it)
-                } else {
-                    onFailure?.invoke(rfid)
-                }
+                onEquipItemSuccess?.invoke(it)
             }, {
-                onError?.invoke(it.localizedMessage)
+                it.printStackTrace()
+
+                if (it.toString().contains("EmptyResultSetException")) {
+                    onFailure?.invoke(rfid)
+                } else {
+                    onError?.invoke(it.localizedMessage)
+                }
             })
         compositeDisposable.add(disposable)
     }

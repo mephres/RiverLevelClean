@@ -65,6 +65,8 @@
     <string name="nfc_tag_is_set">Метка %s установлена</string>
     <string name="nfc_tag_set_error">При установке метки возникла ошибка</string>
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
+    <string name="nfc_tag_get_equip_failure">Оборудование по метке %s не найдено</string>
+    <string name="nfc_tag_get_equip_error">При поиске оборудования возникла ошибка</string>
 
     <string name="request_search_bar_hint">Поиск заявок</string>
     <string name="request_no_equip">Оборудование не найдено</string>
@@ -102,7 +104,9 @@
     <string name="add_request_type_title">Срочная</string>
     <string name="add_request_category_title">Тип заявки</string>
     <string name="add_request_discipline_title">Дисциплина</string>
-    <string name="add_request_operation_title">Дисциплина</string>
+    <string name="add_request_operation_title">Мероприятие</string>
     <string name="add_request_comment_title">Описание заявки</string>
+    <string name="add_request_priority_title">Приоритет</string>
+    <string name="add_request_no_equip_message_title">Выбран режим БЕЗ сканирования. В этом случае заявка будет оформлена без привязки к оборудованию.</string>
 
 </resources>

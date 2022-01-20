@@ -85,8 +85,8 @@ class RequestsFragment : Fragment() {
             showScanner()
         }
         fragment.onSelectWithoutScannerClickListener = {
-            val f = AddRequestFragment()
-            f.show(requireActivity().supportFragmentManager, "")
+            val addRequestFragment = AddRequestFragment.newInstanceWithoutRfid()
+            addRequestFragment.show(requireActivity().supportFragmentManager, AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG)
         }
     }
 
