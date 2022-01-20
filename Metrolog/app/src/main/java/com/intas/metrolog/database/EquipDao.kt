@@ -39,10 +39,7 @@ interface EquipDao {
     @Query("SELECT * FROM equip WHERE equipRFID = :equipRFID")
     fun getEquipByRFID(equipRFID: String): Single<List<EquipItem>>
 
-    @Query("SELECT * FROM equip WHERE isSendRFID = 0 ORDER BY equipId ASC LIMIT 1")
-    fun getEquipNotSendRFID(): LiveData<List<EquipItem>>
-
-    @Query("SELECT * FROM equip WHERE isSendRFID = 0 OR isSendGeo = 0")
-    fun getEquipReplaceList(): LiveData<List<EquipItem>>
+    @Query("SELECT * FROM equip WHERE isSendRFID = 0 OR isSendGeo = 0 ORDER BY equipId ASC LIMIT 1")
+    fun getEquipNotSended(): LiveData<List<EquipItem>>
 
 }

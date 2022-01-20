@@ -31,7 +31,6 @@ import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
-import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.SingleLiveEvent
 import com.intas.metrolog.util.Util
 import io.reactivex.Flowable
@@ -53,12 +52,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var getEquipDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
-    val notSendedEquipRFIDList = db.equipDao().getEquipNotSendRFID()
-    val equipReplaceLiveDataList = db.equipDao().getEquipReplaceList()
+    val notSendedEquipList = db.equipDao().getEquipNotSended()
 
     val onErrorMessage = SingleLiveEvent<String>()
-
-    var equipReplaceList: MutableList<EquipItem> = mutableListOf()
 
     init {
         getEquip()
@@ -81,7 +77,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_INSERT_EQUIP", equipList.toString())
 
         viewModelScope.launch {
+            val tempNotSendedEquipList = notSendedEquipList.value
             db.equipDao().insertEquipList(equipList)
+            tempNotSendedEquipList?.let {
+                if (!tempNotSendedEquipList.isNullOrEmpty()) {
+                    db.equipDao().insertEquipList(it)
+                }
+            }
 
             for (equip in equipList) {
                 equip.equipInfoList?.let { eil ->
@@ -90,41 +92,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 }
             }
-
-            if (equipReplaceList.isNotEmpty()) {
-                Log.d("MM_REPLACE_EQUIP", equipReplaceList.toString())
-                db.equipDao().insertEquipList(equipReplaceList)
-                equipReplaceList.clear()
-            }
-        }
-    }
-
-    private fun insertEquipList2(equipList: List<EquipItem>) {
-
-        Log.d("MM_INSERT_EQUIP2", equipList.toString())
-        Log.d(
-            "MM_INSERT_EQUIP2",
-            DateTimeUtil.getLongDateFromMili(DateTimeUtil.getUnixDateTimeNow())
-        )
-
-        viewModelScope.launch {
-            for (equip in equipList) {
-                val equipItem = db.equipDao().getEquipItemById(equip.equipId)
-                if (equipItem != null && equipItem.isSendRFID == 0) {
-                    continue
-                }
-                db.equipDao().insertEquipItem(equip)
-
-                equip.equipInfoList?.let { eil ->
-                    if (eil.isNotEmpty()) {
-                        insertEquipInfoList(eil)
-                    }
-                }
-            }
-            Log.d(
-                "MM_INSERT_EQUIP2",
-                DateTimeUtil.getLongDateFromMili(DateTimeUtil.getUnixDateTimeNow())
-            )
         }
     }
 

@@ -42,8 +42,7 @@ class MainActivity : AppCompatActivity() {
         initBottomNavigation()
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
-        initNotSendedEquipRFIDObserver()
-        initEquipReplaceObserver()
+        initNotSendedEquipObserver()
     }
 
     /**
@@ -68,32 +67,14 @@ class MainActivity : AppCompatActivity() {
     /**
      * Получение и отправка на сервер списка оборудования с проставленными RFID-метками
      */
-    private fun initNotSendedEquipRFIDObserver() {
-        viewModel.notSendedEquipRFIDList.observe(this, {
+    private fun initNotSendedEquipObserver() {
+        viewModel.notSendedEquipList.observe(this, {
             for (equip in it) {
-                viewModel.sendEquipRFID(equip)
-            }
-        })
-    }
-
-    /**
-     * Сохранение списка, неотправленных на сервер (измененных) данных оборудований
-     *
-     * Для последующей вставки и актуализации в БД
-     */
-    @RequiresApi(Build.VERSION_CODES.N)
-    private fun initEquipReplaceObserver() {
-        viewModel.equipReplaceLiveDataList.observe(this, {
-
-            if(it.isNotEmpty()) {
-                it.forEach { item ->
-                    viewModel.equipReplaceList.removeIf {
-                        it.equipId == item.equipId
-                    }
-                    item.apply {
-                        isSendRFID = 1
-                    }
-                    viewModel.equipReplaceList.add(item)
+                if (equip.isSendRFID == 0) {
+                    viewModel.sendEquipRFID(equip)
+                }
+                if (equip.isSendGeo == 0) {
+                    viewModel.sendEquipLocation(equip)
                 }
             }
         })

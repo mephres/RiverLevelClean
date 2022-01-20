@@ -6,36 +6,33 @@ import android.app.Dialog
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.zxing.Result
+import com.google.zxing.ResultPoint
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
-import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.util.Util
-import me.dm7.barcodescanner.zxing.ZXingScannerView
+import com.journeyapps.barcodescanner.BarcodeCallback
+import com.journeyapps.barcodescanner.BarcodeResult
+import com.journeyapps.barcodescanner.camera.CameraSettings
 
-class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler {
-    private val mainViewModel: MainViewModel by activityViewModels()
+
+class NfcFragment : BottomSheetDialogFragment() {
 
     private var nfcAdapter: NfcAdapter? = null
     private var scannerMode: String = MODE_UNKNOWN
     private var equipSerialNumber: String? = null
     private var equipItem: EquipItem? = null
     private var flash = false
-
-    private val mScannerView by lazy {
-        ZXingScannerView(requireActivity())
-    }
 
     private val nfcViewModel by lazy {
         ViewModelProvider(this)[NfcViewModel::class.java]
@@ -65,6 +62,7 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUI()
+        initQRScannerDecoder()
         setScannerType()
     }
 
@@ -81,19 +79,8 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
 
     override fun onPause() {
         super.onPause()
-        mScannerView.stopCamera()
+        binding.qrScannerView.pause()
         nfcAdapter?.disableReaderMode(requireActivity())
-    }
-
-    /**
-     * Переопределенная функция класса QR-сканера [ZXingScannerView.ResultHandler]
-     * @param rawResult - отсканирования метка QR/штрих-кода
-     */
-    override fun handleResult(rawResult: Result?) {
-        equipSerialNumber = rawResult?.text
-        equipSerialNumber?.let {
-            launchMode()
-        }
     }
 
     private fun parseArgs() {
@@ -135,6 +122,25 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
             )
         }
         colorAnimation.start()
+
+        binding.qrScannerCardView.visibility = View.INVISIBLE
+    }
+
+    private fun initQRScannerDecoder() {
+        binding.qrScannerView.barcodeView.decodeContinuous(object : BarcodeCallback {
+            override fun barcodeResult(result: BarcodeResult?) {
+                equipSerialNumber = result.toString()
+                equipSerialNumber?.let {
+                    launchMode()
+                    Log.d("QR_SCANNER_DECODER_RES", "equipSerialNumber = $it")
+                }
+                binding.qrScannerView.barcodeView.stopDecoding()
+            }
+
+            override fun possibleResultPoints(resultPoints: MutableList<ResultPoint>?) {
+                Log.d("QR_SCANNER_DECODER_RP", resultPoints.toString())
+            }
+        })
     }
 
     /**
@@ -142,30 +148,35 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
      */
     private fun setScannerType() {
         binding.changeScanTypeToQR.setOnClickListener {
-            binding.qrLayout.addView(mScannerView)
+
             binding.changeScanTypeToNFC.visibility = View.VISIBLE
             binding.changeScanTypeToQR.visibility = View.GONE
             binding.flash.visibility = View.VISIBLE
 
-            mScannerView.setBorderColor(
-                ContextCompat.getColor(
-                    requireContext(),
-                    R.color.colorAccent
-                )
-            )
-            mScannerView.setIsBorderCornerRounded(true)
-            mScannerView.setBorderCornerRadius(8)
-            mScannerView.setResultHandler(this)
-            mScannerView.setAutoFocus(true)
-            mScannerView.startCamera()
+            binding.qrScannerView.setBackgroundColor(ContextCompat.getColor(
+                requireContext(),
+                R.color.colorAccent
+            ))
 
+            val cameraSettings = CameraSettings()
+            cameraSettings.requestedCameraId = 0 // front/back/etc
+            cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
+            cameraSettings.isAutoFocusEnabled = true
+            cameraSettings.isBarcodeSceneModeEnabled = true
+
+            binding.qrScannerView.barcodeView.cameraSettings = cameraSettings
+
+            binding.qrScannerView.setStatusText("")
+            binding.qrScannerView.resume()
+
+            binding.qrScannerCardView.visibility = View.VISIBLE
         }
 
         binding.changeScanTypeToNFC.setOnClickListener {
-            mScannerView.setAutoFocus(false)
-            mScannerView.stopCamera()
-            binding.qrLayout.removeView(mScannerView)
 
+            binding.qrScannerView.pause()
+
+            binding.qrScannerCardView.visibility = View.INVISIBLE
             binding.changeScanTypeToNFC.visibility = View.GONE
             binding.flash.visibility = View.GONE
             binding.changeScanTypeToQR.visibility = View.VISIBLE
@@ -185,10 +196,11 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
         flash = !flash
         if (flash) {
             binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_off_black_24dp))
+            binding.qrScannerView.setTorchOn()
         } else {
             binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_on_black_24dp))
+            binding.qrScannerView.setTorchOff()
         }
-        mScannerView.flash = flash
     }
 
     /**
@@ -274,8 +286,7 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
 
     private fun closeFragment() {
         nfcAdapter?.disableReaderMode(requireActivity())
-        mScannerView.setAutoFocus(false)
-        mScannerView.stopCamera()
+        binding.qrScannerView.pause()
         val fragment =
             parentFragmentManager.findFragmentByTag(NFC_FRAGMENT_TAG)
         fragment?.let {
