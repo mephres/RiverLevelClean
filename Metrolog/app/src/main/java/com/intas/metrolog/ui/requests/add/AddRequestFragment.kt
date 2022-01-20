@@ -86,7 +86,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
 
         binding.applyNewRequestButton.setOnClickListener {
-            checkSpinners()
+            addRequest()
         }
     }
 
@@ -96,7 +96,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         return dialog
     }
 
-    private fun checkSpinners() {
+    private fun addRequest() {
         if (selectCategory == null) {
             binding.addRequestCategoryMenu.error = "Необходимо выбрать тип заявки"
             return
@@ -104,31 +104,38 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             binding.addRequestCategoryMenu.error = null
         }
 
-        if (selectDiscipline == null) {
+        if (!isRequest && selectDiscipline == null) {
             binding.addRequestDisciplineMenu.error = "Необходимо выбрать дисциплину"
             return
         } else {
             binding.addRequestDisciplineMenu.error = null
         }
 
-        if (selectOperation == null) {
+        if (!isRequest && selectOperation == null) {
             binding.addRequestOperationMenu.error = "Необходимо выбрать мероприятие"
             return
         } else {
             binding.addRequestOperationMenu.error = null
         }
 
-        if (binding.addRequestCommentTextInputLayout.editText?.text.isNullOrEmpty()) {
-            binding.addRequestCommentTextInputLayout.error = "Необходимо заполнить описание заявки"
+        if (!isRequest && selectPriority == null) {
+            binding.addRequestPriorityMenu.error = "Необходимо выбрать приоритет"
+            return
+        } else {
+            binding.addRequestPriorityMenu.error = null
+        }
+
+        if (!isRequest && binding.addRequestCommentTextInputLayout.editText?.text?.trim().isNullOrEmpty()) {
+            binding.addRequestCommentTextInputLayout.error = "Для добавления информации для ТО описание необходимо заполнить"
             return
         } else {
             binding.addRequestCommentTextInputLayout.error = null
         }
 
-        createRequest()
+        createRequestItem()
     }
 
-    private fun createRequest() {
+    private fun createRequestItem() {
         val senderId = Util.authUser?.userId ?: return
         val discipline = selectDiscipline?.id ?: return
         val operation = selectOperation?.id ?: return
