@@ -52,7 +52,7 @@ class RequestListAdapter :
         holder.requestDateTextView.text =
             DateTimeUtil.getShortDataFromMili(requestItem.creationDate)
 
-        holder.requestStatusTextView.text = status?.name ?: "Нет данных"
+        holder.requestStatusTextView.text = status?.name ?: context.getString(R.string.no_data)
 
         if (!requestItem.comment.isNullOrEmpty()) {
             holder.requestCommentTextView.text = requestItem.comment
@@ -62,12 +62,12 @@ class RequestListAdapter :
         }
 
         if (discipline != null) {
-            val eventOperationString = operation?.name ?: "Тип операции не определен"
+            val eventOperationString = operation?.name ?: context.getString(R.string.request_no_operation_type)
             val disciplineOperation =
                 String.format("%s. %s", discipline.name, eventOperationString)
             holder.requestDisciplineOperationTextView.text = disciplineOperation
         } else {
-            holder.requestDisciplineOperationTextView.text = "Дисциплина не определена"
+            holder.requestDisciplineOperationTextView.text = context.getString(R.string.request_no_discipline_type)
         }
 
         if (equip != null) {
@@ -79,13 +79,13 @@ class RequestListAdapter :
             )
             holder.requestTitleTextView.text = titleString
         } else {
-            holder.requestTitleTextView.text = "Оборудование не найдено"
+            holder.requestTitleTextView.text = context.getString(R.string.request_no_equip)
         }
 
         if (sender != null) {
             holder.requestFromTextView.text = sender.fio
         } else {
-            holder.requestFromTextView.text = "Нет данных"
+            holder.requestFromTextView.text = context.getString(R.string.no_data)
         }
 
         if (executor != null) {

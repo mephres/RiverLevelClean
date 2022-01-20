@@ -48,4 +48,13 @@
     <style name="ProgressBarStyle">
         <item name="colorAccent">@color/colorPrimary</item>
     </style>
+
+    <style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Switch" parent="">
+        <item name="colorControlActivated">@color/colorAccent</item>
+        <item name="colorSwitchThumbNormal">@color/md_grey_500</item>
+    </style>
 </resources>

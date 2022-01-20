@@ -21,8 +21,11 @@ import com.intas.metrolog.databinding.FragmentRequestsBinding
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.requests.adapter.RequestListAdapter
+import com.intas.metrolog.ui.requests.add.AddRequestFragment
+import com.intas.metrolog.ui.requests.add.SelectFragment
 import com.intas.metrolog.ui.requests.filter.RequestFilter
 import com.intas.metrolog.ui.requests.filter.RequestFilterFragment
+import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.AppPreferences
 
 class RequestsFragment : Fragment() {
@@ -67,12 +70,29 @@ class RequestsFragment : Fragment() {
         }
 
         binding.addNewRequestFab.setOnClickListener {
-
+            showSelectDialog()
         }
 
         binding.requestFilterFab.setOnClickListener {
             showFilter()
         }
+    }
+
+    private fun showSelectDialog() {
+        val fragment = SelectFragment.newInstance()
+        fragment.show(requireActivity().supportFragmentManager, SelectFragment.SELECT_FRAGMENT_TAG)
+        fragment.onSelectScannerClickListener = {
+            showScanner()
+        }
+        fragment.onSelectWithoutScannerClickListener = {
+            val f = AddRequestFragment()
+            f.show(requireActivity().supportFragmentManager, "")
+        }
+    }
+
+    private fun showScanner() {
+        val scanner = NfcFragment.newInstanceAddRequest()
+        scanner.show(requireActivity().supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
     }
 
     private fun setUI() {

@@ -3,6 +3,7 @@
     <string name="app_version_title">Версия приложения: %s</string>
     <string name="login_activity_app_title">Мобильный метролог</string>
     <string name="no_data">Нет данных</string>
+    <string name="save_title">Сохранить</string>
 
     <string name="exit_message">Нажмите еще раз для выхода</string>
 
@@ -66,6 +67,25 @@
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
 
     <string name="request_search_bar_hint">Поиск заявок</string>
+    <string name="request_no_equip">Оборудование не найдено</string>
+    <string name="request_no_operation_type">Тип операции не определен</string>
+    <string name="request_no_discipline_type">Дисциплина не определена</string>
+
+    <string name="equip_document_activity_document_type_spinner_hint">Тип документа</string>
+    <string name="equip_document_activity_save_pdf_button_title">Создать PDF</string>
+
+    <string name="no_support_camera_message">Ваше устройство не поддерживает работу с камерой</string>
+    <string name="no_permission_camera_message">Нет разрешения на работу с камерой</string>
+
+    <string name="equip_document_activity_delete_image_dialog_title">Удаление изображения</string>
+    <string name="equip_document_activity_delete_image_dialog_text">Выбранное фото/изображение будет удалено. Продолжить?</string>
+    <string name="equip_document_activity_delete_image_dialog_positive_button">Удалить</string>
+    <string name="pequip_document_activity_delete_image_dialog_negative_button">Отмена</string>
+
+    <string name="equip_document_activity_pdf_view_dialog_title">PDF</string>
+    <string name="equip_document_activity_pdf_view_dialog_text">"Создан %s для %s"</string>
+    <string name="equip_document_activity_pdf_view_dialog_positive_button">Просмотр</string>
+    <string name="pequip_document_activity_pdf_view_dialog_negative_button">Выйти</string>
 
     <string name="filter_title">Фильтр</string>
     <string name="period_title">Период:</string>
@@ -74,4 +94,15 @@
     <string name="discipline_title">Дисциплина</string>
     <string name="no_chosen_filter_title">Не выбрано</string>
     <string name="date_range_placeholder">%s - %s</string>
+
+    <string name="bottom_dialog_scanner_title">Сканер</string>
+    <string name="bottom_dialog_no_scanner_title">Без сканирования</string>
+
+    <string name="add_request_title">Заявка</string>
+    <string name="add_request_type_title">Срочная</string>
+    <string name="add_request_category_title">Тип заявки</string>
+    <string name="add_request_discipline_title">Дисциплина</string>
+    <string name="add_request_operation_title">Дисциплина</string>
+    <string name="add_request_comment_title">Описание заявки</string>
+
 </resources>

@@ -237,7 +237,9 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
                 }
             }
             MODE_ADD_NEW_REQUEST -> {
-
+                equipSerialNumber?.let {
+                    getEquipByRFID(it)
+                }
             }
         }
     }
@@ -268,6 +270,27 @@ class NfcFragment : BottomSheetDialogFragment(), ZXingScannerView.ResultHandler 
                 requireContext(), getString(R.string.nfc_tag_set_error),
                 Toast.LENGTH_SHORT
             ).show()
+            closeFragment()
+        }
+    }
+
+    /**
+     * Функция получения экземпляра оборудования по RFID-тэгу для создания заявки
+     * @return экземпляр класса [EquipItem]
+     * @param rfid - отсканированная метка
+     */
+    private fun getEquipByRFID(rfid: String) {
+        nfcViewModel.getEquipByRFID(rfid)
+        nfcViewModel.onEquipItemSuccess = {
+
+            closeFragment()
+        }
+        nfcViewModel.onFailure = {
+
+            closeFragment()
+        }
+        nfcViewModel.onError = {
+
             closeFragment()
         }
     }
