@@ -1,12 +1,16 @@
 package com.intas.metrolog.ui.requests.add
 
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentBottomAddRequestBinding
@@ -66,7 +70,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initUi()
+        initSpinners()
         checkMode()
 
         binding.addRequestImageFab.setOnClickListener {
@@ -82,38 +86,47 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
 
         binding.applyNewRequestButton.setOnClickListener {
-            if (selectCategory == null) {
-                binding.addRequestCategoryMenu.error = "Необходимо выбрать тип заявки"
-                return@setOnClickListener
-            } else {
-                binding.addRequestCategoryMenu.error = null
-            }
-
-            if (selectDiscipline == null) {
-                binding.addRequestDisciplineMenu.error = "Необходимо выбрать дисциплину"
-                return@setOnClickListener
-            } else {
-                binding.addRequestDisciplineMenu.error = null
-            }
-
-            if (selectOperation == null) {
-                binding.addRequestOperationMenu.error = "Необходимо выбрать мероприятие"
-                return@setOnClickListener
-            } else {
-                binding.addRequestOperationMenu.error = null
-            }
-
-            if (binding.addRequestCommentTextInputLayout.editText?.text.isNullOrEmpty()) {
-                binding.addRequestCommentTextInputLayout.error = "Необходимо заполнить описание заявки"
-                return@setOnClickListener
-            } else {
-                binding.addRequestCommentTextInputLayout.error = null
-            }
-
-            createRequest()
+            checkSpinners()
         }
     }
 
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = BottomSheetDialog(requireContext(), theme)
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        return dialog
+    }
+
+    private fun checkSpinners() {
+        if (selectCategory == null) {
+            binding.addRequestCategoryMenu.error = "Необходимо выбрать тип заявки"
+            return
+        } else {
+            binding.addRequestCategoryMenu.error = null
+        }
+
+        if (selectDiscipline == null) {
+            binding.addRequestDisciplineMenu.error = "Необходимо выбрать дисциплину"
+            return
+        } else {
+            binding.addRequestDisciplineMenu.error = null
+        }
+
+        if (selectOperation == null) {
+            binding.addRequestOperationMenu.error = "Необходимо выбрать мероприятие"
+            return
+        } else {
+            binding.addRequestOperationMenu.error = null
+        }
+
+        if (binding.addRequestCommentTextInputLayout.editText?.text.isNullOrEmpty()) {
+            binding.addRequestCommentTextInputLayout.error = "Необходимо заполнить описание заявки"
+            return
+        } else {
+            binding.addRequestCommentTextInputLayout.error = null
+        }
+
+        createRequest()
+    }
 
     private fun createRequest() {
         val senderId = Util.authUser?.userId ?: return
@@ -122,8 +135,8 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         val category = selectCategory?.id ?: return
         val equipId = equip?.equipId?.toInt() ?: -1
         val equipRfid = equip?.equipRFID ?: ""
-
         val comment = binding.addRequestCommentTextInputEditText.text.toString()
+
         val requestItem = RequestItem(
             senderId = senderId,
             discipline = discipline,
@@ -139,7 +152,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         closeFragment()
     }
 
-    private fun initUi() {
+    private fun initSpinners() {
         viewModel.operations.observe(viewLifecycleOwner, {
             operationSpinnerAdapter = OperationSpinnerAdapter(
                 requireContext(),
@@ -188,6 +201,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         setDisciplinesSpinner()
         setCategorySpinner()
         setPrioritySpinner()
+        setCommentInputLayoutListener()
     }
 
     private fun setOperationsSpinner() {
@@ -195,6 +209,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             selectOperation = operationSpinnerAdapter?.getItem(position)
             selectOperation?.let {
                 binding.addRequestOperationList.setText(it.name)
+                binding.addRequestOperationMenu.error = null
             }
         }
     }
@@ -204,6 +219,8 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             selectDiscipline = disciplineSpinnerAdapter?.getItem(position)
             selectDiscipline?.let {
                 binding.addRequestDisciplineList.setText(it.name)
+                binding.addRequestDisciplineMenu.error = null
+                binding.addRequestDisciplineMenu.refreshDrawableState()
             }
         }
     }
@@ -213,6 +230,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             selectPriority = prioritySpinnerAdapter?.getItem(position)
             selectPriority?.let {
                 binding.addRequestPriorityList.setText(it.name)
+                binding.addRequestPriorityMenu.error = null
             }
         }
     }
@@ -223,21 +241,27 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             selectCategory?.let {
                 binding.newRequestTitleTextView.text = it.comment
                 binding.addRequestCategoryList.setText(it.comment)
+                binding.addRequestCategoryMenu.error = null
+                binding.addRequestCategoryMenu.refreshDrawableState()
                 binding.addRequestCommentTextInputLayout.hint = "${it.comment}. Описание"
 
                 if (it.type == 200) {
                     isRequest = false
 
                     binding.addRequestPriorityMenu.visibility = View.VISIBLE
-
-                    binding.addRequestImageFab.isEnabled = false
                 } else {
                     isRequest = true
 
                     binding.addRequestPriorityMenu.visibility = View.GONE
-
-                    binding.addRequestImageFab.isEnabled = true
                 }
+            }
+        }
+    }
+
+    private fun setCommentInputLayoutListener() {
+        binding.addRequestCommentTextInputLayout.editText?.addTextChangedListener {
+            if (!binding.addRequestCommentTextInputLayout.editText?.text.isNullOrEmpty()) {
+                binding.addRequestCommentTextInputLayout.error = null
             }
         }
     }
