@@ -11,6 +11,7 @@ import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.http.ResponseApi
 import com.intas.metrolog.pojo.http.UpdateResponse
 import com.intas.metrolog.pojo.operation.EventOperationItem
+import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import io.reactivex.Single
 import okhttp3.MultipartBody

@@ -16,6 +16,7 @@ import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.operation.EventOperationItem
+import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
 
@@ -25,7 +26,7 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
                EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
                EventOperationItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
                EventComment::class, EquipDocument::class, RequestItem::class],
-    version = 6, exportSchema = false
+    version = 7, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
