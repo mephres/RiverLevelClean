@@ -1,19 +1,19 @@
-package com.intas.metrolog.pojo.event.operation
+package com.intas.metrolog.pojo.event.event_operation
 
 import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.intas.metrolog.pojo.event.operation.operation_control.OperControlItem
+import com.intas.metrolog.pojo.event.event_operation.operation_control.OperControlItem
 import kotlinx.parcelize.Parcelize
 
 /**
  * Операция мероприятия
  */
 @Parcelize
-@Entity(tableName = "operation", indices = [Index(value = ["opId"], unique = false)])
-data class OperationItem(
+@Entity(tableName = "eventOperation", indices = [Index(value = ["opId"], unique = false)])
+data class EventOperationItem(
     @PrimaryKey(autoGenerate = false)
     /**
      * идентификатор записи

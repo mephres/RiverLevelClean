@@ -1,4 +1,4 @@
-package com.intas.metrolog.pojo.event.operation.operation_control.field
+package com.intas.metrolog.pojo.event.event_operation.operation_control.field
 
 import android.os.Parcelable
 import androidx.room.Entity

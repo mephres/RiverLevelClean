@@ -89,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         deviceLocation.setLocationUpdatesActive(true)
         deviceLocation
             .currentLocation.observe(this) {
-                Toast.makeText(this, it.latitude.toString(), Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, it.latitude.toString(), Toast.LENGTH_LONG).show()
 
                 val userLocation = UserLocation()
 

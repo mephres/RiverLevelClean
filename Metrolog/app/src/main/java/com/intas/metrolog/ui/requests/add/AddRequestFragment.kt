@@ -17,12 +17,12 @@ import com.intas.metrolog.databinding.FragmentBottomAddRequestBinding
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
+import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event_comment.EventComment
-import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.ui.requests.add.adapter.CategorySpinnerAdapter
 import com.intas.metrolog.ui.requests.add.adapter.DisciplineSpinnerAdapter
-import com.intas.metrolog.ui.requests.add.adapter.OperationSpinnerAdapter
+import com.intas.metrolog.ui.requests.add.adapter.OperationTypeSpinnerAdapter
 import com.intas.metrolog.ui.requests.add.adapter.PrioritySpinnerAdapter
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
@@ -33,12 +33,12 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     private var isRequest = true
 
     private var requestImageFabVisible = false
-    private var selectOperation: EventOperationItem? = null
+    private var selectOperationType: EventOperationTypeItem? = null
     private var selectDiscipline: DisciplineItem? = null
     private var selectCategory: EventComment? = null
     private var selectPriority: EquipInfoPriority? = null
 
-    private var operationSpinnerAdapter: OperationSpinnerAdapter? = null
+    private var operationTypeSpinnerAdapter: OperationTypeSpinnerAdapter? = null
     private var disciplineSpinnerAdapter: DisciplineSpinnerAdapter? = null
     private var categorySpinnerAdapter: CategorySpinnerAdapter? = null
     private var prioritySpinnerAdapter: PrioritySpinnerAdapter? = null
@@ -112,11 +112,11 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             binding.addRequestDisciplineMenu.error = null
         }
 
-        if (!isRequest && selectOperation == null) {
-            binding.addRequestOperationMenu.error = getString(R.string.add_request_need_operation_title)
+        if (!isRequest && selectOperationType == null) {
+            binding.addRequestOperationTypeMenu.error = getString(R.string.add_request_need_operation_title)
             return
         } else {
-            binding.addRequestOperationMenu.error = null
+            binding.addRequestOperationTypeMenu.error = null
         }
 
         if (!isRequest && selectPriority == null) {
@@ -139,7 +139,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     private fun createRequestItem() {
         val senderId = Util.authUser?.userId ?: 0
         val discipline = selectDiscipline?.id ?: 0
-        val operation = selectOperation?.id ?: 0
+        val operation = selectOperationType?.id ?: 0
         val category = selectCategory?.id ?: 0
         val equipId = equip?.equipId?.toInt() ?: -1
         val equipRfid = equip?.equipRFID ?: ""
@@ -162,14 +162,14 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     }
 
     private fun setSpinnerAdapters() {
-        viewModel.operations.observe(viewLifecycleOwner, {
-            operationSpinnerAdapter = OperationSpinnerAdapter(
+        viewModel.operationTypes.observe(viewLifecycleOwner, {
+            operationTypeSpinnerAdapter = OperationTypeSpinnerAdapter(
                 requireContext(),
                 R.layout.drop_down_list_item,
                 it
             )
-            (binding.addRequestOperationMenu.editText as? AutoCompleteTextView)?.setAdapter(
-                operationSpinnerAdapter
+            (binding.addRequestOperationTypeMenu.editText as? AutoCompleteTextView)?.setAdapter(
+                operationTypeSpinnerAdapter
             )
         })
 
@@ -214,11 +214,11 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     }
 
     private fun configureOperationsSpinner() {
-        binding.addRequestOperationList.setOnItemClickListener { _, _, position, _ ->
-            selectOperation = operationSpinnerAdapter?.getItem(position)
-            selectOperation?.let {
-                binding.addRequestOperationList.setText(it.name)
-                binding.addRequestOperationMenu.error = null
+        binding.addRequestOperationTypeList.setOnItemClickListener { _, _, position, _ ->
+            selectOperationType = operationTypeSpinnerAdapter?.getItem(position)
+            selectOperationType?.let {
+                binding.addRequestOperationTypeList.setText(it.name)
+                binding.addRequestOperationTypeMenu.error = null
             }
         }
     }

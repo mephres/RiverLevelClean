@@ -1,4 +1,4 @@
-package com.intas.metrolog.pojo.operation
+package com.intas.metrolog.pojo.event.event_operation_type
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -7,8 +7,8 @@ import com.google.gson.annotations.SerializedName
 /**
  * Тип операции мероприятия
  */
-@Entity(tableName = "eventOperation")
-data class EventOperationItem(
+@Entity(tableName = "eventOperationType")
+data class EventOperationTypeItem(
     /**
      * идентификатор записи
      */

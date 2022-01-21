@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
-import com.intas.metrolog.pojo.operation.EventOperationItem
 
 class PrioritySpinnerAdapter(
     val cont: Context,

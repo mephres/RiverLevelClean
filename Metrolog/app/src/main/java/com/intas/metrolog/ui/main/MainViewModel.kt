@@ -30,9 +30,9 @@ import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
-import com.intas.metrolog.pojo.event.operation.OperationItem
+import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event_comment.EventComment
-import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
@@ -362,14 +362,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /**
      * Сохранение списка операций мероприятий в БД
-     * @param operationList - список операций
+     * @param operationTypeList - список операций
      */
-    private fun insertEventOperationList(operationList: List<EventOperationItem>) {
+    private fun insertEventOperationTypeList(operationTypeList: List<EventOperationTypeItem>) {
 
-        Log.d("MM_INSERT_OPERATION", operationList.toString())
+        Log.d("MM_INSERT_OPERATION", operationTypeList.toString())
 
         viewModelScope.launch {
-            db.eventOperationDao().insertEventOperationList(operationList)
+            db.eventOperationTypeDao().insertEventOperationTypeList(operationTypeList)
         }
     }
 
@@ -378,14 +378,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun getEventOperation() {
         Util.authUser?.userId?.let {
-            val disposable = ApiFactory.apiService.getEventOperation(it)
+            val disposable = ApiFactory.apiService.getEventOperationType(it)
                 .retryWhen { f: Flowable<Throwable?> ->
                     f.delay(1, TimeUnit.MINUTES)
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    it.list?.let { operation ->
-                        insertEventOperationList(operation)
+                    it.list?.let { operationTypeList ->
+                        insertEventOperationTypeList(operationTypeList)
                     }
                 }, {
                     it.printStackTrace()
@@ -458,8 +458,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe({
-                    it.list?.let { status ->
-                        insertRequestStatusList(status)
+                    it.list?.let { statusList ->
+                        insertRequestStatusList(statusList)
+
+                        val list = mutableListOf<Int>()
+                        for (disc in statusList) {
+                            list.add(disc.id)
+                        }
+                        AppPreferences.requestFilterStatusList = list as ArrayList<Int>
                     }
                 }, {
                     it.printStackTrace()
@@ -467,6 +473,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             compositeDisposable.add(disposable)
         }
     }
+
 
     /**
      * Отправка на сервер ЦНО данных с геокоординатами оборудования
@@ -773,7 +780,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     //TODO: Переименовать EventOperation в Operation
-    private fun insertEventOperations(eventOperationList: List<OperationItem>) {
+    private fun insertEventOperations(eventEventOperationList: List<EventOperationItem>) {
         /*viewModelScope.launch {
             db.eventDao().insertEventList(eventOperationList)
         }*/

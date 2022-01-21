@@ -114,7 +114,7 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/addRequestOperationMenu"
+        android:id="@+id/addRequestOperationTypeMenu"
         style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.ExposedDropdownMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -129,7 +129,7 @@
         app:layout_constraintTop_toBottomOf="@+id/addRequestDisciplineMenu">
 
         <AutoCompleteTextView
-            android:id="@+id/addRequestOperationList"
+            android:id="@+id/addRequestOperationTypeList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="none" />
@@ -149,7 +149,7 @@
         app:hintTextColor="@color/md_black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/addRequestOperationMenu">
+        app:layout_constraintTop_toBottomOf="@+id/addRequestOperationTypeMenu">
 
         <AutoCompleteTextView
             android:id="@+id/addRequestPriorityList"
@@ -179,7 +179,8 @@
             android:layout_height="wrap_content"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:inputType="textMultiLine" />
+            android:inputType="textMultiLine"
+            android:textCursorDrawable = "@null"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 

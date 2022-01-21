@@ -3,7 +3,6 @@ package com.intas.metrolog.ui.requests
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,8 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentRequestsBinding
 import com.intas.metrolog.pojo.request.RequestItem
@@ -156,22 +155,27 @@ class RequestsFragment : Fragment() {
     }
 
     private fun showFilter() {
-        val requestFilterDiscList = AppPreferences.requestFilterDiscList
-        val requestFilterStatusList = AppPreferences.requestFilterStatusList
-        val dateStart = AppPreferences.requestFilterDateStart
-        val dateEnd = AppPreferences.requestFilterDateEnd
+        try {
+            val requestFilterDiscList = AppPreferences.requestFilterDiscList
+            val requestFilterStatusList = AppPreferences.requestFilterStatusList
+            val dateStart = AppPreferences.requestFilterDateStart
+            val dateEnd = AppPreferences.requestFilterDateEnd
 
-        val requestFilter = RequestFilter(
-            dateStart = dateStart ?: 0,
-            dateEnd = dateEnd ?: 0,
-            requestDisciplineIdList = requestFilterDiscList,
-            requestStatusIdList = requestFilterStatusList
-        )
-        val filterFragment = RequestFilterFragment.newInstance(requestFilter)
-        filterFragment.show(
-            requireActivity().supportFragmentManager,
-            RequestFilterFragment.REQUEST_FILTER_TAG
-        )
+            val requestFilter = RequestFilter(
+                dateStart = dateStart ?: 0,
+                dateEnd = dateEnd ?: 0,
+                requestDisciplineIdList = requestFilterDiscList,
+                requestStatusIdList = requestFilterStatusList
+            )
+            val filterFragment = RequestFilterFragment.newInstance(requestFilter)
+            filterFragment.show(
+                requireActivity().supportFragmentManager,
+                RequestFilterFragment.REQUEST_FILTER_TAG
+            )
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            showToast("При загрузке списка дисциплин и статусов заявки возникла ошибка")
+        }
     }
 
     private fun setSearchViewListener() {
@@ -197,6 +201,10 @@ class RequestsFragment : Fragment() {
             it.equipInfo?.contains(text, true) == null ||
                     it.disciplineInfo?.contains(text, true) == true
         })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 
     private fun showSnackBar(message: String) {

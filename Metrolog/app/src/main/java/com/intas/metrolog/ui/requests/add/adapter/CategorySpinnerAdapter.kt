@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.intas.metrolog.pojo.event_comment.EventComment
-import com.intas.metrolog.pojo.operation.EventOperationItem
 
 class CategorySpinnerAdapter(
     val cont: Context,

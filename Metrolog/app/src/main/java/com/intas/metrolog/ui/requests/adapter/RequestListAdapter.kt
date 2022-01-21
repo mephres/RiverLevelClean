@@ -11,7 +11,6 @@ import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.ui.requests.callback.RequestItemDiffCallback
 import com.intas.metrolog.util.DateTimeUtil
-import java.lang.Exception
 
 class RequestListAdapter :
     ListAdapter<RequestItem, RequestItemViewHolder>(RequestItemDiffCallback()) {
@@ -38,7 +37,7 @@ class RequestListAdapter :
 
         val status = db.requestStatusDao().getRequestStatusById(requestItem.status)
         val discipline = db.disciplineDao().getDisciplineById(requestItem.discipline)
-        val operation = db.eventOperationDao().getEventOperationById(requestItem.operationType)
+        val operationType = db.eventOperationTypeDao().getEventOperationTypeById(requestItem.operationType)
         val equip = db.equipDao().getEquipItemById(requestItem.equipId.toLong())
         val sender = db.userDao().getUserById(requestItem.senderId)
 
@@ -62,7 +61,7 @@ class RequestListAdapter :
         }
 
         if (discipline != null) {
-            val eventOperationString = operation?.name ?: context.getString(R.string.request_no_operation_type)
+            val eventOperationString = operationType?.name ?: context.getString(R.string.request_no_operation_type)
             val disciplineOperation =
                 String.format("%s. %s", discipline.name, eventOperationString)
             holder.requestDisciplineOperationTextView.text = disciplineOperation

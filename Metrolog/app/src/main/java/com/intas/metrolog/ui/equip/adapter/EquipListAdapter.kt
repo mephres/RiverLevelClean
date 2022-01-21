@@ -111,6 +111,8 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
         if (!equipItem.mestUstan.isNullOrEmpty()) {
             holder.equipLocationTextView.text = equipItem.mestUstan
             holder.equipLocationTextView.setBackgroundResource(R.drawable.rounded_corner_area_white)
+            holder.equipLocationTextView.background
+                .setTint(ContextCompat.getColor(context, R.color.md_white_1000))
             holder.equipLocationTextView.setTextColor(
                 ContextCompat.getColor(
                     context,

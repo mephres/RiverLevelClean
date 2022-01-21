@@ -5,19 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.intas.metrolog.pojo.operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 
-class OperationSpinnerAdapter(
+class OperationTypeSpinnerAdapter(
     val cont: Context,
     val textViewResourceId: Int,
-    val values: List<EventOperationItem>
-) : ArrayAdapter<EventOperationItem>(cont, textViewResourceId, values) {
+    val values: List<EventOperationTypeItem>
+) : ArrayAdapter<EventOperationTypeItem>(cont, textViewResourceId, values) {
 
     override fun getCount(): Int {
         return values.size
     }
 
-    override fun getItem(position: Int): EventOperationItem {
+    override fun getItem(position: Int): EventOperationTypeItem {
         return values[position]
     }
 

@@ -11,7 +11,7 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
     private val db = AppDatabase.getInstance(application)
 
     val disciplines = db.disciplineDao().getAllDiscipline()
-    val operations = db.eventOperationDao().getAllEventOperation()
+    val operationTypes = db.eventOperationTypeDao().getAllEventOperationType()
     val category = db.eventCommentDao().getAllEventComment()
     val priority = db.equipInfoPriorityDao().getAllEquipInfoPriority()
 

@@ -7,10 +7,10 @@ import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.http.ResponseApi
 import com.intas.metrolog.pojo.http.UpdateResponse
-import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import io.reactivex.Single
@@ -79,10 +79,10 @@ interface ApiService {
      * Получение списка операций мероприятия
      *
      * @param userId параметр для запроса
-     * @return список операций мероприятия [EventOperationItem]
+     * @return список операций мероприятия [EventOperationTypeItem]
      */
     @GET("getDictOper")
-    fun getEventOperation(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<EventOperationItem>>
+    fun getEventOperationType(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<EventOperationTypeItem>>
 
     /**
      * Получение списка типов документов для генерации PDF

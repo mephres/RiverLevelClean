@@ -1,4 +1,4 @@
-package com.intas.metrolog.pojo.event.operation.operation_control
+package com.intas.metrolog.pojo.event.event_operation.operation_control
 
 import android.os.Parcelable
 import androidx.room.Entity
@@ -6,7 +6,7 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.intas.metrolog.pojo.event.operation.operation_control.field.FieldItem
+import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 import kotlinx.parcelize.Parcelize
 
 /**

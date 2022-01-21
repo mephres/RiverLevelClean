@@ -8,9 +8,9 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus
-import com.intas.metrolog.pojo.event.operation.OperationItem
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -136,7 +136,7 @@ data class EventItem(
     @Ignore
     @SerializedName("checkList")
     @Expose
-    var operation: List<OperationItem>? = null
+    var operation: List<EventOperationItem>? = null
 
     /**
      * количество операций мероприятия
