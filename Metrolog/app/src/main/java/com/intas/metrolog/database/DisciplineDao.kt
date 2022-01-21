@@ -9,6 +9,9 @@ interface DisciplineDao {
     @Query("SELECT * FROM discipline order by name asc")
     fun getAllDiscipline(): LiveData<List<DisciplineItem>>
 
+    @Query("SELECT * FROM discipline WHERE id = :id")
+    fun getDisciplineById(id: Int): DisciplineItem?
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateDiscipline(discipline: DisciplineItem?)
 

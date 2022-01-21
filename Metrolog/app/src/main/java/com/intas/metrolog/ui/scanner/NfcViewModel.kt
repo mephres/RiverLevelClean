@@ -1,9 +1,11 @@
 package com.intas.metrolog.ui.scanner
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
+import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -14,6 +16,8 @@ class NfcViewModel(application: Application) : AndroidViewModel(application) {
     var onFailure: ((String) -> Unit)? = null
     var onSuccess: ((Int) -> Unit)? = null
     var onError: ((String) -> Unit)? = null
+
+    var onEquipItemSuccess: ((EquipItem) -> Unit)? = null
 
     /**
      * Установка метки для оборудования. Ведем поиск оборудования по метке, если список пуст, то считаем, что метка никому не принадлежит.
@@ -40,6 +44,30 @@ class NfcViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }, {
                 onError?.invoke(it.localizedMessage)
+                it.printStackTrace()
+            })
+        compositeDisposable.add(disposable)
+    }
+
+    /**
+     * Получение одного экземпляра оборудования из базы по метке
+     *
+     * @param rfid метка оборудования
+     */
+    fun getEquipByRFID(rfid: String) {
+        val disposable = db.equipDao().getEquipItemByRFID(rfid)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                onEquipItemSuccess?.invoke(it)
+            }, {
+                it.printStackTrace()
+
+                if (it.toString().contains("EmptyResultSetException")) {
+                    onFailure?.invoke(rfid)
+                } else {
+                    onError?.invoke(it.localizedMessage)
+                }
             })
         compositeDisposable.add(disposable)
     }

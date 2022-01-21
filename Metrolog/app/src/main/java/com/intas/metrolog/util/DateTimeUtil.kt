@@ -1,5 +1,6 @@
 package com.intas.metrolog.util
 
+import java.sql.Timestamp
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -9,6 +10,9 @@ class DateTimeUtil {
     companion object {
 
         val timeZone = TimeZone.getDefault()
+
+        const val DAY_IN_MILLIS = 86399999
+        const val DAY_IN_SECONDS = 86399
 
         /**
          * dd - день

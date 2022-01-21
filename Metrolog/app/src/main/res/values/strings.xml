@@ -3,6 +3,7 @@
     <string name="app_version_title">Версия приложения: %s</string>
     <string name="login_activity_app_title">Мобильный метролог</string>
     <string name="no_data">Нет данных</string>
+    <string name="save_title">Сохранить</string>
 
     <string name="exit_message">Нажмите еще раз для выхода</string>
 
@@ -64,6 +65,8 @@
     <string name="nfc_tag_is_set">Метка %s установлена</string>
     <string name="nfc_tag_set_error">При установке метки возникла ошибка</string>
     <string name="nfc_tag_set_failure">Метка %s принадлежит другому оборудованию. Выберите другую метку.</string>
+    <string name="nfc_tag_get_equip_failure">Оборудование по метке %s не найдено</string>
+    <string name="nfc_tag_get_equip_error">При поиске оборудования возникла ошибка</string>
 
     <string name="request_search_bar_hint">Поиск заявок</string>
     <string name="request_no_equip">Оборудование не найдено</string>
@@ -110,6 +113,4 @@
     <string name="add_request_need_discipline_title">Необходимо выбрать дисциплину</string>
     <string name="add_request_need_operation_title">Необходимо выбрать мероприятие</string>
     <string name="add_request_need_comment_title">Для добавления информации для ТО описание необходимо заполнить</string>
-
-
 </resources>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_corner_area"
+        android:text="                                                           "
+        android:textSize="1sp"
+        android:tint="@color/md_green_500"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/filterTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/filter_title"
+        android:textColor="@color/md_black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/requestDateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/period_title"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/filterTitleTextView" />
+
+    <TextView
+        android:id="@+id/requestCategoryFilterTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/discipline_title"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/requestDateTextView" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/incidentCategoryChipGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/requestCategoryFilterTextView">
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:id="@+id/requestStatusFilterTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="@string/status_title"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/incidentCategoryChipGroup" />
+
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/requestStatusChipGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/requestStatusFilterTextView">
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <TextView
+        android:id="@+id/selectRequestDateTextView1"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone"
+        android:text="@string/no_chosen_filter_title"
+        android:textAllCaps="false"
+        android:textColor="@color/md_black"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/requestDateTextView"
+        app:layout_constraintStart_toEndOf="@id/requestDateTextView"
+        app:layout_constraintTop_toTopOf="@id/requestDateTextView" />
+
+    <Button
+        android:id="@+id/selectRequestDateTextView"
+        style="@style/SpinnerStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/no_chosen_filter_title"
+        android:textColor="@color/md_black"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@id/requestDateTextView"
+        app:layout_constraintEnd_toStartOf="@+id/requestDateRangeClearImageView"
+        app:layout_constraintStart_toEndOf="@id/requestDateTextView"
+        app:layout_constraintTop_toTopOf="@id/requestDateTextView" />
+
+    <ImageView
+        android:id="@+id/requestDateRangeClearImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:clickable="true"
+        android:focusable="true"
+        android:padding="8dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_baseline_clear_24"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/selectRequestDateTextView"
+        app:layout_constraintStart_toEndOf="@+id/selectRequestDateTextView"
+        app:layout_constraintEnd_toStartOf="@+id/requestDateImageView"
+        app:layout_constraintTop_toTopOf="@+id/selectRequestDateTextView" />
+
+    <ImageView
+        android:id="@+id/requestDateImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:padding="8dp"
+        android:src="@drawable/ic_baseline_date_range_24"
+        app:layout_constraintBottom_toBottomOf="@id/requestDateTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/requestDateTextView" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/requestFilterApplyButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/colorAccent"
+        android:text="@string/apply_title"
+        app:cornerRadius="16dp"
+        android:textAllCaps="false"
+        android:textColor="@color/md_white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/requestStatusChipGroup" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
