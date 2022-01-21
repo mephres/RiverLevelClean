@@ -52,8 +52,8 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         ViewModelProvider(this)[AddRequestViewModel::class.java]
     }
 
-    private val requestType = arrayOf(100, 200)
-    private val modes = arrayOf(MODE_ADD_REQUEST_WITH_SCAN, MODE_ADD_REQUEST_WITHOUT_SCAN)
+    private val requestTypeArray = arrayOf(100, 200)
+    private val modesArray = arrayOf(MODE_ADD_REQUEST_WITH_SCAN, MODE_ADD_REQUEST_WITHOUT_SCAN)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,18 +70,19 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initSpinners()
+
+        setSpinnerAdapters()
         checkMode()
 
         binding.addRequestImageFab.setOnClickListener {
-            showRequestImageFab()
+            showRequestAttachImageFab()
         }
 
-        binding.addRequestImageGalleryFab.setOnClickListener {
+        binding.addRequestShowGalleryFab.setOnClickListener {
 
         }
 
-        binding.addRequestImageCameraFab.setOnClickListener {
+        binding.addRequestShowCameraFab.setOnClickListener {
 
         }
 
@@ -98,35 +99,35 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
     private fun addRequest() {
         if (selectCategory == null) {
-            binding.addRequestCategoryMenu.error = "Необходимо выбрать тип заявки"
+            binding.addRequestCategoryMenu.error = getString(R.string.add_request_need_category_title)
             return
         } else {
             binding.addRequestCategoryMenu.error = null
         }
 
         if (!isRequest && selectDiscipline == null) {
-            binding.addRequestDisciplineMenu.error = "Необходимо выбрать дисциплину"
+            binding.addRequestDisciplineMenu.error = getString(R.string.add_request_need_discipline_title)
             return
         } else {
             binding.addRequestDisciplineMenu.error = null
         }
 
         if (!isRequest && selectOperation == null) {
-            binding.addRequestOperationMenu.error = "Необходимо выбрать мероприятие"
+            binding.addRequestOperationMenu.error = getString(R.string.add_request_need_operation_title)
             return
         } else {
             binding.addRequestOperationMenu.error = null
         }
 
         if (!isRequest && selectPriority == null) {
-            binding.addRequestPriorityMenu.error = "Необходимо выбрать приоритет"
+            binding.addRequestPriorityMenu.error = getString(R.string.add_request_need_priority_title)
             return
         } else {
             binding.addRequestPriorityMenu.error = null
         }
 
         if (!isRequest && binding.addRequestCommentTextInputLayout.editText?.text?.trim().isNullOrEmpty()) {
-            binding.addRequestCommentTextInputLayout.error = "Для добавления информации для ТО описание необходимо заполнить"
+            binding.addRequestCommentTextInputLayout.error = getString(R.string.add_request_need_comment_title)
             return
         } else {
             binding.addRequestCommentTextInputLayout.error = null
@@ -136,10 +137,10 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     }
 
     private fun createRequestItem() {
-        val senderId = Util.authUser?.userId ?: return
-        val discipline = selectDiscipline?.id ?: return
-        val operation = selectOperation?.id ?: return
-        val category = selectCategory?.id ?: return
+        val senderId = Util.authUser?.userId ?: 0
+        val discipline = selectDiscipline?.id ?: 0
+        val operation = selectOperation?.id ?: 0
+        val category = selectCategory?.id ?: 0
         val equipId = equip?.equipId?.toInt() ?: -1
         val equipRfid = equip?.equipRFID ?: ""
         val comment = binding.addRequestCommentTextInputEditText.text.toString()
@@ -153,13 +154,14 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             categoryId = category,
             creationDate = DateTimeUtil.getUnixDateTimeNow(),
             equipId = equipId,
-            rfid = equipRfid
+            rfid = equipRfid,
+            status = 1
         )
         viewModel.addRequest(requestItem)
         closeFragment()
     }
 
-    private fun initSpinners() {
+    private fun setSpinnerAdapters() {
         viewModel.operations.observe(viewLifecycleOwner, {
             operationSpinnerAdapter = OperationSpinnerAdapter(
                 requireContext(),
@@ -186,7 +188,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             categorySpinnerAdapter = CategorySpinnerAdapter(
                 requireContext(),
                 R.layout.drop_down_list_item,
-                it.filter { requestType.contains(it.type) }
+                it.filter { requestTypeArray.contains(it.type) }
             )
             (binding.addRequestCategoryMenu.editText as? AutoCompleteTextView)?.setAdapter(
                 categorySpinnerAdapter
@@ -204,14 +206,14 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             )
         })
 
-        setOperationsSpinner()
-        setDisciplinesSpinner()
-        setCategorySpinner()
-        setPrioritySpinner()
-        setCommentInputLayoutListener()
+        configureOperationsSpinner()
+        configureDisciplinesSpinner()
+        configureCategorySpinner()
+        configurePrioritySpinner()
+        setCommentEditTextListener()
     }
 
-    private fun setOperationsSpinner() {
+    private fun configureOperationsSpinner() {
         binding.addRequestOperationList.setOnItemClickListener { _, _, position, _ ->
             selectOperation = operationSpinnerAdapter?.getItem(position)
             selectOperation?.let {
@@ -221,7 +223,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setDisciplinesSpinner() {
+    private fun configureDisciplinesSpinner() {
         binding.addRequestDisciplineList.setOnItemClickListener { _, _, position, _ ->
             selectDiscipline = disciplineSpinnerAdapter?.getItem(position)
             selectDiscipline?.let {
@@ -232,7 +234,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setPrioritySpinner() {
+    private fun configurePrioritySpinner() {
         binding.addRequestPriorityList.setOnItemClickListener { _, _, position, _ ->
             selectPriority = prioritySpinnerAdapter?.getItem(position)
             selectPriority?.let {
@@ -242,7 +244,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setCategorySpinner() {
+    private fun configureCategorySpinner() {
         binding.addRequestCategoryList.setOnItemClickListener { _, _, position, _ ->
             selectCategory = categorySpinnerAdapter?.getItem(position)
             selectCategory?.let {
@@ -265,7 +267,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun setCommentInputLayoutListener() {
+    private fun setCommentEditTextListener() {
         binding.addRequestCommentTextInputLayout.editText?.addTextChangedListener {
             if (!binding.addRequestCommentTextInputLayout.editText?.text.isNullOrEmpty()) {
                 binding.addRequestCommentTextInputLayout.error = null
@@ -273,16 +275,16 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
     }
 
-    private fun showRequestImageFab() {
+    private fun showRequestAttachImageFab() {
 
         requestImageFabVisible = !requestImageFabVisible
 
-        binding.addRequestImageGalleryFab.visibility = View.INVISIBLE
-        binding.addRequestImageCameraFab.visibility = View.INVISIBLE
+        binding.addRequestShowGalleryFab.visibility = View.INVISIBLE
+        binding.addRequestShowCameraFab.visibility = View.INVISIBLE
 
         if (requestImageFabVisible) {
-            binding.addRequestImageGalleryFab.visibility = View.VISIBLE
-            binding.addRequestImageCameraFab.visibility = View.VISIBLE
+            binding.addRequestShowGalleryFab.visibility = View.VISIBLE
+            binding.addRequestShowCameraFab.visibility = View.VISIBLE
         }
     }
 
@@ -299,7 +301,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
 
         val mode = args.getString(ADD_REQUEST_MODE)
-        if (!modes.contains(mode)) {
+        if (!modesArray.contains(mode)) {
             return
         }
         mode?.let { addRequestMode = it }

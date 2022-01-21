@@ -195,7 +195,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addRequestImageCameraFab"
+        android:id="@+id/add_request_show_camera_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
@@ -203,13 +203,13 @@
         android:visibility="invisible"
         app:backgroundTint="@color/colorAccent"
         app:fabSize="mini"
-        app:layout_constraintEnd_toStartOf="@id/addRequestImageGalleryFab"
-        app:layout_constraintTop_toTopOf="@+id/addRequestImageGalleryFab"
+        app:layout_constraintEnd_toStartOf="@id/add_request_show_gallery_fab"
+        app:layout_constraintTop_toTopOf="@+id/add_request_show_gallery_fab"
         app:srcCompat="@drawable/ic_baseline_photo_camera_24"
         app:tint="@color/md_white_1000" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/addRequestImageGalleryFab"
+        android:id="@+id/add_request_show_gallery_fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"

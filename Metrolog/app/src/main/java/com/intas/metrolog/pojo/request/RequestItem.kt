@@ -123,13 +123,13 @@ data class RequestItem(
     /**
      * информация по оборудованию (название, серийный номер, завод изготовитель) для поиска
      */
-    val equipInfo: String? = null,
+    var equipInfo: String? = null,
     /**
      * информация о дисциплине для поиска
      */
-    val disciplineInfo: String? = null,
+    var disciplineInfo: String? = null,
     /**
      * информация по операции мероприятия для поиска
      */
-    val eventOperationInfo: String? = null
+    var eventOperationInfo: String? = null
 ) : Parcelable

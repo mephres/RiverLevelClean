@@ -86,7 +86,10 @@ class RequestsFragment : Fragment() {
         }
         fragment.onSelectWithoutScannerClickListener = {
             val addRequestFragment = AddRequestFragment.newInstanceWithoutRfid()
-            addRequestFragment.show(requireActivity().supportFragmentManager, AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG)
+            addRequestFragment.show(
+                requireActivity().supportFragmentManager,
+                AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG
+            )
         }
     }
 
@@ -165,7 +168,10 @@ class RequestsFragment : Fragment() {
             requestStatusIdList = requestFilterStatusList
         )
         val filterFragment = RequestFilterFragment.newInstance(requestFilter)
-        filterFragment.show(requireActivity().supportFragmentManager, RequestFilterFragment.REQUEST_FILTER_TAG)
+        filterFragment.show(
+            requireActivity().supportFragmentManager,
+            RequestFilterFragment.REQUEST_FILTER_TAG
+        )
     }
 
     private fun setSearchViewListener() {
@@ -179,13 +185,17 @@ class RequestsFragment : Fragment() {
             override fun onQueryTextChange(newText: String): Boolean {
                 handler.removeCallbacksAndMessages(null)
                 handler.postDelayed({
-                        requestListAdapter.submitList(requestList.filter {
-                            it.equipInfo?.contains(newText, true) == null ||
-                                    it.disciplineInfo?.contains(newText, true) == true
-                        })
+                    setFilter(newText)
                 }, 300)
                 return true
             }
+        })
+    }
+
+    private fun setFilter(text: String) {
+        requestListAdapter.submitList(requestList.filter {
+            it.equipInfo?.contains(text, true) == null ||
+                    it.disciplineInfo?.contains(text, true) == true
         })
     }
 
