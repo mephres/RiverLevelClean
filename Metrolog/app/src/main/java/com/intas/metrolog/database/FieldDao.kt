@@ -12,7 +12,7 @@ interface FieldDao {
     suspend fun updateField(field: FieldItem)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertField(field: FieldItem)
+    suspend fun insertField(field: FieldItem): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFieldList(field: List<FieldItem>)

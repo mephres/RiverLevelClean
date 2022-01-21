@@ -7,12 +7,12 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "fieldDictData")
-data class DictData(
+data class FieldDictData(
     /**
      * идентификатор записи
      */
     @PrimaryKey(autoGenerate = true)
-    var id: Int = 0,
+    var id: Int? = null,
     /**
      * идентификатор поля операционного контроля
      */

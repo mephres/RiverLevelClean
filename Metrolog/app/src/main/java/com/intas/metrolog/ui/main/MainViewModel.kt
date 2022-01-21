@@ -32,6 +32,7 @@ import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.OperControlItem
+import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dict_data.FieldDictData
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
@@ -817,11 +818,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     field.eventId = operControl.eventId
                     field.operationId = operControl.opId
                     field.classCode = operControl.classCode
+
+                    val fieldId = db.fieldDao().insertField(field)
+                    field.dictData?.let { dictData ->
+                        if (!dictData.isNullOrEmpty()) {
+                            for ((code, value) in dictData) {
+                                val dictDataObject =
+                                    FieldDictData(fieldId = fieldId, code = code, value = value)
+                                    db.fieldDictDataDao().insertFieldDictData(dictDataObject) // запись в базу способа измерения
+                            }
+                        }
+                    }
                 }
-                db.fieldDao().insertFieldList(fieldList)
-
             }
-
         }
     }
 
