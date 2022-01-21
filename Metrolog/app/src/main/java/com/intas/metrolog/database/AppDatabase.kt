@@ -13,9 +13,8 @@ import com.intas.metrolog.pojo.equip.EquipDocument
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
+import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event_comment.EventComment
-import com.intas.metrolog.pojo.event_priority.EventPriority
-import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
@@ -24,9 +23,9 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
 @Database(
     entities = [AuthUser::class, UserLocation::class, JournalItem::class, UserItem::class,
                EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
-               EventOperationItem::class, DocumentType::class, EquipInfoPriority::class,
-               EventStatus::class, EventPriority::class, EventComment::class, EquipDocument::class],
-    version = 3, exportSchema = false
+               EventOperationItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
+               EventComment::class, EquipDocument::class],
+    version = 6, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -65,8 +64,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventOperationDao(): EventOperationDao
     abstract fun documentTypeDao(): DocumentTypeDao
     abstract fun equipInfoPriorityDao(): EquipInfoPriorityDao
-    abstract fun eventStatusDao(): EventStatusDao
-    abstract fun eventPriorityDao(): EventPriorityDao
     abstract fun eventCommentDao(): EventCommentDao
     abstract fun equipDocumentDao(): EquipDocumentDao
+    abstract fun eventDao(): EventDao
 }

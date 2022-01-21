@@ -6,9 +6,8 @@ import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
+import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event_comment.EventComment
-import com.intas.metrolog.pojo.event_priority.EventPriority
-import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.http.ResponseApi
 import com.intas.metrolog.pojo.http.UpdateResponse
 import com.intas.metrolog.pojo.operation.EventOperationItem
@@ -103,24 +102,6 @@ interface ApiService {
     fun getEquipInfoPriorityList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<EquipInfoPriority>>
 
     /**
-     * Получение списка статусов мероприятий
-     *
-     * @param userId параметр для запроса
-     * @return список статусов мероприятий [EventStatus]
-     */
-    @GET("getDictToirStatus")
-    fun getEventStatus(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<EventStatus>>
-
-    /**
-     * Получение списка приоритетов для мероприятия
-     *
-     * @param userId параметр для запроса
-     * @return список сообщений [EventPriority]
-     */
-    @GET("getDictToirPriority")
-    fun getEventPriority(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<EventPriority>>
-
-    /**
      * Получение списка комментариев
      *
      * @param userId параметр для запроса
@@ -149,9 +130,6 @@ interface ApiService {
     @POST("addEquipLocation")
     fun updateEquipGeo(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
-    /*@FormUrlEncoded
-    @POST("addEquipDoc")
-    Call<UpdateDataResponse> addEquipDocument(@FieldMap Map<String, String> fields);*/
     /**
      * Добавление документа для оборудования на сервер ЦНО
      *
@@ -174,6 +152,18 @@ interface ApiService {
         @Part(QUERY_PARAM_TYPE) type: RequestBody,
         @Part(QUERY_PARAM_EQUIP_DOCUMENT) doc: RequestBody
     ): Single<UpdateResponse>
+
+    /**
+     * Получение списка мероприятий
+     *
+     * @param parameters параметры запроса
+     * @return список мероприятий [EventItem]
+     */
+    @GET("getToir")
+    fun getEventList(@Query(QUERY_PARAM_USER_ID) userId: Int,
+                     @Query(QUERY_PARAM_MONTH) month: Int,
+                     @Query(QUERY_PARAM_YEAR) year: Int
+    ): Single<ResponseApi<EventItem>>
 
 
     companion object {

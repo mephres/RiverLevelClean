@@ -22,15 +22,17 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
+import com.intas.metrolog.pojo.equip.EquipDocument
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
+import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.pojo.event.operation.OperationItem
 import com.intas.metrolog.pojo.event_comment.EventComment
-import com.intas.metrolog.pojo.event_priority.EventPriority
-import com.intas.metrolog.pojo.event_status.EventStatus
 import com.intas.metrolog.pojo.operation.EventOperationItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
+import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.SingleLiveEvent
 import com.intas.metrolog.util.Util
 import io.reactivex.Flowable
@@ -39,6 +41,11 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -50,8 +57,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendEquipLocationDisposable: Disposable? = null
     private var sendEquipRFIDDisposable: Disposable? = null
     private var getEquipDisposable: Disposable? = null
+    private var getEventDisposable: Disposable? = null
+    private var sendEquipDocumentDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
+    val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
     val notSendedEquipList = db.equipDao().getEquipNotSended()
 
     val onErrorMessage = SingleLiveEvent<String>()
@@ -63,9 +73,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getEventOperation()
         getDocumentType()
         getEquipInfoPriority()
-        getEventStatus()
-        getEventPriority()
         getEventComment()
+        getEvent()
     }
 
     /**
@@ -170,74 +179,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribe({
                     it.list?.let { eventComment ->
                         insertEventCommentList(eventComment)
-                    }
-                }, {
-                    it.printStackTrace()
-                })
-            compositeDisposable.add(disposable)
-        }
-    }
-
-    /**
-     * Сохранение списка приоритетов для мероприятия в БД
-     * @param eventPriorityList - список приоритетов для мероприятия
-     */
-    private fun insertEventPriorityList(eventPriorityList: List<EventPriority>) {
-
-        Log.d("MM_INSERT_EVENT_PRIOR", eventPriorityList.toString())
-
-        viewModelScope.launch {
-            db.eventPriorityDao().insertEventPriorityList(eventPriorityList)
-        }
-    }
-
-    /**
-     * Получение списка приоритетов для мероприятия
-     */
-    private fun getEventPriority() {
-        Util.authUser?.userId?.let {
-            val disposable = ApiFactory.apiService.getEventPriority(it)
-                .retryWhen { f: Flowable<Throwable?> ->
-                    f.delay(1, TimeUnit.MINUTES)
-                }
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    it.list?.let { eventPriority ->
-                        insertEventPriorityList(eventPriority)
-                    }
-                }, {
-                    it.printStackTrace()
-                })
-            compositeDisposable.add(disposable)
-        }
-    }
-
-    /**
-     * Сохранение списка статусов мероприятий в БД
-     * @param eventStatusList - список статусов мероприятий
-     */
-    private fun insertEventStatusList(eventStatusList: List<EventStatus>) {
-
-        Log.d("MM_INSERT_EVENT_STATUS", eventStatusList.toString())
-
-        viewModelScope.launch {
-            db.eventStatusDao().insertEventStatusList(eventStatusList)
-        }
-    }
-
-    /**
-     * Получение списка статусов мероприятий
-     */
-    private fun getEventStatus() {
-        Util.authUser?.userId?.let {
-            val disposable = ApiFactory.apiService.getEventStatus(it)
-                .retryWhen { f: Flowable<Throwable?> ->
-                    f.delay(1, TimeUnit.MINUTES)
-                }
-                .subscribeOn(Schedulers.io())
-                .subscribe({
-                    it.list?.let { eventStatus ->
-                        insertEventStatusList(eventStatus)
                     }
                 }, {
                     it.printStackTrace()
@@ -599,6 +540,132 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             db.userLocationDao().setUserLocationSendedById(id)
         }
+    }
+
+    /**
+     * Отправка документа оборудования на сервер
+     * @param equipDocument - документ оборудования
+     */
+    fun sendEquipDocument(equipDocument: EquipDocument) {
+
+        sendEquipDocumentDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        var multipartFile: MultipartBody.Part? = null
+
+        equipDocument.filePath?.let {
+
+            val file = File(it)
+
+            val requestFile = file.asRequestBody("multipart/form-data".toMediaTypeOrNull())
+
+            multipartFile = MultipartBody.Part.createFormData("file", file.name, requestFile)
+        }
+
+        val multipartId = equipDocument.id.toString().toRequestBody(MultipartBody.FORM)
+        val multipartUserId = Util.authUser?.userId.toString().toRequestBody(MultipartBody.FORM)
+        val multipartEquipId = equipDocument.equipId.toString().toRequestBody(MultipartBody.FORM)
+        val multipartType =
+            equipDocument.documentTypeId.toString().toRequestBody(MultipartBody.FORM)
+        val multipartDoc = equipDocument.filename.toString().toRequestBody(MultipartBody.FORM)
+
+        sendEquipDocumentDisposable = ApiFactory.apiService.addEquipDocument(
+            file = multipartFile,
+            id = multipartId,
+            userId = multipartUserId,
+            equipId = multipartEquipId,
+            type = multipartType,
+            doc = multipartDoc
+        )
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EQUIP_DOCUMENT", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEquipDocumentSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_EQUIP_DOCUMENT", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_EQUIP_DOCUMENT", it.message.toString())
+                })
+        sendEquipDocumentDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки данных на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setEquipDocumentSendedById(id: Long) {
+
+        Log.d("MM_SET_EQUIP_DOC_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.equipDocumentDao().setEquipDocumentSendedById(id)
+        }
+    }
+
+    private fun getEvent() {
+        Util.authUser?.userId?.let {
+
+            getEventDisposable?.let {
+                compositeDisposable.remove(it)
+            }
+
+            val month = DateTimeUtil.getMonthNowByPattern("MM")
+            val year = DateTimeUtil.getMonthNowByPattern("YYYY")
+
+            getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
+                .subscribeOn(Schedulers.io())
+                .repeatWhen { completed ->
+                    completed.delay(5, TimeUnit.MINUTES)
+                }
+                .retryWhen { f: Flowable<Throwable?> ->
+                    f.take(600).delay(1, TimeUnit.MINUTES)
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    it.list?.let { eventList ->
+                        insertEventList(eventList)
+                    }
+                }, {
+                    onErrorMessage.postValue(
+                        "При получении списка мероприятий с сервера произошла ошибка - " +
+                                "${it.message}"
+                    )
+                    it.printStackTrace()
+                })
+            getEventDisposable?.let {
+                compositeDisposable.add(it)
+            }
+        }
+    }
+
+    private fun insertEventList(eventList: List<EventItem>) {
+        viewModelScope.launch {
+            db.eventDao().insertEventList(eventList)
+        }
+    }
+
+    //TODO: Переименовать EventOperation в Operation
+    private fun insertEventOperations(eventOperationList: List<OperationItem>) {
+        /*viewModelScope.launch {
+            db.eventDao().insertEventList(eventOperationList)
+        }*/
     }
 
     override fun onCleared() {

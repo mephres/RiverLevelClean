@@ -11,6 +11,17 @@ class DateTimeUtil {
         val timeZone = TimeZone.getDefault()
 
         /**
+         * dd - день
+         * MM - месяц
+         * YYYY - год
+         */
+        fun getMonthNowByPattern(pattern: String): Int {
+            val simpleDateFormat = SimpleDateFormat(pattern)
+            simpleDateFormat.timeZone = timeZone
+            val calendar = GregorianCalendar(timeZone)
+            return simpleDateFormat.format(calendar.time).toInt()
+        }
+        /**
          * Преобразование даты-времени в милисекундах
          * @param timeInMili время в милисекундах
          * @param chatType тип чата: 0 - список активных чатов, 1 - чат с собеседником
@@ -131,7 +142,7 @@ class DateTimeUtil {
          * @return дата-время в милисекундах
          */
         fun getUnixDateTimeNow(): Long {
-            val calendar: Calendar = GregorianCalendar()
+            val calendar = GregorianCalendar()
             calendar.timeZone = timeZone
             return calendar.timeInMillis / 1000L
         }
