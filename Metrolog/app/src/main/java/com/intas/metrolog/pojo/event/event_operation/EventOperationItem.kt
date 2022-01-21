@@ -22,7 +22,7 @@ data class EventOperationItem(
     /**
      * идентификатор мероприятия
      */
-    val opId: Long = 0,
+    var opId: Long = 0,
     /**
      * идентификатор типа операции [EventOperationItem]
      */
@@ -42,7 +42,7 @@ data class EventOperationItem(
     /**
      * идентификатор оборудования для комплексного мероприятия
      */
-    val equipId: Long = 0,
+    var equipId: Long = 0,
     /**
      * дата-время начала выполнения операции
      */

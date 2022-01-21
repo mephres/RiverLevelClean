@@ -11,6 +11,7 @@ import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus
+import com.intas.metrolog.util.DateTimeUtil
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
@@ -77,19 +78,6 @@ data class EventItem(
     @SerializedName("comment")
     @Expose
     val comment: String? = null,
-
-    /**
-     * признак - фотофиксация при выполнении мероприятия (0 - фото не нужно, 1 - фото нужно)
-     */
-    val needPhotoFix: Int = 0,
-    /**
-     * месяц, на который запланировано данное мероприятие
-     */
-    val month: Int = 0,
-    /**
-     * день, на который запланировано данное мероприятие
-     */
-    val day: Int = 0,
     /**
      * дата-время начала выполнения мероприятия в UNIX формате
      */
@@ -137,24 +125,54 @@ data class EventItem(
     @SerializedName("checkList")
     @Expose
     var operation: List<EventOperationItem>? = null
+        /*set(value) {
+            field = value?.let {
+                it.map {
+                    it.opId = opId
+                    it
+                }
+            }
+        }*/
+    /*get() = operation?.map {
+            it.opId = this.opId
+            it
+    }*/
 
     /**
      * количество операций мероприятия
      */
     var operationListSize: Int = 0
-    get() = operation?.size ?: 0
+        get() = operation?.size ?: 0
 
     /**
      * идентификатор оборудования мероприятия [EquipItem]
      */
     var equipId: Long? = 0
-    get() = equip?.equipId
+        get() = equip?.equipId
 
     /**
      * метка оборудования мероприятия
      */
     var equipRfid: String? = null
-    get() = equip?.equipRFID
+        get() = equip?.equipRFID
+
+    /**
+     * признак - фотофиксация при выполнении мероприятия (0 - фото не нужно, 1 - фото нужно)
+     */
+    var needPhotoFix: Boolean = false
+        get() = operation?.any { it.needPhotoFix == 1 } == true
+
+    /**
+     * месяц, на который запланировано данное мероприятие
+     */
+    var month: Int = 0
+        get() = DateTimeUtil.getDateNowByPattern("MM", planDate ?: 0)
+
+    /**
+     * день, на который запланировано данное мероприятие
+     */
+    var day: Int = 0
+        get() = DateTimeUtil.getDateNowByPattern("dd", planDate ?: 0)
 
     constructor() : this(
         0,
@@ -167,9 +185,6 @@ data class EventItem(
         "",
         false,
         "",
-        0,
-        1,
-        1,
         0L,
         0,
         0,

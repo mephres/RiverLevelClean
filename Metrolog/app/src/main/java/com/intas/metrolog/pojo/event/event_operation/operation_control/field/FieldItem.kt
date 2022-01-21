@@ -21,11 +21,11 @@ data class FieldItem(
     /**
      * идентификатор мероприятия
      */
-    val eventId: Long = 0,
+    var eventId: Long = 0,
     /**
      * идентификатор операции мероприятия
      */
-    val operationId: Long = 0,
+    var operationId: Long = 0,
     /**
      * наименование поля
      */
@@ -67,7 +67,7 @@ data class FieldItem(
     /**
      * код
      */
-    val classCode: String? = null
+    var classCode: String? = null
 ) : Parcelable {
     /**
      * список способов измерения

@@ -23,11 +23,11 @@ data class OperControlItem(
     /**
      * идентификатор операции мероприятия [OperationItem]
      */
-    val opId: Long = 0,
+    var opId: Long = 0,
     /**
      * идентификатор мероприятия [EventItem]
      */
-    val eventId: Long = 0,
+    var eventId: Long = 0,
     /**
      * код
      */
@@ -40,7 +40,7 @@ data class OperControlItem(
      */
     @Ignore
     @SerializedName("fields")
-    private val fieldItemList: List<FieldItem>? = null
+    val fieldList: List<FieldItem>? = null
 
     constructor() : this(0,0,0,"")
 }

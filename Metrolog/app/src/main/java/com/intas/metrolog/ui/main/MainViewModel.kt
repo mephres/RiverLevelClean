@@ -31,6 +31,7 @@ import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_operation.operation_control.OperControlItem
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
@@ -744,8 +745,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 compositeDisposable.remove(it)
             }
 
-            val month = DateTimeUtil.getMonthNowByPattern("MM")
-            val year = DateTimeUtil.getMonthNowByPattern("YYYY")
+            val month = DateTimeUtil.getDateNowByPattern("MM")
+            val year = DateTimeUtil.getDateNowByPattern("YYYY")
 
             getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
                 .subscribeOn(Schedulers.io())
@@ -776,14 +777,52 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
             db.eventDao().insertEventList(eventList)
+
+            eventList.forEach { event ->
+                event.operation?.let { eol ->
+                    insertEventOperations(eol, event.opId)
+                }
+
+            }
         }
     }
 
-    //TODO: Переименовать EventOperation в Operation
-    private fun insertEventOperations(eventEventOperationList: List<EventOperationItem>) {
-        /*viewModelScope.launch {
-            db.eventDao().insertEventList(eventOperationList)
-        }*/
+    private fun insertEventOperations(
+        eventEventOperationList: List<EventOperationItem>,
+        eventId: Long
+    ) {
+        viewModelScope.launch {
+            db.eventOperationDao().insertEventOperationList(eventEventOperationList.map {
+                it.opId = eventId
+                it
+            })
+
+            eventEventOperationList.forEach { eventOperation ->
+                eventOperation.operControl?.let {
+                    it.eventId = eventId
+                    it.opId = eventOperation.subId
+                    insertOperControl(it)
+                }
+            }
+
+        }
+    }
+
+    private fun insertOperControl(operControl: OperControlItem) {
+        viewModelScope.launch {
+            db.operControlDao().insertOperControl(operControl)
+
+            operControl.fieldList?.let { fieldList ->
+                fieldList.forEach { field ->
+                    field.eventId = operControl.eventId
+                    field.operationId = operControl.opId
+                    field.classCode = operControl.classCode
+                }
+                db.fieldDao().insertFieldList(fieldList)
+
+            }
+
+        }
     }
 
     override fun onCleared() {

@@ -1,6 +1,5 @@
 package com.intas.metrolog.util
 
-import java.sql.Timestamp
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -19,10 +18,14 @@ class DateTimeUtil {
          * MM - месяц
          * YYYY - год
          */
-        fun getMonthNowByPattern(pattern: String): Int {
+        fun getDateNowByPattern(pattern: String, timeInMili: Long = 0): Int {
             val simpleDateFormat = SimpleDateFormat(pattern)
             simpleDateFormat.timeZone = timeZone
             val calendar = GregorianCalendar(timeZone)
+            if (timeInMili > 0) {
+                calendar.timeInMillis = timeInMili * 1000L
+            }
+            val a = simpleDateFormat.format(calendar.time)
             return simpleDateFormat.format(calendar.time).toInt()
         }
         /**
