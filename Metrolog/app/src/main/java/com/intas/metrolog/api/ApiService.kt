@@ -131,6 +131,25 @@ interface ApiService {
     fun updateEquipGeo(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
     /**
+     * Получение списка заявок для авторизованного пользователя с сервера ЦНО
+     *
+     * @param userId параметр для запроса
+     * @return список заявок [RequestItem]
+     */
+    @GET("getRequest")
+    fun getRequestList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<RequestItem>>
+
+    /**
+     * Добавление заявки на сервер
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addRequest")
+    fun addRequest(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
      * Добавление документа для оборудования на сервер ЦНО
      *
      * @param file    файл документа для оборудования

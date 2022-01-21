@@ -57,6 +57,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendEquipLocationDisposable: Disposable? = null
     private var sendEquipRFIDDisposable: Disposable? = null
     private var getEquipDisposable: Disposable? = null
+    private var getRequestDisposable: Disposable? = null
     private var getEventDisposable: Disposable? = null
     private var sendEquipDocumentDisposable: Disposable? = null
 
@@ -66,7 +67,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val onErrorMessage = SingleLiveEvent<String>()
 
+    private var _requestFilter = MutableLiveData<RequestFilter>()
+    val requestFilter: LiveData<RequestFilter>
+        get() = _requestFilter
+
     init {
+        getUserList()
+        getRequestList()
         getEquip()
         getRequestStatus()
         getDiscipline()

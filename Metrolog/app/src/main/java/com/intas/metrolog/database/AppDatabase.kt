@@ -24,7 +24,7 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
     entities = [AuthUser::class, UserLocation::class, JournalItem::class, UserItem::class,
                EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
                EventOperationItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
-               EventComment::class, EquipDocument::class],
+               EventComment::class, EquipDocument::class, RequestItem::class],
     version = 6, exportSchema = false
 )
 
@@ -67,4 +67,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun eventCommentDao(): EventCommentDao
     abstract fun equipDocumentDao(): EquipDocumentDao
     abstract fun eventDao(): EventDao
+    abstract fun requestDao(): RequestDao
 }
