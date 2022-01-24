@@ -176,7 +176,7 @@ class NfcFragment : BottomSheetDialogFragment() {
 
         binding.changeScanTypeToNFC.setOnClickListener {
 
-            binding.qrScannerView.pause()
+            binding.qrScannerView.pauseAndWait()
 
             binding.qrScannerCardView.visibility = View.INVISIBLE
             binding.changeScanTypeToNFC.visibility = View.GONE
