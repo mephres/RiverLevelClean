@@ -31,7 +31,13 @@ data class OperControlItem(
     /**
      * код
      */
-    val classCode: String? = null
+    val classCode: String? = null,
+    /**
+     * Признак отправки записи на сервер
+     * 0 - не отправлена
+     * 1 - отправлена
+     */
+    val isSended: Int = 1
 
 ) : Parcelable {
 

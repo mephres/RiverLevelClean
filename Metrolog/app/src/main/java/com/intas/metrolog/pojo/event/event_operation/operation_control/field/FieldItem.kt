@@ -67,7 +67,13 @@ data class FieldItem(
     /**
      * код
      */
-    var classCode: String? = null
+    var classCode: String? = null,
+    /**
+     * Признак отправки записи на сервер
+     * 0 - не отправлена
+     * 1 - отправлена
+     */
+    val isSended: Int = 1
 ) : Parcelable {
     /**
      * список способов измерения

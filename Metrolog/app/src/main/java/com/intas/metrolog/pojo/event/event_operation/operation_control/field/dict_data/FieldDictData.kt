@@ -24,5 +24,11 @@ data class FieldDictData(
     /**
      * код способа измерения
      */
-    val code: String? = null
+    val code: String? = null,
+    /**
+     * Признак отправки записи на сервер
+     * 0 - не отправлена
+     * 1 - отправлена
+     */
+    val isSended: Int = 1
 ): Parcelable
