@@ -74,7 +74,7 @@
     <string name="request_no_discipline_type">Дисциплина не определена</string>
 
     <string name="equip_document_activity_document_type_spinner_hint">Тип документа</string>
-    <string name="equip_document_activity_save_pdf_button_title">Создать PDF</string>
+    <string name="equip_document_activity_save_pdf_button_title">Создать документ</string>
 
     <string name="no_support_camera_message">Ваше устройство не поддерживает работу с камерой</string>
     <string name="no_permission_camera_message">Нет разрешения на работу с камерой</string>

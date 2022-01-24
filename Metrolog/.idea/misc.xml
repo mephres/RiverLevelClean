@@ -79,10 +79,12 @@
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/drawable/ic_metrolog_ico.xml" value="0.21458333333333332" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/drawable/ic_metrolog_ico_512dp.xml" value="0.21458333333333332" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/drawable/rounded_corner_area_white.xml" value="0.10740740740740741" />
+        <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_equip_document.xml" value="0.19947916666666668" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_login.xml" value="0.19479166666666667" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_main.xml" value="0.27898550724637683" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/activity_pin_code.xml" value="0.19479166666666667" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/fragment_bottom_add_request.xml" value="0.317481884057971" />
+        <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/image_slider_item.xml" value="0.24739583333333334" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/nfc_fragment.xml" value="0.19479166666666667" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/layout/settings_activity.xml" value="0.1984375" />
         <entry key="..\:/Work/Dropbox/Android/INTAS/Metrolog/app/src/main/res/xml/root_preferences.xml" value="0.33" />

@@ -9,4 +9,5 @@ import com.smarteist.autoimageslider.SliderViewAdapter
 class ImageSliderViewHolder(val view: View) : SliderViewAdapter.ViewHolder(view) {
     val imageSliderImageView: ImageView = view.findViewById(R.id.imageSliderImageView)
     val imageSliderAutoTextView: TextView = view.findViewById(R.id.imageSliderAutoTextView)
+    val imageSliderDeleteImageView: ImageView = view.findViewById(R.id.imageSliderDeleteImageView)
 }

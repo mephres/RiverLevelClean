@@ -36,9 +36,11 @@
         android:backgroundTint="@color/md_black_1000"
 
         android:hint="@string/equip_document_activity_document_type_spinner_hint"
-        android:textColorHint="@color/colorPrimary"
+        android:textColorHint="@color/colorAccent"
         app:boxBackgroundColor="@color/md_white_1000"
-        app:hintTextColor="@color/colorPrimary"
+        app:hintTextColor="@color/colorAccent"
+        app:endIconTint="@color/colorAccent"
+        app:boxStrokeColor="@color/colorAccent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/equipDocumentAppBarLayout">
@@ -55,13 +57,16 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/equipDocumentCardView"
         android:layout_width="0dp"
-        android:layout_height="300dp"
+        android:layout_height="0dp"
         android:layout_margin="16dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        app:cardCornerRadius="6dp"
+        android:layout_marginEnd="16dp"
 
-        app:layout_constraintEnd_toStartOf="@+id/equipDocumentPhotoButton"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="6dp"
+        app:layout_constraintBottom_toTopOf="@+id/addEquipDocumentImageFab"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/equipDocumentTypeSpinner">
 
@@ -88,76 +93,63 @@
             app:sliderStartAutoCycle="true" />
     </androidx.cardview.widget.CardView>
 
-    <ImageButton
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/equipDocumentPhotoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/md_white_1000"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/equipDocumentChoosePhotoButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_add_a_photo_48dp"
-        app:tint="@color/colorPrimary" />
+        android:backgroundTint="@color/colorAccent"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorAccent"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toStartOf="@id/equipDocumentChoosePhotoButton"
+        app:layout_constraintTop_toTopOf="@+id/equipDocumentChoosePhotoButton"
+        app:srcCompat="@drawable/ic_baseline_photo_camera_24"
+        app:tint="@color/md_white_1000" />
 
-    <ImageButton
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/equipDocumentChoosePhotoButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/md_white_1000"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/equipDocumentEditPhotoButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_attach_file_48dp"
-        app:tint="@color/colorPrimary" />
+        android:backgroundTint="@color/colorAccent"
+        android:visibility="invisible"
+        app:backgroundTint="@color/colorAccent"
+        app:fabSize="mini"
+        app:layout_constraintEnd_toStartOf="@id/addEquipDocumentImageFab"
+        app:layout_constraintTop_toTopOf="@+id/addEquipDocumentImageFab"
+        app:srcCompat="@drawable/ic_baseline_image_24"
+        app:tint="@color/md_white_1000" />
 
-    <ImageButton
-        android:id="@+id/equipDocumentEditPhotoButton"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addEquipDocumentImageFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/md_white_1000"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toTopOf="@+id/equipDocumentDeletePhotoButton"
+        android:layout_margin="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorAccent"
+        android:elevation="4dp"
+        app:backgroundTint="@color/colorAccent"
+        app:layout_constraintBottom_toTopOf="@+id/equipDocumentSavePdfButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_crop_48dp"
-        app:tint="@color/colorPrimary" />
-
-    <ImageButton
-        android:id="@+id/equipDocumentDeletePhotoButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/md_white_1000"
-        android:elevation="2dp"
-        app:layout_constraintBottom_toBottomOf="@+id/equipDocumentCardView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="@drawable/ic_baseline_delete_48dp"
-        app:tint="@color/colorPrimary" />
+        app:srcCompat="@drawable/ic_baseline_attach_file_24"
+        app:tint="@color/md_white_1000" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/equipDocumentSavePdfButton"
-        style="?attr/materialButtonStyle"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorAccent"
         android:text="@string/equip_document_activity_save_pdf_button_title"
         android:textAllCaps="false"
-        app:cornerRadius="4dp"
-        android:textColor="@color/md_white_1000"
+        android:textColor="@color/md_white"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/equipDocumentCardView" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

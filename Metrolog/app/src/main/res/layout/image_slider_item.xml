@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
@@ -39,5 +40,17 @@
             android:textSize="18sp" />
 
     </FrameLayout>
+
+    <ImageView
+        android:id="@+id/imageSliderDeleteImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:srcCompat="@drawable/ic_baseline_delete_48dp"
+        app:tint="@color/md_red_600"
+        android:scaleX="0.7"
+        android:scaleY="0.7"/>
 
 </FrameLayout>

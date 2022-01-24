@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import com.bumptech.glide.Glide
 import com.intas.metrolog.R
+import com.intas.metrolog.util.ViewUtil
 import com.smarteist.autoimageslider.SliderViewAdapter
 
 class ImageSliderViewAdapter(
@@ -14,6 +15,7 @@ class ImageSliderViewAdapter(
 
     lateinit var context: Context
     var onCropImageListener: ((Uri) -> Unit)? = null
+    var onDeleteImageListener: ((Uri) -> Unit)? = null
 
     override fun onCreateViewHolder(parent: ViewGroup): ImageSliderViewHolder {
         context = parent.context
@@ -34,6 +36,11 @@ class ImageSliderViewAdapter(
 
         holder.imageSliderImageView.setOnClickListener {
             onCropImageListener?.invoke(uriList[position])
+        }
+
+        holder.imageSliderDeleteImageView.setOnClickListener {
+            ViewUtil.runAnimationButton(context, it)
+            onDeleteImageListener?.invoke(uriList[position])
         }
     }
 

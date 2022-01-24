@@ -11,6 +11,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.MenuItem
+import android.view.View
 import android.widget.AutoCompleteTextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -57,6 +58,7 @@ class EquipDocumentActivity : AppCompatActivity() {
     private var photoURI: Uri? = null
     private var photoPath: String? = null
     private var uriList: List<Uri>? = null
+    private var imageFabVisible: Boolean = false
 
     private var cropImagePosition = 0
 
@@ -64,7 +66,7 @@ class EquipDocumentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        this.title = "Генератор PDF"
+        this.title = "Документ оборудования"
         val intent = intent
         if (intent != null) {
             equipItem = intent.getParcelableExtra<EquipItem>(EXTRA_EQUIP_ITEM) as EquipItem
@@ -89,21 +91,18 @@ class EquipDocumentActivity : AppCompatActivity() {
 
         configureDocumentTypeSpinner()
 
+        binding.addEquipDocumentImageFab.setOnClickListener {
+            showAttachImageFab()
+        }
 
         binding.equipDocumentPhotoButton.setOnClickListener {
             createPhoto()
+            showAttachImageFab()
         }
 
         binding.equipDocumentChoosePhotoButton.setOnClickListener {
             selectImage()
-        }
-
-        binding.equipDocumentDeletePhotoButton.setOnClickListener {
-            deleteImage()
-        }
-
-        binding.equipDocumentEditPhotoButton.setOnClickListener {
-            editImage()
+            showAttachImageFab()
         }
 
         binding.equipDocumentSavePdfButton.setOnClickListener {
@@ -114,6 +113,14 @@ class EquipDocumentActivity : AppCompatActivity() {
             uriList = it
             imageSliderAdapter = ImageSliderViewAdapter(it)
             binding.equipDocumentImageSliderView.setSliderAdapter(imageSliderAdapter)
+
+            imageSliderAdapter.onCropImageListener = {
+                editImage()
+            }
+
+            imageSliderAdapter.onDeleteImageListener = {
+                deleteImage()
+            }
         }
     }
 
@@ -126,7 +133,6 @@ class EquipDocumentActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
 
     private fun generatePDF() {
 
@@ -420,6 +426,18 @@ class EquipDocumentActivity : AppCompatActivity() {
         binding.equipDocumentImageSliderView.setSliderAdapter(imageSliderAdapter)
         binding.equipDocumentTypeList.text.clear()
         selectDocumentType = null
+    }
+
+    private fun showAttachImageFab() {
+        imageFabVisible = !imageFabVisible
+
+        binding.equipDocumentPhotoButton.visibility = View.INVISIBLE
+        binding.equipDocumentChoosePhotoButton.visibility = View.INVISIBLE
+
+        if (imageFabVisible) {
+            binding.equipDocumentPhotoButton.visibility = View.VISIBLE
+            binding.equipDocumentChoosePhotoButton.visibility = View.VISIBLE
+        }
     }
 
     companion object {
