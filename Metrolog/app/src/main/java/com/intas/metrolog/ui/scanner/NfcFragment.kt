@@ -12,7 +12,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -65,6 +64,7 @@ class NfcFragment : BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        qrMode = false
         savedInstanceState?.let {
             qrMode = it.getBoolean(NFC_FRAGMENT_STATE)
         }
@@ -87,8 +87,7 @@ class NfcFragment : BottomSheetDialogFragment() {
 
     override fun onPause() {
         super.onPause()
-        qrMode = binding.qrScannerCardView.isVisible
-        binding.qrScannerView.pause()
+        binding.qrScannerView.pauseAndWait()
         nfcAdapter?.disableReaderMode(requireActivity())
     }
 
@@ -103,8 +102,6 @@ class NfcFragment : BottomSheetDialogFragment() {
      */
     private fun checkScannerType() {
         if (qrMode) {
-
-            qrMode = false
             binding.changeScanTypeToNFC.visibility = View.VISIBLE
             binding.changeScanTypeToQR.visibility = View.GONE
             binding.flash.visibility = View.VISIBLE
@@ -129,7 +126,6 @@ class NfcFragment : BottomSheetDialogFragment() {
             binding.qrScannerCardView.visibility = View.VISIBLE
 
         } else {
-            qrMode = true
             binding.qrScannerView.pauseAndWait()
 
             binding.qrScannerCardView.visibility = View.INVISIBLE
@@ -206,10 +202,12 @@ class NfcFragment : BottomSheetDialogFragment() {
      */
     private fun setScannerClickListener() {
         binding.changeScanTypeToQR.setOnClickListener {
+            qrMode = true
             checkScannerType()
         }
 
         binding.changeScanTypeToNFC.setOnClickListener {
+            qrMode = false
             checkScannerType()
         }
 
@@ -356,7 +354,7 @@ class NfcFragment : BottomSheetDialogFragment() {
 
     private fun closeFragment() {
         nfcAdapter?.disableReaderMode(requireActivity())
-        binding.qrScannerView.pause()
+        binding.qrScannerView.pauseAndWait()
         val fragment =
             parentFragmentManager.findFragmentByTag(NFC_FRAGMENT_TAG)
         fragment?.let {
