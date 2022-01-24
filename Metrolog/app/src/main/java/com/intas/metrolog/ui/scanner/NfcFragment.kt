@@ -20,6 +20,7 @@ import com.google.zxing.ResultPoint
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.ui.requests.add.AddRequestFragment
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -174,7 +175,7 @@ class NfcFragment : BottomSheetDialogFragment() {
 
         binding.changeScanTypeToNFC.setOnClickListener {
 
-            binding.qrScannerView.pause()
+            binding.qrScannerView.pauseAndWait()
 
             binding.qrScannerCardView.visibility = View.INVISIBLE
             binding.changeScanTypeToNFC.visibility = View.GONE
@@ -249,7 +250,9 @@ class NfcFragment : BottomSheetDialogFragment() {
                 }
             }
             MODE_ADD_NEW_REQUEST -> {
-
+                equipSerialNumber?.let {
+                    getEquipByRFID(it)
+                }
             }
         }
     }
@@ -278,6 +281,32 @@ class NfcFragment : BottomSheetDialogFragment() {
         nfcViewModel.onError = {
             Toast.makeText(
                 requireContext(), getString(R.string.nfc_tag_set_error),
+                Toast.LENGTH_SHORT
+            ).show()
+            closeFragment()
+        }
+    }
+
+    /**
+     * Функция получения экземпляра оборудования по RFID-тэгу для создания заявки
+     * @param rfid - отсканированная метка
+     */
+    private fun getEquipByRFID(rfid: String) {
+        nfcViewModel.getEquipByRFID(rfid)
+        nfcViewModel.onEquipItemSuccess = {
+            val addRequestFragment = AddRequestFragment.newInstanceWithRfid(it)
+            addRequestFragment.show(requireActivity().supportFragmentManager, AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG)
+            closeFragment()
+        }
+        nfcViewModel.onFailure = {
+            val tagGetFailure = getString(R.string.nfc_tag_get_equip_failure)
+            Toast.makeText(requireContext(), String.format(tagGetFailure, it), Toast.LENGTH_SHORT)
+                .show()
+            closeFragment()
+        }
+        nfcViewModel.onError = {
+            Toast.makeText(
+                requireContext(), getString(R.string.nfc_tag_get_equip_error),
                 Toast.LENGTH_SHORT
             ).show()
             closeFragment()
