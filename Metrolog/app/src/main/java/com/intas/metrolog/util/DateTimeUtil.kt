@@ -10,6 +10,24 @@ class DateTimeUtil {
 
         val timeZone = TimeZone.getDefault()
 
+        const val DAY_IN_MILLIS = 86399999
+        const val DAY_IN_SECONDS = 86399
+
+        /**
+         * dd - день
+         * MM - месяц
+         * YYYY - год
+         */
+        fun getDateNowByPattern(pattern: String, timeInMili: Long = 0): Int {
+            val simpleDateFormat = SimpleDateFormat(pattern)
+            simpleDateFormat.timeZone = timeZone
+            val calendar = GregorianCalendar(timeZone)
+            if (timeInMili > 0) {
+                calendar.timeInMillis = timeInMili * 1000L
+            }
+            val a = simpleDateFormat.format(calendar.time)
+            return simpleDateFormat.format(calendar.time).toInt()
+        }
         /**
          * Преобразование даты-времени в милисекундах
          * @param timeInMili время в милисекундах
@@ -131,7 +149,7 @@ class DateTimeUtil {
          * @return дата-время в милисекундах
          */
         fun getUnixDateTimeNow(): Long {
-            val calendar: Calendar = GregorianCalendar()
+            val calendar = GregorianCalendar()
             calendar.timeZone = timeZone
             return calendar.timeInMillis / 1000L
         }

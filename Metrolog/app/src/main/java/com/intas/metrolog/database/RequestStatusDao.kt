@@ -7,7 +7,10 @@ import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 @Dao
 interface RequestStatusDao {
     @Query("SELECT * FROM requestStatus")
-    fun getRequestStatusList(): LiveData<List<RequestStatusItem>>
+    fun getAllRequestStatus(): LiveData<List<RequestStatusItem>>
+
+    @Query("SELECT * FROM requestStatus WHERE id = :id")
+    fun getRequestStatusById(id: Int): RequestStatusItem?
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateRequestStatus(requestStatus: RequestStatusItem)

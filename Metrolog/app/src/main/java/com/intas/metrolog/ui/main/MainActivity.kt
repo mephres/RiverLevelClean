@@ -43,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         initDeviceLocationObserver()
         initNotSendedUserLocationObserver()
         initNotSendedEquipObserver()
+        initNotSendedEquipDocumentObserver()
     }
 
     /**
@@ -88,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         deviceLocation.setLocationUpdatesActive(true)
         deviceLocation
             .currentLocation.observe(this) {
-                Toast.makeText(this, it.latitude.toString(), Toast.LENGTH_LONG).show()
+                //Toast.makeText(this, it.latitude.toString(), Toast.LENGTH_LONG).show()
 
                 val userLocation = UserLocation()
 
@@ -106,6 +107,18 @@ class MainActivity : AppCompatActivity() {
                 viewModel.insertUserLocation(userLocation)
             }
     }
+
+    /**
+     * Получение и отправка на сервер неотправленных документов оборудования
+     */
+    private fun initNotSendedEquipDocumentObserver() {
+        viewModel.notSendedEquipDocumentList.observe(this, {
+            for (equipDocument in it) {
+                viewModel.sendEquipDocument(equipDocument)
+            }
+        })
+    }
+
 
     private fun showToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()

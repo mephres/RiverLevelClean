@@ -20,6 +20,7 @@ import com.google.zxing.ResultPoint
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.ui.requests.add.AddRequestFragment
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -33,6 +34,7 @@ class NfcFragment : BottomSheetDialogFragment() {
     private var equipSerialNumber: String? = null
     private var equipItem: EquipItem? = null
     private var flash = false
+    private var qrMode = false
 
     private val nfcViewModel by lazy {
         ViewModelProvider(this)[NfcViewModel::class.java]
@@ -61,9 +63,15 @@ class NfcFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        qrMode = false
+        savedInstanceState?.let {
+            qrMode = it.getBoolean(NFC_FRAGMENT_STATE)
+        }
+
         setUI()
         initQRScannerDecoder()
-        setScannerType()
+        setScannerClickListener()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -74,13 +82,59 @@ class NfcFragment : BottomSheetDialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        enableReaderMode()
+        checkScannerType()
     }
 
     override fun onPause() {
         super.onPause()
-        binding.qrScannerView.pause()
+        binding.qrScannerView.pauseAndWait()
         nfcAdapter?.disableReaderMode(requireActivity())
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(NFC_FRAGMENT_STATE, qrMode)
+    }
+
+    /**
+     * Функция настройки сканнеров, в зависимости от выбранного типа сканирования [qrMode] (NFC или QR)
+     *
+     */
+    private fun checkScannerType() {
+        if (qrMode) {
+            binding.changeScanTypeToNFC.visibility = View.VISIBLE
+            binding.changeScanTypeToQR.visibility = View.GONE
+            binding.flash.visibility = View.VISIBLE
+
+            binding.qrScannerView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorAccent
+                )
+            )
+
+            val cameraSettings = CameraSettings()
+            cameraSettings.requestedCameraId = 0 // front/back/etc
+            cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
+            cameraSettings.isAutoFocusEnabled = true
+            cameraSettings.isBarcodeSceneModeEnabled = true
+
+            binding.qrScannerView.barcodeView.cameraSettings = cameraSettings
+            binding.qrScannerView.setStatusText("")
+            binding.qrScannerView.resume()
+
+            binding.qrScannerCardView.visibility = View.VISIBLE
+
+        } else {
+            binding.qrScannerView.pauseAndWait()
+
+            binding.qrScannerCardView.visibility = View.INVISIBLE
+            binding.changeScanTypeToNFC.visibility = View.GONE
+            binding.flash.visibility = View.GONE
+            binding.changeScanTypeToQR.visibility = View.VISIBLE
+
+            enableReaderMode()
+        }
     }
 
     private fun parseArgs() {
@@ -146,42 +200,15 @@ class NfcFragment : BottomSheetDialogFragment() {
     /**
      * Функция выбора режима сканирования(NFC или QR)
      */
-    private fun setScannerType() {
+    private fun setScannerClickListener() {
         binding.changeScanTypeToQR.setOnClickListener {
-
-            binding.changeScanTypeToNFC.visibility = View.VISIBLE
-            binding.changeScanTypeToQR.visibility = View.GONE
-            binding.flash.visibility = View.VISIBLE
-
-            binding.qrScannerView.setBackgroundColor(ContextCompat.getColor(
-                requireContext(),
-                R.color.colorAccent
-            ))
-
-            val cameraSettings = CameraSettings()
-            cameraSettings.requestedCameraId = 0 // front/back/etc
-            cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
-            cameraSettings.isAutoFocusEnabled = true
-            cameraSettings.isBarcodeSceneModeEnabled = true
-
-            binding.qrScannerView.barcodeView.cameraSettings = cameraSettings
-
-            binding.qrScannerView.setStatusText("")
-            binding.qrScannerView.resume()
-
-            binding.qrScannerCardView.visibility = View.VISIBLE
+            qrMode = true
+            checkScannerType()
         }
 
         binding.changeScanTypeToNFC.setOnClickListener {
-
-            binding.qrScannerView.pause()
-
-            binding.qrScannerCardView.visibility = View.INVISIBLE
-            binding.changeScanTypeToNFC.visibility = View.GONE
-            binding.flash.visibility = View.GONE
-            binding.changeScanTypeToQR.visibility = View.VISIBLE
-
-            enableReaderMode()
+            qrMode = false
+            checkScannerType()
         }
 
         binding.flash.setOnClickListener {
@@ -195,10 +222,20 @@ class NfcFragment : BottomSheetDialogFragment() {
     private fun setFlash() {
         flash = !flash
         if (flash) {
-            binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_off_black_24dp))
+            binding.flash.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_flash_off_black_24dp
+                )
+            )
             binding.qrScannerView.setTorchOn()
         } else {
-            binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_on_black_24dp))
+            binding.flash.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_flash_on_black_24dp
+                )
+            )
             binding.qrScannerView.setTorchOff()
         }
     }
@@ -249,7 +286,9 @@ class NfcFragment : BottomSheetDialogFragment() {
                 }
             }
             MODE_ADD_NEW_REQUEST -> {
-
+                equipSerialNumber?.let {
+                    getEquipByRFID(it)
+                }
             }
         }
     }
@@ -284,9 +323,38 @@ class NfcFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Функция получения экземпляра оборудования по RFID-тэгу для создания заявки
+     * @param rfid - отсканированная метка
+     */
+    private fun getEquipByRFID(rfid: String) {
+        nfcViewModel.getEquipByRFID(rfid)
+        nfcViewModel.onEquipItemSuccess = {
+            val addRequestFragment = AddRequestFragment.newInstanceWithRfid(it)
+            addRequestFragment.show(
+                requireActivity().supportFragmentManager,
+                AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG
+            )
+            closeFragment()
+        }
+        nfcViewModel.onFailure = {
+            val tagGetFailure = getString(R.string.nfc_tag_get_equip_failure)
+            Toast.makeText(requireContext(), String.format(tagGetFailure, it), Toast.LENGTH_SHORT)
+                .show()
+            closeFragment()
+        }
+        nfcViewModel.onError = {
+            Toast.makeText(
+                requireContext(), getString(R.string.nfc_tag_get_equip_error),
+                Toast.LENGTH_SHORT
+            ).show()
+            closeFragment()
+        }
+    }
+
     private fun closeFragment() {
         nfcAdapter?.disableReaderMode(requireActivity())
-        binding.qrScannerView.pause()
+        binding.qrScannerView.pauseAndWait()
         val fragment =
             parentFragmentManager.findFragmentByTag(NFC_FRAGMENT_TAG)
         fragment?.let {
@@ -303,6 +371,8 @@ class NfcFragment : BottomSheetDialogFragment() {
         private const val MODE_SCAN_START_EVENT = "mode_scan_start_event"
         private const val MODE_ADD_TAG_FOR_EQUIP = "mode_add_tag_for_equip"
         private const val MODE_ADD_NEW_REQUEST = "mode_add_new_request"
+
+        private const val NFC_FRAGMENT_STATE = "nfc_fragment_state"
 
         private const val EQUIP_ITEM = "equip_item"
 

@@ -2,12 +2,13 @@ package com.intas.metrolog.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.intas.metrolog.pojo.operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 
 @Dao
 interface EventOperationDao {
-    @Query("SELECT * FROM eventOperation order by name asc")
-    fun getAllEventOperation(): LiveData<List<EventOperationItem>>
+
+    @Query("SELECT * FROM eventOperation WHERE isSended = 0 ORDER BY subId ASC LIMIT 1")
+    fun getNotSendedEventOperationList(): LiveData<List<EventOperationItem>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateEventOperation(eventOperation: EventOperationItem?)
@@ -17,7 +18,4 @@ interface EventOperationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEventOperationList(eventOperationList: List<EventOperationItem>)
-
-    @Query("DELETE FROM eventOperation")
-    suspend fun deleteAllEventOperation()
 }

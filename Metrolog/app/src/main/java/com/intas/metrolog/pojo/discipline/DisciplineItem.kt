@@ -16,7 +16,7 @@ data class DisciplineItem(
     @PrimaryKey
     @SerializedName("id")
     @Expose
-    val id: Long,
+    val id: Int,
     /**
      * наименование дисциплины
      */

@@ -57,11 +57,6 @@
             android:exported="false"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
-            android:name=".ui.scanner.ScannerActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
-        <activity
             android:name=".ui.settings.SettingsActivity"
             android:exported="true"
             android:label="@string/settings_activity_title"

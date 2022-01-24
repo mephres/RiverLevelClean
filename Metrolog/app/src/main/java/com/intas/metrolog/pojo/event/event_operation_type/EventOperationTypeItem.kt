@@ -1,30 +1,29 @@
-package com.intas.metrolog.pojo.event_status
+package com.intas.metrolog.pojo.event.event_operation_type
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-
 /**
- * Статус мероприятия
+ * Тип операции мероприятия
  */
-@Entity(tableName = "eventStatus")
-data class EventStatus(
+@Entity(tableName = "eventOperationType")
+data class EventOperationTypeItem(
     /**
      * идентификатор записи
      */
     @PrimaryKey
     @SerializedName("id")
     @Expose
-    val id: Long,
+    val id: Int,
     /**
-     * наименование статуса мероприятия
+     * наименование типа операции
      */
     @SerializedName("name")
     @Expose
     val name: String,
     /**
-     * код статуса мероприятия
+     * код типа операции
      */
     @SerializedName("code")
     @Expose
