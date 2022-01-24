@@ -11,14 +11,20 @@ import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_BEARING
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMMENT
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_TIME_START_TIMER
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DURATION_TIMER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ELAPSED_REALTIME_NANOS
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_RFID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_FACT_DATE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OP_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PROVIDER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SPEED
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_STATUS_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
@@ -68,12 +74,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var getRequestDisposable: Disposable? = null
     private var getEventDisposable: Disposable? = null
     private var sendEquipDocumentDisposable: Disposable? = null
+    private var sendEventDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
     val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
     val notSendedEquipList = db.equipDao().getEquipNotSended()
     val notSendedEventList = db.eventDao().getNotSendedEventList()
-
+    val notSendedEventOperationList = db.eventOperationDao().getNotSendedEventOperationList()
+    val getNotSendedEventOperationFieldList = db.fieldDao().getNotSendedEventOperationFieldList()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -833,6 +841,62 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Отправка данных геопозиции на сервер
+     * @param userLocation - геопозиция устройства
+     */
+    fun sendEvent(event: EventItem) {
+
+        sendEventDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_OP_ID] = event.opId.toString()
+        map[QUERY_PARAM_FACT_DATE] = event.factDate.toString()
+        map[QUERY_PARAM_STATUS_ID] = event.status.toString()
+        map[QUERY_PARAM_DURATION_TIMER] = event.durationTimer.toString()
+        map[QUERY_PARAM_DATE_TIME_START_TIMER] = event.dateTimeStartTimer.toString()
+        map[QUERY_PARAM_COMMENT] = event.comment.toString()
+
+        sendEventDisposable = ApiFactory.apiService.updateEvent(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EVENT", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEventSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_EVENT", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_EVENT", it.message.toString())
+                })
+        sendEventDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    private fun setEventSendedById(id: Long) {
+        Log.d("MM_SET_EVENT_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.eventDao().setEventSendedById(id)
         }
     }
 

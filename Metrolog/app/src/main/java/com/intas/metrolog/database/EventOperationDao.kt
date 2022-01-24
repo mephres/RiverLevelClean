@@ -1,13 +1,14 @@
 package com.intas.metrolog.database
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Update
+import androidx.lifecycle.LiveData
+import androidx.room.*
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 
 @Dao
 interface EventOperationDao {
+
+    @Query("SELECT * FROM eventOperation WHERE isSended = 0 ORDER BY subId ASC LIMIT 1")
+    fun getNotSendedEventOperationList(): LiveData<List<EventOperationItem>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateEventOperation(eventOperation: EventOperationItem?)

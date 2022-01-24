@@ -185,6 +185,16 @@ interface ApiService {
                      @Query(QUERY_PARAM_YEAR) year: Int
     ): Single<ResponseApi<EventItem>>
 
+    /**
+     * Обновление данных мероприятия на сервере
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateDataResponse]
+     */
+    @FormUrlEncoded
+    @POST("updToir")
+    fun updateEvent(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
 
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
@@ -210,5 +220,13 @@ interface ApiService {
         const val QUERY_PARAM_EQUIP_DOCUMENT = "doc"
 
         const val QUERY_PARAM_DATETIME = "dateTime"
+
+        const val QUERY_PARAM_OP_ID = "opId"
+        const val QUERY_PARAM_FACT_DATE = "factDate"
+        const val QUERY_PARAM_STATUS_ID = "status"
+        const val QUERY_PARAM_DURATION_TIMER = "durationTimer"
+        const val QUERY_PARAM_DATE_TIME_START_TIMER = "dateTimeStartTimer"
+        const val QUERY_PARAM_COMMENT = "comment"
+
     }
 }

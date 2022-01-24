@@ -20,4 +20,7 @@ interface EventDao {
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insertEventList(eventList: List<EventItem>)
+
+        @Query("UPDATE event SET isSended = 1 WHERE opId = :id")
+        suspend fun setEventSendedById(id: Long)
 }
