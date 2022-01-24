@@ -45,7 +45,7 @@ interface ApiService {
     /**
      * Получение списка пользователей
      */
-    @GET("getUserList")
+    @GET("getChatUser")
     fun getUserList(@Query(QUERY_PARAM_USER_ID) userId: Int): Single<ResponseApi<UserItem>>
 
     /**
