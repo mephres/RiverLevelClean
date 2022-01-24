@@ -171,7 +171,6 @@ class NfcFragment : BottomSheetDialogFragment() {
             binding.qrScannerView.resume()
 
             binding.qrScannerCardView.visibility = View.VISIBLE
-
         }
 
         binding.changeScanTypeToNFC.setOnClickListener {
@@ -288,13 +287,11 @@ class NfcFragment : BottomSheetDialogFragment() {
         }
     }
 
-
     /**
      * Функция получения экземпляра оборудования по RFID-тэгу для создания заявки
      * @param rfid - отсканированная метка
      */
     private fun getEquipByRFID(rfid: String) {
-
         nfcViewModel.getEquipByRFID(rfid)
         nfcViewModel.onEquipItemSuccess = {
             val addRequestFragment = AddRequestFragment.newInstanceWithRfid(it)
