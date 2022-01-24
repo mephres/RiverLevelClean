@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -34,6 +35,7 @@ class NfcFragment : BottomSheetDialogFragment() {
     private var equipSerialNumber: String? = null
     private var equipItem: EquipItem? = null
     private var flash = false
+    private var qrMode = false
 
     private val nfcViewModel by lazy {
         ViewModelProvider(this)[NfcViewModel::class.java]
@@ -62,9 +64,14 @@ class NfcFragment : BottomSheetDialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        savedInstanceState?.let {
+            qrMode = it.getBoolean(NFC_FRAGMENT_STATE)
+        }
+
         setUI()
         initQRScannerDecoder()
-        setScannerType()
+        setScannerClickListener()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -75,13 +82,63 @@ class NfcFragment : BottomSheetDialogFragment() {
 
     override fun onResume() {
         super.onResume()
-        enableReaderMode()
+        checkScannerType()
     }
 
     override fun onPause() {
         super.onPause()
+        qrMode = binding.qrScannerCardView.isVisible
         binding.qrScannerView.pause()
         nfcAdapter?.disableReaderMode(requireActivity())
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(NFC_FRAGMENT_STATE, qrMode)
+    }
+
+    /**
+     * Функция настройки сканнеров, в зависимости от выбранного типа сканирования [qrMode] (NFC или QR)
+     *
+     */
+    private fun checkScannerType() {
+        if (qrMode) {
+
+            qrMode = false
+            binding.changeScanTypeToNFC.visibility = View.VISIBLE
+            binding.changeScanTypeToQR.visibility = View.GONE
+            binding.flash.visibility = View.VISIBLE
+
+            binding.qrScannerView.setBackgroundColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorAccent
+                )
+            )
+
+            val cameraSettings = CameraSettings()
+            cameraSettings.requestedCameraId = 0 // front/back/etc
+            cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
+            cameraSettings.isAutoFocusEnabled = true
+            cameraSettings.isBarcodeSceneModeEnabled = true
+
+            binding.qrScannerView.barcodeView.cameraSettings = cameraSettings
+            binding.qrScannerView.setStatusText("")
+            binding.qrScannerView.resume()
+
+            binding.qrScannerCardView.visibility = View.VISIBLE
+
+        } else {
+            qrMode = true
+            binding.qrScannerView.pauseAndWait()
+
+            binding.qrScannerCardView.visibility = View.INVISIBLE
+            binding.changeScanTypeToNFC.visibility = View.GONE
+            binding.flash.visibility = View.GONE
+            binding.changeScanTypeToQR.visibility = View.VISIBLE
+
+            enableReaderMode()
+        }
     }
 
     private fun parseArgs() {
@@ -147,42 +204,13 @@ class NfcFragment : BottomSheetDialogFragment() {
     /**
      * Функция выбора режима сканирования(NFC или QR)
      */
-    private fun setScannerType() {
+    private fun setScannerClickListener() {
         binding.changeScanTypeToQR.setOnClickListener {
-
-            binding.changeScanTypeToNFC.visibility = View.VISIBLE
-            binding.changeScanTypeToQR.visibility = View.GONE
-            binding.flash.visibility = View.VISIBLE
-
-            binding.qrScannerView.setBackgroundColor(ContextCompat.getColor(
-                requireContext(),
-                R.color.colorAccent
-            ))
-
-            val cameraSettings = CameraSettings()
-            cameraSettings.requestedCameraId = 0 // front/back/etc
-            cameraSettings.focusMode = CameraSettings.FocusMode.AUTO
-            cameraSettings.isAutoFocusEnabled = true
-            cameraSettings.isBarcodeSceneModeEnabled = true
-
-            binding.qrScannerView.barcodeView.cameraSettings = cameraSettings
-
-            binding.qrScannerView.setStatusText("")
-            binding.qrScannerView.resume()
-
-            binding.qrScannerCardView.visibility = View.VISIBLE
+            checkScannerType()
         }
 
         binding.changeScanTypeToNFC.setOnClickListener {
-
-            binding.qrScannerView.pauseAndWait()
-
-            binding.qrScannerCardView.visibility = View.INVISIBLE
-            binding.changeScanTypeToNFC.visibility = View.GONE
-            binding.flash.visibility = View.GONE
-            binding.changeScanTypeToQR.visibility = View.VISIBLE
-
-            enableReaderMode()
+            checkScannerType()
         }
 
         binding.flash.setOnClickListener {
@@ -196,10 +224,20 @@ class NfcFragment : BottomSheetDialogFragment() {
     private fun setFlash() {
         flash = !flash
         if (flash) {
-            binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_off_black_24dp))
+            binding.flash.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_flash_off_black_24dp
+                )
+            )
             binding.qrScannerView.setTorchOn()
         } else {
-            binding.flash.setImageDrawable(ContextCompat.getDrawable(requireContext(), R.drawable.ic_flash_on_black_24dp))
+            binding.flash.setImageDrawable(
+                ContextCompat.getDrawable(
+                    requireContext(),
+                    R.drawable.ic_flash_on_black_24dp
+                )
+            )
             binding.qrScannerView.setTorchOff()
         }
     }
@@ -295,7 +333,10 @@ class NfcFragment : BottomSheetDialogFragment() {
         nfcViewModel.getEquipByRFID(rfid)
         nfcViewModel.onEquipItemSuccess = {
             val addRequestFragment = AddRequestFragment.newInstanceWithRfid(it)
-            addRequestFragment.show(requireActivity().supportFragmentManager, AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG)
+            addRequestFragment.show(
+                requireActivity().supportFragmentManager,
+                AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG
+            )
             closeFragment()
         }
         nfcViewModel.onFailure = {
@@ -332,6 +373,8 @@ class NfcFragment : BottomSheetDialogFragment() {
         private const val MODE_SCAN_START_EVENT = "mode_scan_start_event"
         private const val MODE_ADD_TAG_FOR_EQUIP = "mode_add_tag_for_equip"
         private const val MODE_ADD_NEW_REQUEST = "mode_add_new_request"
+
+        private const val NFC_FRAGMENT_STATE = "nfc_fragment_state"
 
         private const val EQUIP_ITEM = "equip_item"
 
