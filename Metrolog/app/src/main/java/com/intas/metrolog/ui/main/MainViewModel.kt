@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.intas.metrolog.R
 import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
@@ -69,6 +70,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -171,6 +173,40 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             db.requestDao().insertRequestList(requestList)
 
+            requestList.forEach {
+                fillRequestEquipInfo(it)
+            }
+        }
+    }
+
+    /**
+     * Установка наименования оборудования, места установки, тэга оборудования для заявки
+     * Для поиска заявок по введенному тексту в поле поиска
+     *
+     * @param requestItem заявка, объект класса [RequestItem]
+     */
+    private fun fillRequestEquipInfo(requestItem: RequestItem) {
+
+        val equipId = try {
+            requestItem.equipId?.toLong()
+        } catch (e: Exception) {
+            -1
+        }
+
+        if (equipId != null) {
+            if (equipId < 0) {
+                return
+            }
+
+            val equipItem = db.equipDao().getEquipItemById(equipId) ?: return
+            val equipInfo = String.format(
+                    "%s [%s] - %s",
+                    equipItem.equipName,
+                    equipItem.equipTag,
+                    equipItem.mestUstan
+                )
+
+            db.requestDao().updateRequestEquipInfo(requestItem.id, equipInfo)
         }
     }
 

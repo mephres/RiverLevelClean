@@ -141,6 +141,4 @@ data class RequestItem(
      * 1 - отослана
      */
     var isSended: Int = 1
-) : Parcelable {
-
-}
+) : Parcelable
