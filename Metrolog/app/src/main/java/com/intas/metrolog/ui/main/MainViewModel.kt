@@ -11,8 +11,11 @@ import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_BEARING
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_CATEGORY_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMMENT
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATETIME
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_TIME_START_TIMER
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DISCIPLINE_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DURATION_TIMER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ELAPSED_REALTIME_NANOS
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_ID
@@ -21,11 +24,16 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_FACT_DATE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OPERATION_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OP_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PRIORITY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PROVIDER
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_PHOTO
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SPEED
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_STATUS_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
@@ -42,6 +50,7 @@ import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dic
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
+import com.intas.metrolog.pojo.request.RequestPhoto
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
 import com.intas.metrolog.ui.requests.filter.RequestFilter
@@ -75,6 +84,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var getEventDisposable: Disposable? = null
     private var sendEquipDocumentDisposable: Disposable? = null
     private var sendEventDisposable: Disposable? = null
+    private var sendRequestDisposable: Disposable? = null
+    private var sendRequestPhotoDisposable: Disposable? = null
+    private var sendEquipInfoDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
     val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
@@ -82,6 +94,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val notSendedEventList = db.eventDao().getNotSendedEventList()
     val notSendedEventOperationList = db.eventOperationDao().getNotSendedEventOperationList()
     val getNotSendedEventOperationFieldList = db.fieldDao().getNotSendedEventOperationFieldList()
+    val getNotSendedRequestList = db.requestDao().getNotSendedRequestList()
+    val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -230,7 +244,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_INSERT_EQUIP_INFO", equipInfoList.toString())
 
         viewModelScope.launch {
-            db.equipDao().insertEquipInfoList(equipInfoList)
+            db.equipInfoDao().insertEquipInfoList(equipInfoList)
         }
     }
 
@@ -897,6 +911,205 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.eventDao().setEventSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка на сервер ЦНО неотправленных заявок
+     *
+     * @param request заявка, экземпляр класса [RequestItem]
+     */
+    fun sendRequest(request: RequestItem) {
+
+        request.id.let {
+            Util.requestQueue.addLast(it)
+        }
+
+        sendRequestDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_ID] = request.id.toString()
+        map[QUERY_PARAM_EQUIP_ID] = request.equipId.toString()
+        map[QUERY_PARAM_COMMENT] = request.comment.toString()
+        map[QUERY_PARAM_DATETIME] = request.creationDate.toString()
+        map[QUERY_PARAM_TYPE] = request.typeRequest.toString()
+        map[QUERY_PARAM_CATEGORY_ID] = request.categoryId.toString()
+        map[QUERY_PARAM_DISCIPLINE_ID] = request.discipline.toString()
+        map[QUERY_PARAM_OPERATION_TYPE] = request.operationType.toString()
+
+        sendRequestDisposable = ApiFactory.apiService.addRequest(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_REQUEST", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.requestSuccess != null) {
+                    it.requestSuccess?.let {
+                        Util.safeLet(it.id, it.serverId) { id, serverId ->
+                            setRequestSendedById(id.toLong(), serverId.toLong())
+                        }
+                    }
+                }
+                Log.d("MM_SEND_REQUEST", it.toString())
+            }, {
+                Log.d("MM_SEND_REQUEST", it.message.toString())
+            })
+        sendRequestDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки заявки на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setRequestSendedById(id: Long, serverId: Long) {
+
+        if (Util.requestQueue.count() > 100) {
+            Util.requestQueue.removeFirst()
+        }
+
+        Log.d("MM_SET_REQUEST_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.requestDao().setRequestSendedById(id, serverId)
+
+            val requestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList(id)
+            for (requestPhoto in requestPhotoList) {
+                sendRequestPhoto(requestPhoto)
+            }
+
+        }
+    }
+
+    /**
+     * Отправка на сервер ЦНО фото к заявкам
+     *
+     * @param requestPhoto фото к заявке, экземпляр класса [RequestPhoto]
+     */
+    fun sendRequestPhoto(requestPhoto: RequestPhoto) {
+        sendRequestPhotoDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_ID] = requestPhoto.id.toString()
+        map[QUERY_PARAM_REQUEST_ID] = requestPhoto.requestId.toString()
+        map[QUERY_PARAM_REQUEST_PHOTO] = requestPhoto.photo.toString()
+        map[QUERY_PARAM_DATETIME] = requestPhoto.dateTime.toString()
+
+        sendRequestPhotoDisposable = ApiFactory.apiService.addRequestPhoto(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_REQUEST_PHOTO", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.requestSuccess != null) {
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setRequestPhotoSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_REQUEST_PHOTO", it.toString())
+            }, {
+                Log.d("MM_SEND_REQUEST_PHOTO", it.message.toString())
+            })
+        sendRequestPhotoDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки фото к заявке на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setRequestPhotoSendedById(id: Long) {
+
+        Log.d("MM_SET_REQUEST_PH_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.requestPhotoDao().setRequestPhotoSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка на сервер ЦНО комментария к оборудованию
+     *
+     * @param equipInfo комментарий к оборудованию, экземпляр класса [EquipInfo]
+     */
+    fun sendEquipInfo(equipInfo: EquipInfo) {
+
+        equipInfo.id.let {
+            Util.equipInfoQueue.addLast(it)
+        }
+
+        sendEquipInfoDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_ID] = equipInfo.id.toString()
+        map[QUERY_PARAM_EQUIP_ID] = equipInfo.equipId.toString()
+        map[QUERY_PARAM_COMMENT] = equipInfo.text.toString()
+        map[QUERY_PARAM_PRIORITY] = equipInfo.priority.toString()
+        map[QUERY_PARAM_DATETIME] = equipInfo.dateTime.toString()
+
+        sendEquipInfoDisposable = ApiFactory.apiService.addEquipInfo(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EQUIP_INFO", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.let {
+                        Util.safeLet(it.id, it.serverId) { id, serverId ->
+                            setEquipInfoSendedById(id.toLong(), serverId.toLong())
+                        }
+                    }
+                }
+                Log.d("MM_SEND_EQUIP_INFO", it.toString())
+            }, {
+                Log.d("MM_SEND_EQUIP_INFO", it.message.toString())
+            })
+        sendEquipInfoDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки фото к заявке на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setEquipInfoSendedById(id: Long, serverId: Long) {
+
+        if (Util.equipInfoQueue.count() > 100) {
+            Util.equipInfoQueue.removeFirst()
+        }
+
+        Log.d("MM_SET_EQUIP_INFO_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.equipInfoDao().setEquipInfoSendedById(id, serverId)
         }
     }
 

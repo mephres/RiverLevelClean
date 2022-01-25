@@ -113,4 +113,5 @@
     <string name="add_request_need_discipline_title">Необходимо выбрать дисциплину</string>
     <string name="add_request_need_operation_title">Необходимо выбрать мероприятие</string>
     <string name="add_request_need_comment_title">Для добавления информации для ТО описание необходимо заполнить</string>
+    <string name="add_request_need_equip_title">Добавление приоритетной информации для ТО возможно только для оборудования, оснащенного меткой.</string>
 </resources>

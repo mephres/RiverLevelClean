@@ -16,6 +16,7 @@ import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import io.reactivex.Single
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.Call
 import retrofit2.http.*
 
 interface ApiService {
@@ -195,6 +196,26 @@ interface ApiService {
     @POST("updToir")
     fun updateEvent(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
+    /**
+     * Добавление комментария к оборудованию
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addEquipInfo")
+    fun addEquipInfo(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Добавление картинки или фото для заявки
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addRequestPhoto")
+    fun addRequestPhoto(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
 
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
@@ -227,6 +248,13 @@ interface ApiService {
         const val QUERY_PARAM_DURATION_TIMER = "durationTimer"
         const val QUERY_PARAM_DATE_TIME_START_TIMER = "dateTimeStartTimer"
         const val QUERY_PARAM_COMMENT = "comment"
+        const val QUERY_PARAM_RFID = "rfid"
+        const val QUERY_PARAM_CATEGORY_ID = "categoryId"
+        const val QUERY_PARAM_DISCIPLINE_ID = "disciplineId"
+        const val QUERY_PARAM_OPERATION_TYPE = "operationType"
+        const val QUERY_PARAM_REQUEST_ID = "requestId"
+        const val QUERY_PARAM_REQUEST_PHOTO = "photo"
+        const val QUERY_PARAM_PRIORITY = "priority"
 
     }
 }

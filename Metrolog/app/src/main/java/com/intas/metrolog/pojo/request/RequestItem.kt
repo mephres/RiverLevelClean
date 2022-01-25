@@ -40,7 +40,7 @@ data class RequestItem(
      */
     @SerializedName("equipId")
     @Expose
-    val equipId: Int = 0,
+    val equipId: Long = 0,
     /**
      * тип операции мероприятия
      */
@@ -131,5 +131,11 @@ data class RequestItem(
     /**
      * информация по операции мероприятия для поиска
      */
-    var eventOperationInfo: String? = null
+    var eventOperationInfo: String? = null,
+    /**
+     * Признак отсылки записи на сервер
+     * 0 - не отослана
+     * 1 - отослана
+     */
+    var isSended: Int = 1
 ) : Parcelable

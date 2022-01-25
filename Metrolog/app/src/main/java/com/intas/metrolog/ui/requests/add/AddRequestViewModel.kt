@@ -1,10 +1,17 @@
 package com.intas.metrolog.ui.requests.add
 
 import android.app.Application
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
+import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.request.RequestItem
+import com.intas.metrolog.pojo.request.RequestPhoto
+import com.intas.metrolog.util.getScreen
 import kotlinx.coroutines.launch
 
 class AddRequestViewModel(application: Application) : AndroidViewModel(application) {
@@ -15,10 +22,65 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
     val category = db.eventCommentDao().getAllEventComment()
     val priority = db.equipInfoPriorityDao().getAllEquipInfoPriority()
 
+    var onRequestSavedSuccess: ((String) -> Unit)? = null
+    var onEquipInfoSavedSuccess: ((Long) -> Unit)? = null
 
-    fun addRequest(requestItem: RequestItem) {
+    private var _uriList = MutableLiveData<List<Uri>>()
+    val uriList: LiveData<List<Uri>>
+        get() = _uriList
+
+    /**
+     * Добавление в БД новой заявки
+     * @param requestItem - экземпляр новой заявки [RequestItem]
+     */
+    fun addRequest(requestItem: RequestItem, context: Context) {
         viewModelScope.launch {
-            db.requestDao().insertRequest(requestItem)
+            val requestId = db.requestDao().insertRequest(requestItem)
+            val imageList = uriList.value
+
+            imageList?.forEach {
+                    val requestPhoto = RequestPhoto(
+                        requestId = requestId,
+                        photo = getScreen(it, context),
+                        dateTime = requestItem.creationDate,
+                        isSended = 0
+                    )
+                db.requestPhotoDao().insertRequestPhoto(requestPhoto)
+            }
+            onRequestSavedSuccess?.invoke("")
         }
+    }
+
+    /**
+     * Добавление в БД информации для ТО
+     * @param equipInfo - экземпляр информации для ТО [EquipInfo]
+     */
+    fun addEquipInfo(equipInfo: EquipInfo) {
+        viewModelScope.launch {
+            val equipInfoId = db.equipInfoDao().insertEquipInfo(equipInfo)
+            onEquipInfoSavedSuccess?.invoke(equipInfoId)
+        }
+    }
+
+    fun addImage(uri: Uri) {
+        val list = _uriList.value
+        val mutableList = list?.toMutableList() ?: mutableListOf()
+        mutableList.add(uri)
+        _uriList.value = mutableList.toList()
+    }
+
+    fun deleteImage(index: Int) {
+        val list = _uriList.value
+        val mutableList = list?.toMutableList() ?: mutableListOf()
+        mutableList.removeAt(index)
+        _uriList.value = mutableList.toList()
+    }
+
+    fun replaceImage(index: Int, uri: Uri) {
+        val list = _uriList.value
+        val mutableList = list?.toMutableList() ?: mutableListOf()
+        mutableList.removeAt(index)
+        mutableList.add(index, uri)
+        _uriList.value = mutableList.toList()
     }
 }

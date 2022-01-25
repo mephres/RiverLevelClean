@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
         initNotSendedUserLocationObserver()
         initNotSendedEquipObserver()
         initNotSendedEquipDocumentObserver()
+        initNotSendedRequestObserver()
+        initNotSendedEquipInfoObserver()
     }
 
     /**
@@ -115,6 +117,32 @@ class MainActivity : AppCompatActivity() {
         viewModel.notSendedEquipDocumentList.observe(this, {
             for (equipDocument in it) {
                 viewModel.sendEquipDocument(equipDocument)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных заявок
+     */
+    private fun initNotSendedRequestObserver() {
+        viewModel.getNotSendedRequestList.observe(this, {
+            for (request in it) {
+                if (!Util.requestQueue.contains(request.id)) {
+                    viewModel.sendRequest(request)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер комментария к оборудованию
+     */
+    private fun initNotSendedEquipInfoObserver() {
+        viewModel.getNotSendedEquipInfoList.observe(this, {
+            for (equipInfo in it) {
+                if (!Util.equipInfoQueue.contains(equipInfo.id)) {
+                    viewModel.sendEquipInfo(equipInfo)
+                }
             }
         })
     }

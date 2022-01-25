@@ -2,11 +2,15 @@ package com.intas.metrolog.util
 
 import android.Manifest
 import com.intas.metrolog.pojo.authuser.AuthUser
+import java.util.*
 
 class Util {
     companion object {
 
         var eventLoggingEnabled = false
+
+        var requestQueue: LinkedList<Long> = LinkedList()
+        var equipInfoQueue: LinkedList<Int> = LinkedList()
 
         val appPermissionArray = arrayOf(
             Manifest.permission.INTERNET,
