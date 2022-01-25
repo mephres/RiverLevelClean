@@ -73,7 +73,7 @@ data class FieldItem(
      * 0 - не отправлена
      * 1 - отправлена
      */
-    val isSended: Int = 1
+    var isSended: Int = 1
 ) : Parcelable {
     /**
      * список способов измерения

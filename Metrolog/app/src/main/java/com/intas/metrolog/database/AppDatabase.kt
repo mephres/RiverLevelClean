@@ -19,6 +19,7 @@ import com.intas.metrolog.pojo.event.event_operation.operation_control.OperContr
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dict_data.FieldDictData
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
+import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
@@ -30,8 +31,8 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
                EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
                EventOperationTypeItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
                EventComment::class, EquipDocument::class, RequestItem::class, EventOperationItem::class,
-               OperControlItem::class, FieldItem::class, FieldDictData::class],
-    version = 19, exportSchema = false
+               OperControlItem::class, FieldItem::class, FieldDictData::class, EventPhotoItem::class],
+    version = 20, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -78,4 +79,5 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun operControlDao(): OperControlDao
     abstract fun fieldDao(): FieldDao
     abstract fun fieldDictDataDao(): FieldDictDataDao
+    abstract fun eventPhotoDao(): EventPhotoDao
 }

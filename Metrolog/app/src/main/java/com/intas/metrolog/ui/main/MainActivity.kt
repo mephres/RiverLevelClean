@@ -44,6 +44,10 @@ class MainActivity : AppCompatActivity() {
         initNotSendedUserLocationObserver()
         initNotSendedEquipObserver()
         initNotSendedEquipDocumentObserver()
+        initNotSendedEventObserver()
+        initNotSendedEventOperationObserver()
+        initNotSendedEventOperationControlObserver()
+        initNotSendedEventPhotoObserver()
     }
 
     /**
@@ -119,6 +123,48 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Получение и отправка на сервер неотправленных мероприятий
+     */
+    private fun initNotSendedEventObserver() {
+        viewModel.notSendedEventList.observe(this, {
+            for (event in it) {
+                viewModel.sendEvent(event)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных операций мероприятия
+     */
+    private fun initNotSendedEventOperationObserver() {
+        viewModel.notSendedEventOperationList.observe(this, {
+            for (eventOperation in it) {
+                viewModel.sendEventOperation(eventOperation)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленного операционного контроля
+     */
+    private fun initNotSendedEventOperationControlObserver() {
+        viewModel.getNotSendedEventOperationControlList.observe(this, {
+            for (eventOperationControl in it) {
+                viewModel.sendEventOperationControl(eventOperationControl)
+            }
+        })
+    }
+    /**
+     * Получение и отправка на сервер неотправленного операционного контроля
+     */
+    private fun initNotSendedEventPhotoObserver() {
+        viewModel.getNotSendedEventPhotoList.observe(this, {
+            for (eventPhoto in it) {
+                viewModel.sendEventPhoto(eventPhoto)
+            }
+        })
+    }
 
     private fun showToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
@@ -138,7 +184,7 @@ class MainActivity : AppCompatActivity() {
             this.doubleBackToExitPressedOnce = true
             showToast(getString(R.string.exit_message))
 
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            Handler(Looper.getMainLooper()).postDelayed({
                 doubleBackToExitPressedOnce = false
             }, 2000)
         } else {
