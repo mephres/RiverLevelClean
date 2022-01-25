@@ -140,7 +140,11 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEventOperationObserver() {
         viewModel.notSendedEventOperationList.observe(this, {
             for (eventOperation in it) {
-                viewModel.sendEventOperation(eventOperation)
+                if (eventOperation.equipId > 0) {
+                    viewModel.sendComplexEventOperation(eventOperation)
+                } else {
+                    viewModel.sendEventOperation(eventOperation)
+                }
             }
         })
     }

@@ -52,6 +52,7 @@ import com.intas.metrolog.pojo.event.event_operation.operation_control.field.Fie
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dict_data.FieldDictData
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
+import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
@@ -86,6 +87,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendEquipDocumentDisposable: Disposable? = null
     private var sendEventDisposable: Disposable? = null
     private var sendEventOperationDisposable: Disposable? = null
+    private var sendComplexEventOperationDisposable: Disposable? = null
     private var sendOperControlDisposable: Disposable? = null
     private var sendEventPhotoDisposable: Disposable? = null
 
@@ -915,6 +917,68 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.eventDao().setEventSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка операции комплексного мероприятия на сервер
+     * @param eventOperation - операция комплексного мероприятия, объект класса [EventOperationItem]
+     */
+    @SuppressLint("LongLogTag")
+    fun sendComplexEventOperation(eventOperation: EventOperationItem) {
+
+        sendComplexEventOperationDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val opId = eventOperation.subId
+
+        var status = EventStatus.CANCELED.ordinal
+        var comment = "Отклонено"
+        if (eventOperation.completed == 1) {
+            status = EventStatus.COMPLETED.ordinal
+            comment = "Выполнено"
+        }
+
+        val factDate = eventOperation.dateEnd
+        val durationTimer = 0
+        val dateTimeStartTimer = 0
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_OP_ID] = opId.toString()
+        map[QUERY_PARAM_FACT_DATE] = factDate.toString()
+        map[QUERY_PARAM_STATUS_ID] = status.toString()
+        map[QUERY_PARAM_DURATION_TIMER] = durationTimer.toString()
+        map[QUERY_PARAM_DATE_TIME_START_TIMER] = dateTimeStartTimer.toString()
+        map[QUERY_PARAM_COMMENT] = comment
+
+        sendComplexEventOperationDisposable = ApiFactory.apiService.updateEvent(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEventOperationSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.message.toString())
+                })
+        sendComplexEventOperationDisposable?.let {
+            compositeDisposable.add(it)
         }
     }
 
