@@ -96,6 +96,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedEventOperationFieldList = db.fieldDao().getNotSendedEventOperationFieldList()
     val getNotSendedRequestList = db.requestDao().getNotSendedRequestList()
     val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
+    val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -169,6 +170,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.requestDao().insertRequestList(requestList)
+
         }
     }
 
@@ -933,6 +935,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_ID] = request.id.toString()
         map[QUERY_PARAM_EQUIP_ID] = request.equipId.toString()
+        map[QUERY_PARAM_EQUIP_RFID] = request.rfid.toString()
         map[QUERY_PARAM_COMMENT] = request.comment.toString()
         map[QUERY_PARAM_DATETIME] = request.creationDate.toString()
         map[QUERY_PARAM_TYPE] = request.typeRequest.toString()
@@ -951,13 +954,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                if (it.requestSuccess != null) {
                     it.requestSuccess?.let {
                         Util.safeLet(it.id, it.serverId) { id, serverId ->
                             setRequestSendedById(id.toLong(), serverId.toLong())
                         }
                     }
-                }
                 Log.d("MM_SEND_REQUEST", it.toString())
             }, {
                 Log.d("MM_SEND_REQUEST", it.message.toString())
@@ -981,12 +982,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.requestDao().setRequestSendedById(id, serverId)
-
-            val requestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList(id)
-            for (requestPhoto in requestPhotoList) {
-                sendRequestPhoto(requestPhoto)
-            }
-
+            db.requestPhotoDao().updateRequestPhoto(id, serverId)
         }
     }
 
@@ -996,6 +992,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param requestPhoto фото к заявке, экземпляр класса [RequestPhoto]
      */
     fun sendRequestPhoto(requestPhoto: RequestPhoto) {
+
+        requestPhoto.id.let {
+            Util.requestPhoto.addLast(it)
+        }
+
         sendRequestPhotoDisposable?.let {
             compositeDisposable.remove(it)
         }
@@ -1018,10 +1019,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                if (it.requestSuccess != null) {
-                    it.requestSuccess?.id?.toLong()?.let {
-                        setRequestPhotoSendedById(it)
-                    }
+                    it.requestSuccess?.let {
+                        Util.safeLet(it.id, it.serverId) { id, serverId ->
+                            setRequestPhotoSendedById(id.toLong(), serverId.toLong())
+                        }
                 }
                 Log.d("MM_SEND_REQUEST_PHOTO", it.toString())
             }, {
@@ -1036,12 +1037,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * Установка признака отсылки фото к заявке на сервер
      * @param id - идентификатор записи
      */
-    private fun setRequestPhotoSendedById(id: Long) {
+    private fun setRequestPhotoSendedById(id: Long, serverId: Long) {
 
         Log.d("MM_SET_REQUEST_PH_SEND", id.toString())
 
+        if (Util.requestPhoto.count() > 100) {
+            Util.requestPhoto.removeFirst()
+        }
+
         viewModelScope.launch {
-            db.requestPhotoDao().setRequestPhotoSendedById(id)
+            db.requestPhotoDao().setRequestPhotoSendedById(id, serverId)
         }
     }
 

@@ -11,6 +11,7 @@ class Util {
 
         var requestQueue: LinkedList<Long> = LinkedList()
         var equipInfoQueue: LinkedList<Int> = LinkedList()
+        var requestPhoto: LinkedList<Long> = LinkedList()
 
         val appPermissionArray = arrayOf(
             Manifest.permission.INTERNET,

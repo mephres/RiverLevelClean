@@ -38,7 +38,6 @@ class RequestListAdapter :
         val status = db.requestStatusDao().getRequestStatusById(requestItem.status)
         val discipline = db.disciplineDao().getDisciplineById(requestItem.discipline)
         val operationType = db.eventOperationTypeDao().getEventOperationTypeById(requestItem.operationType)
-        val equip = db.equipDao().getEquipItemById(requestItem.equipId.toLong())
         val sender = db.userDao().getUserById(requestItem.senderId)
 
         val executorId = try {
@@ -47,6 +46,13 @@ class RequestListAdapter :
             -1
         }
         val executor = db.userDao().getUserById(executorId ?: -1)
+
+        val equipId = try {
+            requestItem.equipId?.toLong()
+        } catch (e: Exception) {
+            -1
+        }
+        val equip = db.equipDao().getEquipItemById(equipId ?: -1)
 
         holder.requestDateTextView.text =
             DateTimeUtil.getShortDataFromMili(requestItem.creationDate)

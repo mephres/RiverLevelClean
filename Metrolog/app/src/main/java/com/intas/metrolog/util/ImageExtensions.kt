@@ -16,10 +16,9 @@ import java.io.ByteArrayOutputStream
  * Получение кодированной картинки в виде строки
  * @return кодированная картинка
  */
-fun getScreen(uri: Uri, context: Context): String {
+fun getEncodedScreen(uri: Uri, context: Context): String {
 
     return try {
-      //  val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
         val bitmap = uri.getBitmap(context)
         val screen: String = bitmap?.getBase64() ?: ""
         screen
@@ -92,7 +91,7 @@ fun Bitmap.getBase64(): String {
 private fun Uri.getBitmap(context: Context): Bitmap? {
     return try {
         val parcelFileDescriptor =
-            context.getContentResolver().openFileDescriptor(this, "r")
+            context.contentResolver.openFileDescriptor(this, "r")
         val fileDescriptor = parcelFileDescriptor?.fileDescriptor
         val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
         parcelFileDescriptor?.close();

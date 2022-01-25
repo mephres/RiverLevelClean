@@ -396,7 +396,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         }
 
         if (!isRequest && binding.addRequestCommentTextInputLayout.editText?.text?.trim().isNullOrEmpty()) {
-            showToast(getString(R.string.add_request_need_comment_title))
+            showToast(getString(R.string.add_equip_info_need_comment_title))
             return
         }
 
@@ -424,14 +424,15 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             comment = comment,
             categoryId = category,
             creationDate = DateTimeUtil.getUnixDateTimeNow(),
-            equipId = equipId,
+            equipId = equipId.toString(),
             rfid = equipRfid,
             status = 1,
             isSended = 0
         )
-        viewModel.addRequest(requestItem, requireContext())
+        viewModel.addRequest(requestItem)
         binding.progressBar.visibility = View.VISIBLE
         viewModel.onRequestSavedSuccess = {
+            showToast(getString(R.string.add_request_success_title))
             closeFragment()
         }
     }
@@ -452,6 +453,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         viewModel.addEquipInfo(equipInfo)
         binding.progressBar.visibility = View.VISIBLE
         viewModel.onEquipInfoSavedSuccess = {
+            showToast(getString(R.string.add_equip_info_success_title))
             closeFragment()
         }
     }
@@ -515,7 +517,6 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         configureDisciplinesSpinner()
         configureCategorySpinner()
         configurePrioritySpinner()
-        setCommentEditTextListener()
     }
 
     private fun configureOperationsSpinner() {
@@ -564,14 +565,6 @@ class AddRequestFragment : BottomSheetDialogFragment() {
                     binding.imageListCardView.visibility = View.VISIBLE
                     binding.addRequestPriorityMenu.visibility = View.GONE
                 }
-            }
-        }
-    }
-
-    private fun setCommentEditTextListener() {
-        binding.addRequestCommentTextInputLayout.editText?.addTextChangedListener {
-            if (!binding.addRequestCommentTextInputLayout.editText?.text.isNullOrEmpty()) {
-
             }
         }
     }

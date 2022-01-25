@@ -11,7 +11,7 @@ import com.intas.metrolog.pojo.request.RequestPhoto
 @Dao
 interface RequestDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertRequestList(requestList: List<RequestItem>)
+    suspend fun insertRequestList(requestList: List<RequestItem>): List<Long>
 
     @Query("SELECT * FROM request ORDER BY id DESC")
     fun getAllRequest(): LiveData<List<RequestItem>>
@@ -22,6 +22,6 @@ interface RequestDao {
     @Query("SELECT * FROM request WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
     fun getNotSendedRequestList(): LiveData<List<RequestItem>>
 
-    @Query("UPDATE request SET isSended = 1 AND id = :serverId WHERE id = :id")
+    @Query("UPDATE request SET isSended = 1, id = :serverId WHERE id = :id")
     suspend fun setRequestSendedById(id: Long, serverId: Long)
 }

@@ -1,7 +1,6 @@
 package com.intas.metrolog.ui.requests.add
 
 import android.app.Application
-import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,7 +10,7 @@ import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.request.RequestPhoto
-import com.intas.metrolog.util.getScreen
+import com.intas.metrolog.util.getEncodedScreen
 import kotlinx.coroutines.launch
 
 class AddRequestViewModel(application: Application) : AndroidViewModel(application) {
@@ -30,20 +29,19 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
         get() = _uriList
 
     /**
-     * Добавление в БД новой заявки
+     * Добавление в БД новой заявки и фото
      * @param requestItem - экземпляр новой заявки [RequestItem]
      */
-    fun addRequest(requestItem: RequestItem, context: Context) {
+    fun addRequest(requestItem: RequestItem) {
         viewModelScope.launch {
             val requestId = db.requestDao().insertRequest(requestItem)
             val imageList = uriList.value
 
-            imageList?.forEach {
+            imageList?.forEach { uri ->
                     val requestPhoto = RequestPhoto(
                         requestId = requestId,
-                        photo = getScreen(it, context),
+                        photo = getEncodedScreen(uri, getApplication()),
                         dateTime = requestItem.creationDate,
-                        isSended = 0
                     )
                 db.requestPhotoDao().insertRequestPhoto(requestPhoto)
             }
@@ -62,6 +60,10 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
         }
     }
 
+    /**
+     * Добавление в список URI фото или картинки для заявки
+     * @param uri
+     */
     fun addImage(uri: Uri) {
         val list = _uriList.value
         val mutableList = list?.toMutableList() ?: mutableListOf()
@@ -69,6 +71,10 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
         _uriList.value = mutableList.toList()
     }
 
+    /**
+     * Удаление из списка URI фото
+     * @param index
+     */
     fun deleteImage(index: Int) {
         val list = _uriList.value
         val mutableList = list?.toMutableList() ?: mutableListOf()
@@ -76,6 +82,11 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
         _uriList.value = mutableList.toList()
     }
 
+    /**
+     * Замена фото в списке при редактировании
+     * @param index
+     * @param uri
+     */
     fun replaceImage(index: Int, uri: Uri) {
         val list = _uriList.value
         val mutableList = list?.toMutableList() ?: mutableListOf()

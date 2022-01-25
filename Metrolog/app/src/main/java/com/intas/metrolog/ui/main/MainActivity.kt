@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
         initNotSendedEquipDocumentObserver()
         initNotSendedRequestObserver()
         initNotSendedEquipInfoObserver()
+        initNotSendedRequestPhotoObserver()
     }
 
     /**
@@ -142,6 +143,19 @@ class MainActivity : AppCompatActivity() {
             for (equipInfo in it) {
                 if (!Util.equipInfoQueue.contains(equipInfo.id)) {
                     viewModel.sendEquipInfo(equipInfo)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка фото к отправленной заявке
+     */
+    private fun initNotSendedRequestPhotoObserver() {
+        viewModel.getNotSendedRequestPhotoList.observe(this, {
+            for (requestPhoto in it) {
+                if (!Util.requestPhoto.contains(requestPhoto.id)) {
+                    viewModel.sendRequestPhoto(requestPhoto)
                 }
             }
         })
