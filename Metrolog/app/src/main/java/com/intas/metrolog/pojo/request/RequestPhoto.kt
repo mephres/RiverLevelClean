@@ -14,10 +14,6 @@ data class RequestPhoto(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
     /**
-     * идентификатор записи на сервере ЦНО
-     */
-    var serverId: Long = 0,
-    /**
      * идентификатор заявки [RequestItem]
      */
     val requestId: Long = 0,
@@ -29,10 +25,6 @@ data class RequestPhoto(
      * дата-время изображения в unix формате
      */
     val dateTime: Long = 0,
-    /**
-     * идентификатор пользователя, сделавшего изображение
-     */
-    val userId: Int = 0,
     /**
      * Признак отсылки записи на сервер
      * 0 - не отослана

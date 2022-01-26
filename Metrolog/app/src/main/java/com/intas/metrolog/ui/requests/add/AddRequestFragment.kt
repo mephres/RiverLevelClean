@@ -169,6 +169,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
                     try {
                         photoURI?.let {
                             viewModel.addImage(it)
+                            showRequestAttachImageFab()
                         }
                     } catch (e: IOException) {
                         //FirebaseCrashlytics.getInstance().recordException(e);
@@ -179,6 +180,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
                         photoURI = data.data
                         photoURI?.let {
                             viewModel.addImage(it)
+                            showRequestAttachImageFab()
                         }
                     }
                 }

@@ -41,7 +41,7 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
                     val requestPhoto = RequestPhoto(
                         requestId = requestId,
                         photo = getEncodedScreen(uri, getApplication()),
-                        dateTime = requestItem.creationDate,
+                        dateTime = requestItem.creationDate
                     )
                 db.requestPhotoDao().insertRequestPhoto(requestPhoto)
             }

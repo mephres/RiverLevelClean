@@ -116,10 +116,6 @@ data class RequestItem(
      */
     val categoryId: Int = 0,
     /**
-     * идентификатор записи на сервере ЦНО
-     */
-    val serverId: Long = 0,
-    /**
      * метка оборудования
      */
     var rfid: String? = null,
