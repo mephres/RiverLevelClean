@@ -25,9 +25,9 @@ class DateTimeUtil {
             if (timeInMili > 0) {
                 calendar.timeInMillis = timeInMili * 1000L
             }
-            val a = simpleDateFormat.format(calendar.time)
             return simpleDateFormat.format(calendar.time).toInt()
         }
+
         /**
          * Преобразование даты-времени в милисекундах
          * @param timeInMili время в милисекундах
@@ -90,6 +90,20 @@ class DateTimeUtil {
                 calendar.add(Calendar.DAY_OF_MONTH, 1)
             }
             return calendar.timeInMillis / 1000L
+        }
+
+        /**
+         * Преобразование даты-времени в милисекундах в строку
+         * @param timeInMili время в милисекундах
+         * @param pattern шаблон, например dd.MM.yyyy HH:mm:ss
+         * @return дата-время
+         */
+        fun getDateTimeFromMili(timeInMili: Long, pattern: String): String? {
+            val simpleDateFormat = SimpleDateFormat(pattern)
+            simpleDateFormat.timeZone = timeZone
+            val calendar = GregorianCalendar(timeZone)
+            calendar.timeInMillis = timeInMili * 1000L
+            return simpleDateFormat.format(calendar.time)
         }
 
         /**

@@ -107,14 +107,19 @@
     <string name="add_request_operation_title">Мероприятие</string>
     <string name="add_request_comment_title">Описание заявки</string>
     <string name="add_request_priority_title">Приоритет</string>
-    <string name="add_request_no_equip_message_title">Выбран режим БЕЗ сканирования. В этом случае заявка будет оформлена без привязки к оборудованию.</string>
+    <string name="add_request_no_equip_message_title">Выбран режим БЕЗ сканирования. В этом случае заявка будет оформлена без привязки к оборудованию</string>
     <string name="add_request_need_priority_title">Необходимо выбрать приоритет</string>
     <string name="add_request_need_category_title">Необходимо выбрать тип заявки</string>
     <string name="add_request_need_discipline_title">Необходимо выбрать дисциплину</string>
     <string name="add_request_need_operation_title">Необходимо выбрать мероприятие</string>
-    <string name="add_request_success_title">Заявка добавлена.</string>
+    <string name="add_request_success_title">Заявка добавлена</string>
 
     <string name="add_equip_info_need_comment_title">Для добавления информации для ТО описание необходимо заполнить</string>
-    <string name="add_equip_info_need_equip_title">Добавление приоритетной информации для ТО возможно только для оборудования, оснащенного меткой.</string>
-    <string name="add_equip_info_success_title">Информация добавлена.</string>
+    <string name="add_equip_info_need_equip_title">Добавление приоритетной информации для ТО возможно только для оборудования, оснащенного меткой</string>
+    <string name="add_equip_info_success_title">Информация добавлена</string>
+
+    <string name="event_equip_ZavNum_label">Заводской номер:</string>
+    <string name="event_type_label">Тип мероприятия:</string>
+    <string name="event_plan_date_label">Запланировано:</string>
+    <string name="event_fact_date_label_complete">Выполнено:</string>
 </resources>

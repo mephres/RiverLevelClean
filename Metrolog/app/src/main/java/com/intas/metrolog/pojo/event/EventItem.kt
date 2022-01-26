@@ -125,18 +125,6 @@ data class EventItem(
     @SerializedName("checkList")
     @Expose
     var operation: List<EventOperationItem>? = null
-        /*set(value) {
-            field = value?.let {
-                it.map {
-                    it.opId = opId
-                    it
-                }
-            }
-        }*/
-    /*get() = operation?.map {
-            it.opId = this.opId
-            it
-    }*/
 
     /**
      * количество операций мероприятия
@@ -155,6 +143,12 @@ data class EventItem(
      */
     var equipRfid: String? = null
         get() = equip?.equipRFID
+
+    /**
+     * Название оборудования мероприятия
+     */
+    var equipName: String? = null
+        get() = equip?.equipName
 
     /**
      * признак - фотофиксация при выполнении мероприятия (0 - фото не нужно, 1 - фото нужно)

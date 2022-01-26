@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_equip_ZavNum_label">Заводской номер</string>
+    <string name="event_type_label">Тип мероприятия:</string>
+    <string name="event_plan_date_label">Запланировано:</string>
+    <string name="event_fact_date_label_complete">Выполнено:</string>
+</resources>
