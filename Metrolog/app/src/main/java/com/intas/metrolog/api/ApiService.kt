@@ -4,6 +4,7 @@ import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.authuser.AuthResponse
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
+import com.intas.metrolog.pojo.equip.EquipDocument
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
@@ -23,7 +24,8 @@ interface ApiService {
     /**
      * Авторицация пользователя
      *
-     * @param parameters параметры для авторизации
+     * @param login - имя пользователя
+     * @param password - пароль пользователя
      * @return [AuthResponse]
      */
     @GET("auth")
@@ -159,7 +161,7 @@ interface ApiService {
      * @param equipId id оборудования
      * @param type    тип документа из справочника [DocumentType]
      * @param doc     произвольная информация
-     * @return ответ сервера [UpdateDataResponse]
+     * @return ответ сервера [UpdateResponse]
      */
     @Streaming
     @Multipart
@@ -176,7 +178,9 @@ interface ApiService {
     /**
      * Получение списка мероприятий
      *
-     * @param parameters параметры запроса
+     * @param userId - идентификатор авторизованного пользователя
+     * @param month - порядковый номер месяца
+     * @param year - год
      * @return список мероприятий [EventItem]
      */
     @GET("getToir")
@@ -189,12 +193,61 @@ interface ApiService {
      * Обновление данных мероприятия на сервере
      *
      * @param fields параметры запроса
-     * @return ответ сервера [UpdateDataResponse]
+     * @return ответ сервера [UpdateResponse]
      */
     @FormUrlEncoded
     @POST("updToir")
     fun updateEvent(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
+    /**
+     * Выполнение операции из чек-листа мероприятия
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addOperFact")
+    fun addOperation(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Добавление на сервер ЦНО списка параметров параметров с измерениями
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addOperControlFact")
+    fun addOperControlFact(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Добавление изображения для мероприятия
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addToirPhoto")
+    fun addEventPhoto(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Добавление комментария к оборудованию
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addEquipInfo")
+    fun addEquipInfo(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Добавление картинки или фото для заявки
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addRequestPhoto")
+    fun addRequestPhoto(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
@@ -228,5 +281,22 @@ interface ApiService {
         const val QUERY_PARAM_DATE_TIME_START_TIMER = "dateTimeStartTimer"
         const val QUERY_PARAM_COMMENT = "comment"
 
+        const val QUERY_PARAM_RFID = "rfid"
+        const val QUERY_PARAM_CATEGORY_ID = "categoryId"
+        const val QUERY_PARAM_DISCIPLINE_ID = "disciplineId"
+        const val QUERY_PARAM_OPERATION_TYPE = "operationType"
+        const val QUERY_PARAM_REQUEST_ID = "requestId"
+        const val QUERY_PARAM_REQUEST_PHOTO = "photo"
+        const val QUERY_PARAM_PRIORITY = "priority"
+
+        const val QUERY_PARAM_SUB_ID = "subId"
+        const val QUERY_PARAM_SUB_MAN_HOUR = "subManhour"
+        const val QUERY_PARAM_DATE_START = "dateStart"
+        const val QUERY_PARAM_DATE_END = "dateEnd"
+        const val QUERY_PARAM_COMPLETED = "completed"
+        const val QUERY_PARAM_COMPLETED_USER_ID = "completedUserId"
+
+        const val QUERY_PARAM_DATA = "data"
+        const val QUERY_PARAM_PHOTO = "photo"
     }
 }

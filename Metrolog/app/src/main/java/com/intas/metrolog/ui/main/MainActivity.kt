@@ -44,6 +44,13 @@ class MainActivity : AppCompatActivity() {
         initNotSendedUserLocationObserver()
         initNotSendedEquipObserver()
         initNotSendedEquipDocumentObserver()
+        initNotSendedEventObserver()
+        initNotSendedEventOperationObserver()
+        initNotSendedEventOperationControlObserver()
+        initNotSendedEventPhotoObserver()
+        initNotSendedRequestObserver()
+        initNotSendedEquipInfoObserver()
+        initNotSendedRequestPhotoObserver()
     }
 
     /**
@@ -119,6 +126,91 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Получение и отправка на сервер неотправленных мероприятий
+     */
+    private fun initNotSendedEventObserver() {
+        viewModel.notSendedEventList.observe(this, {
+            for (event in it) {
+                viewModel.sendEvent(event)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных операций мероприятия
+     */
+    private fun initNotSendedEventOperationObserver() {
+        viewModel.notSendedEventOperationList.observe(this, {
+            for (eventOperation in it) {
+                if (eventOperation.equipId > 0) {
+                    viewModel.sendComplexEventOperation(eventOperation)
+                } else {
+                    viewModel.sendEventOperation(eventOperation)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленного операционного контроля
+     */
+    private fun initNotSendedEventOperationControlObserver() {
+        viewModel.getNotSendedEventOperationControlList.observe(this, {
+            for (eventOperationControl in it) {
+                viewModel.sendEventOperationControl(eventOperationControl)
+            }
+        })
+    }
+    /**
+     * Получение и отправка на сервер неотправленного операционного контроля
+     */
+    private fun initNotSendedEventPhotoObserver() {
+        viewModel.getNotSendedEventPhotoList.observe(this, {
+            for (eventPhoto in it) {
+                viewModel.sendEventPhoto(eventPhoto)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных заявок
+     */
+    private fun initNotSendedRequestObserver() {
+        viewModel.getNotSendedRequestList.observe(this, {
+            for (request in it) {
+                if (!Util.requestQueue.contains(request.id)) {
+                    viewModel.sendRequest(request)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер комментария к оборудованию
+     */
+    private fun initNotSendedEquipInfoObserver() {
+        viewModel.getNotSendedEquipInfoList.observe(this, {
+            for (equipInfo in it) {
+                if (!Util.equipInfoQueue.contains(equipInfo.id)) {
+                    viewModel.sendEquipInfo(equipInfo)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка фото к отправленной заявке
+     */
+    private fun initNotSendedRequestPhotoObserver() {
+        viewModel.getNotSendedRequestPhotoList.observe(this, {
+            for (requestPhoto in it) {
+                if (!Util.requestPhoto.contains(requestPhoto.id)) {
+                    viewModel.sendRequestPhoto(requestPhoto)
+                }
+            }
+        })
+    }
 
     private fun showToast(text: String) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
@@ -138,7 +230,7 @@ class MainActivity : AppCompatActivity() {
             this.doubleBackToExitPressedOnce = true
             showToast(getString(R.string.exit_message))
 
-            Handler(Looper.getMainLooper()).postDelayed(Runnable {
+            Handler(Looper.getMainLooper()).postDelayed({
                 doubleBackToExitPressedOnce = false
             }, 2000)
         } else {

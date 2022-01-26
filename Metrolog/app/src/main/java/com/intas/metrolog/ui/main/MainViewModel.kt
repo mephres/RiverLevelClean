@@ -1,6 +1,8 @@
 package com.intas.metrolog.ui.main
 
+import android.annotation.SuppressLint
 import android.app.Application
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -11,8 +13,16 @@ import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_BEARING
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_CATEGORY_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMMENT
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMPLETED
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMPLETED_USER_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATA
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATETIME
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_END
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_START
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_TIME_START_TIMER
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DISCIPLINE_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DURATION_TIMER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ELAPSED_REALTIME_NANOS
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_ID
@@ -21,11 +31,19 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_FACT_DATE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OPERATION_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OP_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PHOTO
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PRIORITY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PROVIDER
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_PHOTO
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SPEED
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_STATUS_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SUB_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SUB_MAN_HOUR
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
@@ -38,17 +56,18 @@ import com.intas.metrolog.pojo.equip_info_priority.EquipInfoPriority
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.OperControlItem
+import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dict_data.FieldDictData
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
+import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
+import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
+import com.intas.metrolog.pojo.request.RequestPhoto
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
 import com.intas.metrolog.ui.requests.filter.RequestFilter
-import com.intas.metrolog.util.AppPreferences
-import com.intas.metrolog.util.DateTimeUtil
-import com.intas.metrolog.util.SingleLiveEvent
-import com.intas.metrolog.util.Util
+import com.intas.metrolog.util.*
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -59,6 +78,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.TimeUnit
 
@@ -75,13 +95,26 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var getEventDisposable: Disposable? = null
     private var sendEquipDocumentDisposable: Disposable? = null
     private var sendEventDisposable: Disposable? = null
+    private var sendEventOperationDisposable: Disposable? = null
+    private var sendComplexEventOperationDisposable: Disposable? = null
+    private var sendOperControlDisposable: Disposable? = null
+    private var sendEventPhotoDisposable: Disposable? = null
+    private var sendRequestDisposable: Disposable? = null
+    private var sendRequestPhotoDisposable: Disposable? = null
+    private var sendEquipInfoDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
     val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
     val notSendedEquipList = db.equipDao().getEquipNotSended()
     val notSendedEventList = db.eventDao().getNotSendedEventList()
     val notSendedEventOperationList = db.eventOperationDao().getNotSendedEventOperationList()
-    val getNotSendedEventOperationFieldList = db.fieldDao().getNotSendedEventOperationFieldList()
+    val getNotSendedEventOperationControlList =
+        db.operControlDao().getNotSendedEventOperationControlList()
+    val getNotSendedEventPhotoList = db.eventPhotoDao().getNotSendedEventPhotoList()
+    val getNotSendedRequestList = db.requestDao().getNotSendedRequestList()
+    val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
+    val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
+
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -155,6 +188,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.requestDao().insertRequestList(requestList)
+
+            requestList.forEach {
+                fillRequestEquipInfo(it)
+            }
+        }
+    }
+
+    /**
+     * Установка наименования оборудования, места установки, тэга оборудования для заявки
+     * Для поиска заявок по введенному тексту в поле поиска
+     *
+     * @param requestItem заявка, объект класса [RequestItem]
+     */
+    private fun fillRequestEquipInfo(requestItem: RequestItem) {
+
+        val equipId = try {
+            requestItem.equipId?.toLong()
+        } catch (e: Exception) {
+            -1
+        }
+
+        if (equipId != null) {
+            if (equipId < 0) {
+                return
+            }
+
+            val equipItem = db.equipDao().getEquipItemById(equipId) ?: return
+            val equipInfo = String.format(
+                    "%s [%s] - %s",
+                    equipItem.equipName,
+                    equipItem.equipTag,
+                    equipItem.mestUstan
+                )
+
+            db.requestDao().updateRequestEquipInfo(requestItem.id, equipInfo)
         }
     }
 
@@ -230,7 +298,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_INSERT_EQUIP_INFO", equipInfoList.toString())
 
         viewModelScope.launch {
-            db.equipDao().insertEquipInfoList(equipInfoList)
+            db.equipInfoDao().insertEquipInfoList(equipInfoList)
         }
     }
 
@@ -790,17 +858,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             db.eventDao().insertEventList(eventList)
 
             eventList.forEach { event ->
-                event.operation?.let { eol ->
-                    insertEventOperations(eol, event.opId)
+                Util.safeLet(event.operation, event.equipId) { eol, equipId ->
+                    insertEventOperationList(eol, event.opId, equipId)
                 }
 
             }
         }
     }
 
-    private fun insertEventOperations(
+    private fun insertEventOperationList(
         eventEventOperationList: List<EventOperationItem>,
-        eventId: Long
+        eventId: Long,
+        equipId: Long
     ) {
         viewModelScope.launch {
             db.eventOperationDao().insertEventOperationList(eventEventOperationList.map {
@@ -812,6 +881,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 eventOperation.operControl?.let {
                     it.eventId = eventId
                     it.opId = eventOperation.subId
+                    it.equipId = equipId
                     insertOperControl(it)
                 }
             }
@@ -835,7 +905,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             for ((code, value) in dictData) {
                                 val dictDataObject =
                                     FieldDictData(fieldId = fieldId, code = code, value = value)
-                                    db.fieldDictDataDao().insertFieldDictData(dictDataObject) // запись в базу способа измерения
+                                db.fieldDictDataDao()
+                                    .insertFieldDictData(dictDataObject) // запись в базу способа измерения
                             }
                         }
                     }
@@ -845,8 +916,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /**
-     * Отправка данных геопозиции на сервер
-     * @param userLocation - геопозиция устройства
+     * Отправка мероприятия на сервер
+     * @param event - мероприятие, объект класса [EventItem]
      */
     fun sendEvent(event: EventItem) {
 
@@ -897,6 +968,543 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.eventDao().setEventSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка операции комплексного мероприятия на сервер
+     * @param eventOperation - операция комплексного мероприятия, объект класса [EventOperationItem]
+     */
+    @SuppressLint("LongLogTag")
+    fun sendComplexEventOperation(eventOperation: EventOperationItem) {
+
+        sendComplexEventOperationDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val opId = eventOperation.subId
+
+        var status = EventStatus.CANCELED.ordinal
+        var comment = "Отклонено"
+        if (eventOperation.completed == 1) {
+            status = EventStatus.COMPLETED.ordinal
+            comment = "Выполнено"
+        }
+
+        val factDate = eventOperation.dateEnd
+        val durationTimer = 0
+        val dateTimeStartTimer = 0
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_OP_ID] = opId.toString()
+        map[QUERY_PARAM_FACT_DATE] = factDate.toString()
+        map[QUERY_PARAM_STATUS_ID] = status.toString()
+        map[QUERY_PARAM_DURATION_TIMER] = durationTimer.toString()
+        map[QUERY_PARAM_DATE_TIME_START_TIMER] = dateTimeStartTimer.toString()
+        map[QUERY_PARAM_COMMENT] = comment
+
+        sendComplexEventOperationDisposable = ApiFactory.apiService.updateEvent(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEventOperationSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.message.toString())
+                })
+        sendComplexEventOperationDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Отправка операции мероприятия на сервер
+     * @param eventOperation - операция мероприятия, объект класса [EventOperationItem]
+     */
+    fun sendEventOperation(eventOperation: EventOperationItem) {
+
+        sendEventOperationDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_OP_ID] = eventOperation.opId.toString()
+        map[QUERY_PARAM_SUB_ID] = eventOperation.subId.toString()
+        map[QUERY_PARAM_SUB_MAN_HOUR] = eventOperation.subManhour.toString()
+        map[QUERY_PARAM_DATE_START] = eventOperation.dateStart.toString()
+        map[QUERY_PARAM_DATE_END] = eventOperation.dateEnd.toString()
+        map[QUERY_PARAM_COMPLETED] = eventOperation.completed.toString()
+        map[QUERY_PARAM_COMPLETED_USER_ID] = eventOperation.completedUserId.toString()
+
+        sendEventOperationDisposable = ApiFactory.apiService.addOperation(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EVENT_OPERATION", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEventOperationSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_EVENT_OPERATION", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_EVENT_OPERATION", it.message.toString())
+                })
+        sendEventOperationDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun setEventOperationSendedById(id: Long) {
+        Log.d("MM_SET_EVENT_OPERATION_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.eventOperationDao().setEventOperationSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка операционного контроля операции мероприятия на сервер
+     * @param operControl - операционный контроль операции мероприятия, объект класса [OperControlItem]
+     */
+    fun sendEventOperationControl(operControl: OperControlItem) {
+
+        sendOperControlDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val jsonObject = getOperControlJSON(operControl.eventId, operControl.opId, operControl.equipId)
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map.put(QUERY_PARAM_DATA, jsonObject["data"].toString())
+        map.put(QUERY_PARAM_EQUIP_ID, operControl.equipId.toString())
+        map.put(QUERY_PARAM_OP_ID, jsonObject["opId"].toString())
+
+        // отправка полей операционного контроля на сервер ЦНО
+        sendOperControlDisposable = ApiFactory.apiService.addOperControlFact(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_OPER_CONTROL", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.let {
+                        setEventOperControlSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_OPER_CONTROL", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_OPER_CONTROL", it.message.toString())
+                })
+        sendOperControlDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun setEventOperControlSendedById(ids: String) {
+        Log.d("MM_SET_OPER_CONTROL_SEND", ids)
+
+        viewModelScope.launch {
+
+            // список id полученных записей
+            val idArray = ids.replace("[", "").replace("]", "").split(",")
+            idArray.forEach { id ->
+                val fieldId = id.toLongOrNull()
+                fieldId?.let {
+                    val field = db.fieldDao().getFieldById(fieldId)
+                    field?.let {
+                        val opId: Long = field.operationId
+                        val eventId: Long = field.eventId
+
+                        field.isSended = 1
+
+                        db.operControlDao().setEventOperationControlSendedById(eventId, opId)
+                        db.fieldDao().updateField(field)
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Формирование JSON структуры операционного контроля
+     * @param eventId - идентификатор мероприятия
+     * @param operationId - идентификатор операции меропрития
+     * @param equipId - идентификатор оборудования
+     * @return структура операционного контроля в формате JSON
+     */
+    @SuppressLint("LongLogTag")
+    private fun getOperControlJSON(eventId: Long, operationId: Long, equipId: Long): JSONObject {
+
+        val fieldList = db.fieldDao().getNotSendedEventOperationFieldList(eventId, operationId)
+
+        val resultJSON = JSONObject()
+        var opId = 0L
+
+        val map = mutableMapOf<String, List<FieldItem>>()
+
+        fieldList.forEach { field ->
+            val classCode = field.classCode
+            classCode?.let {
+                var list = map[classCode]?.toMutableList()
+                if (list == null) {
+                    list = mutableListOf<FieldItem>()
+                }
+
+                list.add(field)
+                map[classCode] = list
+            }
+        }
+        try {
+            // формирование JSON для отправки
+            val dataJSON = JSONObject()
+            val classCodes = map.keys
+            classCodes.forEach { classCode ->
+                val classCodeJSON = JSONObject()
+                var operationJSONArray = JSONObject()
+                var currentOperationId = 0L
+                val fields = map[classCode]
+                fields?.let {
+                    fields.forEach { field ->
+                        val operationJSON = JSONObject()
+
+                        opId = field.eventId
+
+                        operationJSON.put("id", field.id)
+                        operationJSON.put("code", field.code)
+                        operationJSON.put("type", field.type)
+                        operationJSON.put("value", field.value)
+
+                        val preCurOperationId = currentOperationId
+                        currentOperationId = field.operationId
+                        field.code?.let { fieldCode ->
+                            if (preCurOperationId == currentOperationId || preCurOperationId == 0L) {
+                                operationJSONArray.put(fieldCode, operationJSON)
+                            } else {
+                                operationJSONArray = JSONObject()
+                                operationJSONArray.put(fieldCode, operationJSON)
+                            }
+                            classCodeJSON.put(currentOperationId.toString(), operationJSONArray)
+                        }
+                    }
+                    dataJSON.put(classCode, classCodeJSON)
+                }
+            }
+
+            resultJSON.put("data", dataJSON)
+            resultJSON.put("userId", Util.authUser?.userId)
+            resultJSON.put("equipId", equipId)
+            resultJSON.put("opId", opId)
+
+            Log.d("MM_GET_OPER_CONTROL_JSON", resultJSON.toString())
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
+        return resultJSON
+    }
+
+    /**
+     * Отправка изображения мероприятия на сервер
+     * @param eventPhoto - изображение мероприятия, объект класса [EventPhotoItem]
+     */
+    fun sendEventPhoto(eventPhoto: EventPhotoItem) {
+
+        sendEventPhotoDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val screen = ImageUtil.getBase64ScreenFromUri(getApplication<Application>().applicationContext, eventPhoto.photoUrl)
+
+        val map = mutableMapOf<String, String>()
+
+        map[QUERY_PARAM_ID] = eventPhoto.id.toString()
+        map[QUERY_PARAM_OP_ID] = eventPhoto.opId.toString()
+        screen?.let {
+            map[QUERY_PARAM_PHOTO] = screen
+        }
+        map[QUERY_PARAM_DATETIME] = eventPhoto.datetime.toString()
+        map[QUERY_PARAM_USER_ID] = eventPhoto.userId.toString()
+
+        sendEventPhotoDisposable = ApiFactory.apiService.addEventPhoto(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EVENT_PHOTO", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.id?.toLong()?.let {
+                        setEventPhotoSendedById(it)
+                    }
+                }
+                Log.d("MM_SEND_EVENT_PHOTO", it.toString())
+            },
+                {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_EVENT_PHOTO", it.message.toString())
+                })
+        sendEventPhotoDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    @SuppressLint("LongLogTag")
+    private fun setEventPhotoSendedById(id: Long) {
+        Log.d("MM_SET_EVENT_PHOTO_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.eventPhotoDao().setEventPhotoSendedById(id)
+        }
+    }
+
+    /**
+     * Отправка на сервер ЦНО неотправленных заявок
+     *
+     * @param request заявка, экземпляр класса [RequestItem]
+     */
+    fun sendRequest(request: RequestItem) {
+
+        request.id.let {
+            Util.requestQueue.addLast(it)
+        }
+
+        sendRequestDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_ID] = request.id.toString()
+        map[QUERY_PARAM_EQUIP_ID] = request.equipId.toString()
+        map[QUERY_PARAM_EQUIP_RFID] = request.rfid.toString()
+        map[QUERY_PARAM_COMMENT] = request.comment.toString()
+        map[QUERY_PARAM_DATETIME] = request.creationDate.toString()
+        map[QUERY_PARAM_TYPE] = request.typeRequest.toString()
+        map[QUERY_PARAM_CATEGORY_ID] = request.categoryId.toString()
+        map[QUERY_PARAM_DISCIPLINE_ID] = request.discipline.toString()
+        map[QUERY_PARAM_OPERATION_TYPE] = request.operationType.toString()
+
+        sendRequestDisposable = ApiFactory.apiService.addRequest(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_REQUEST", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                it.requestSuccess?.let {
+                    Util.safeLet(it.id, it.serverId) { id, serverId ->
+                        setRequestSendedById(id.toLong(), serverId.toLong())
+                    }
+                }
+                Log.d("MM_SEND_REQUEST", it.toString())
+            }, {
+                Log.d("MM_SEND_REQUEST", it.message.toString())
+            })
+        sendRequestDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки заявки на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setRequestSendedById(id: Long, serverId: Long) {
+
+        if (Util.requestQueue.count() > 100) {
+            Util.requestQueue.removeFirst()
+        }
+
+        Log.d("MM_SET_REQUEST_SEND", id.toString())
+
+        viewModelScope.launch {
+            try {
+                db.requestDao().setRequestSendedById(id, serverId)
+            } catch (e: SQLiteConstraintException) {
+                db.requestDao().deleteRequestById(id)
+            }
+            db.requestPhotoDao().updateRequestPhoto(id, serverId)
+        }
+    }
+
+    /**
+     * Отправка на сервер ЦНО фото к заявкам
+     *
+     * @param requestPhoto фото к заявке, экземпляр класса [RequestPhoto]
+     */
+    fun sendRequestPhoto(requestPhoto: RequestPhoto) {
+
+        requestPhoto.id.let {
+            Util.requestPhoto.addLast(it)
+        }
+
+        sendRequestPhotoDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_ID] = requestPhoto.id.toString()
+        map[QUERY_PARAM_REQUEST_ID] = requestPhoto.requestId.toString()
+        map[QUERY_PARAM_REQUEST_PHOTO] = requestPhoto.photo.toString()
+        map[QUERY_PARAM_DATETIME] = requestPhoto.dateTime.toString()
+
+        sendRequestPhotoDisposable = ApiFactory.apiService.addRequestPhoto(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_REQUEST_PHOTO", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                it.requestSuccess?.let {
+                    Util.safeLet(it.id, it.serverId) { id, serverId ->
+                        setRequestPhotoSendedById(id.toLong(), serverId.toLong())
+                    }
+                }
+                Log.d("MM_SEND_REQUEST_PHOTO", it.toString())
+            }, {
+                Log.d("MM_SEND_REQUEST_PHOTO", it.message.toString())
+            })
+        sendRequestPhotoDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки фото к заявке на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setRequestPhotoSendedById(id: Long, serverId: Long) {
+
+        Log.d("MM_SET_REQUEST_PH_SEND", id.toString())
+
+        if (Util.requestPhoto.count() > 100) {
+            Util.requestPhoto.removeFirst()
+        }
+
+        viewModelScope.launch {
+            db.requestPhotoDao().setRequestPhotoSendedById(id, serverId)
+        }
+    }
+
+    /**
+     * Отправка на сервер ЦНО комментария к оборудованию
+     *
+     * @param equipInfo комментарий к оборудованию, экземпляр класса [EquipInfo]
+     */
+    fun sendEquipInfo(equipInfo: EquipInfo) {
+
+        equipInfo.id.let {
+            Util.equipInfoQueue.addLast(it)
+        }
+
+        sendEquipInfoDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
+        map[QUERY_PARAM_ID] = equipInfo.id.toString()
+        map[QUERY_PARAM_EQUIP_ID] = equipInfo.equipId.toString()
+        map[QUERY_PARAM_COMMENT] = equipInfo.text.toString()
+        map[QUERY_PARAM_PRIORITY] = equipInfo.priority.toString()
+        map[QUERY_PARAM_DATETIME] = equipInfo.dateTime.toString()
+
+        sendEquipInfoDisposable = ApiFactory.apiService.addEquipInfo(map)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(600).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                FirebaseCrashlytics.getInstance().recordException(it)
+                Log.d("MM_SEND_EQUIP_INFO", it.message.toString())
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.requestSuccess != null) {
+
+                    it.requestSuccess?.let {
+                        Util.safeLet(it.id, it.serverId) { id, serverId ->
+                            setEquipInfoSendedById(id.toLong(), serverId.toLong())
+                        }
+                    }
+                }
+                Log.d("MM_SEND_EQUIP_INFO", it.toString())
+            }, {
+                Log.d("MM_SEND_EQUIP_INFO", it.message.toString())
+            })
+        sendEquipInfoDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    /**
+     * Установка признака отсылки фото к заявке на сервер
+     * @param id - идентификатор записи
+     */
+    private fun setEquipInfoSendedById(id: Long, serverId: Long) {
+
+        if (Util.equipInfoQueue.count() > 100) {
+            Util.equipInfoQueue.removeFirst()
+        }
+
+        Log.d("MM_SET_EQUIP_INFO_SEND", id.toString())
+
+        viewModelScope.launch {
+            db.equipInfoDao().setEquipInfoSendedById(id, serverId)
         }
     }
 

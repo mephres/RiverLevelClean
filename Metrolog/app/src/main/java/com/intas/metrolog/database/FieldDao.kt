@@ -1,14 +1,16 @@
 package com.intas.metrolog.database
 
-import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 
 @Dao
 interface FieldDao {
 
-    @Query("SELECT * FROM field WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
-    fun getNotSendedEventOperationFieldList(): LiveData<List<FieldItem>>
+    @Query("SELECT * FROM field WHERE isSended = 0 AND eventId = :eventId AND operationId = :operationId ORDER BY id ASC")
+    fun getNotSendedEventOperationFieldList(eventId: Long, operationId: Long): List<FieldItem>
+
+    @Query("SELECT * FROM field WHERE id = :id")
+    fun getFieldById(id: Long): FieldItem?
 
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateField(field: FieldItem)

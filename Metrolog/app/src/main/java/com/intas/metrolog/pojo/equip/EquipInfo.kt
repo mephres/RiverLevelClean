@@ -16,7 +16,7 @@ data class EquipInfo(
     /**
      * идентификатор записи
      */
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("prId")
     @Expose
     val id: Int = 0,
@@ -25,7 +25,7 @@ data class EquipInfo(
      */
     @SerializedName("equipId")
     @Expose
-    val equipId: Int = 0,
+    val equipId: Long = 0,
     /**
      * текст информации по оборудованию
      */
@@ -67,5 +67,11 @@ data class EquipInfo(
      */
     @SerializedName("checkedUserId")
     @Expose
-    val checkedUserId: Long = 0
+    val checkedUserId: Long = 0,
+    /**
+     * Признак отсылки записи на сервер
+     * 0 - не отослана
+     * 1 - отослана
+     */
+    var isSended: Int = 1
 ) : Parcelable

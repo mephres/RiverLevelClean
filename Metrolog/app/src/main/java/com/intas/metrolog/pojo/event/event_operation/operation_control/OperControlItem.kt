@@ -6,6 +6,9 @@ import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 import kotlinx.parcelize.Parcelize
 
@@ -21,7 +24,7 @@ data class OperControlItem(
     @PrimaryKey(autoGenerate = true)
     var id: Int? = null,
     /**
-     * идентификатор операции мероприятия [OperationItem]
+     * идентификатор операции мероприятия [EventOperationItem]
      */
     var opId: Long = 0,
     /**
@@ -32,6 +35,16 @@ data class OperControlItem(
      * код
      */
     val classCode: String? = null,
+    /**
+     * идентификатор оборудования [EquipItem]
+     */
+    var equipId: Long = 0,
+    /**
+     * Признак отправки записи на сервер
+     * 0 - не отправлена
+     * 1 - отправлена
+     */
+    val isSended: Int = 1
 ) : Parcelable {
 
     /**
@@ -41,5 +54,5 @@ data class OperControlItem(
     @SerializedName("fields")
     val fieldList: List<FieldItem>? = null
 
-    constructor() : this(0,0,0,"")
+    constructor() : this(0, 0, 0, "")
 }

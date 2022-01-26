@@ -189,7 +189,7 @@ class RequestsFragment : Fragment() {
             override fun onQueryTextChange(newText: String): Boolean {
                 handler.removeCallbacksAndMessages(null)
                 handler.postDelayed({
-                    setFilter(newText)
+                    setFilter(newText.trim())
                 }, 300)
                 return true
             }
@@ -197,9 +197,16 @@ class RequestsFragment : Fragment() {
     }
 
     private fun setFilter(text: String) {
+        if (text.isEmpty()) {
+            requestListAdapter.submitList(requestList)
+            return
+        }
+        if (requestList.isNullOrEmpty()) {
+            return
+        }
+
         requestListAdapter.submitList(requestList.filter {
-            it.equipInfo?.contains(text, true) == null ||
-                    it.disciplineInfo?.contains(text, true) == true
+            it.equipInfo?.trim()?.contains(text, true) == true
         })
     }
 
