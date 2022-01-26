@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginEnd="16dp"
                     android:backgroundTint="@color/md_black"
                     android:hint="@string/add_request_category_title"
                     app:boxBackgroundColor="@color/md_white"

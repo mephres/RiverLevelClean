@@ -561,11 +561,15 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
                     binding.imageListCardView.visibility = View.GONE
                     binding.addRequestPriorityMenu.visibility = View.VISIBLE
+                    binding.requestTypeSwitch.visibility = View.GONE
+                    binding.requestTypeTitleTextView.visibility = View.GONE
                 } else {
                     isRequest = true
 
                     binding.imageListCardView.visibility = View.VISIBLE
                     binding.addRequestPriorityMenu.visibility = View.GONE
+                    binding.requestTypeSwitch.visibility = View.VISIBLE
+                    binding.requestTypeTitleTextView.visibility = View.VISIBLE
                 }
             }
         }
