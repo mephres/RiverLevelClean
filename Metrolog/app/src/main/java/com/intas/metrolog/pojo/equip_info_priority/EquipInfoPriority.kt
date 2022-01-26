@@ -16,7 +16,7 @@ data class EquipInfoPriority(
     @PrimaryKey
     @SerializedName("id")
     @Expose
-    val id: Long,
+    val id: Int,
     /**
      * Наименование приоритета информации для оборудования
      */

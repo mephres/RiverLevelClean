@@ -30,9 +30,6 @@ interface EquipDao {
     @Update(onConflict = OnConflictStrategy.REPLACE)
     fun updateEquip(equip: EquipItem): Int
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEquipInfoList(equipInfoList: List<EquipInfo>)
-
     @Query("SELECT * FROM equip WHERE equipId = :id")
     fun getEquipItemById(id: Long): EquipItem?
 
@@ -44,5 +41,4 @@ interface EquipDao {
 
     @Query("SELECT * FROM equip WHERE isSendRFID = 0 OR isSendGeo = 0 ORDER BY equipId ASC LIMIT 1")
     fun getEquipNotSended(): LiveData<List<EquipItem>>
-
 }

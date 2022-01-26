@@ -2,6 +2,7 @@ package com.intas.metrolog.pojo.request
 
 import android.os.Parcelable
 import androidx.room.Entity
+import androidx.room.Ignore
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
@@ -9,6 +10,9 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.discipline.DisciplineItem
+import kotlinx.parcelize.IgnoredOnParcel
+import java.lang.Exception
+import java.security.spec.ECField
 
 /**
  * Заявка
@@ -22,7 +26,7 @@ data class RequestItem(
     @PrimaryKey(autoGenerate = true)
     @SerializedName("idRequest")
     @Expose
-    val id: Long = 0,
+    var id: Long = 0,
     /**
      * идентификатор пользователя, отправившего заявку на сервер ЦНО
      */
@@ -35,12 +39,6 @@ data class RequestItem(
     @SerializedName("executorId")
     @Expose
     val executorId: String? = null,
-    /**
-     * идентификатор оборудования [EquipItem]
-     */
-    @SerializedName("equipId")
-    @Expose
-    val equipId: Int = 0,
     /**
      * тип операции мероприятия
      */
@@ -107,15 +105,16 @@ data class RequestItem(
     @SerializedName("discipline")
     @Expose
     val discipline: Int = 0,
-
+    /**
+     * идентификатор оборудования [EquipItem]
+     */
+    @SerializedName("equipId")
+    @Expose
+    var equipId: String? = null,
     /**
      * категория заявки - авария,дефект, информация для ТО [Comment]
      */
     val categoryId: Int = 0,
-    /**
-     * идентификатор записи на сервере ЦНО
-     */
-    val serverId: Long = 0,
     /**
      * метка оборудования
      */
@@ -131,5 +130,11 @@ data class RequestItem(
     /**
      * информация по операции мероприятия для поиска
      */
-    var eventOperationInfo: String? = null
+    var eventOperationInfo: String? = null,
+    /**
+     * Признак отсылки записи на сервер
+     * 0 - не отослана
+     * 1 - отослана
+     */
+    var isSended: Int = 1
 ) : Parcelable

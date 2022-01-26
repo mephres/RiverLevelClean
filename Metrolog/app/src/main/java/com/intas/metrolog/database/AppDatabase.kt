@@ -22,6 +22,7 @@ import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
+import com.intas.metrolog.pojo.request.RequestPhoto
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
 
@@ -80,8 +81,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun operControlDao(): OperControlDao
     abstract fun fieldDao(): FieldDao
     abstract fun fieldDictDataDao(): FieldDictDataDao
-    abstract fun eventPhotoDao(): EventPhotoDao
     abstract fun requestPhotoDao(): RequestPhotoDao
     abstract fun equipInfoDao(): EquipInfoDao
+    abstract fun eventPhotoDao(): EventPhotoDao
 
 }

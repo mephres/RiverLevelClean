@@ -2,6 +2,7 @@ package com.intas.metrolog.ui.main
 
 import android.annotation.SuppressLint
 import android.app.Application
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
@@ -12,14 +13,10 @@ import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_BEARING
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_CATEGORY_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMMENT
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMPLETED
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMPLETED_USER_ID
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATA
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATETIME
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_END
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_START
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_TIME_START_TIMER
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DISCIPLINE_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DURATION_TIMER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ELAPSED_REALTIME_NANOS
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_EQUIP_ID
@@ -28,9 +25,8 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_FACT_DATE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OPERATION_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OP_ID
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PHOTO
-import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PRIORITY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PROVIDER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_PHOTO
@@ -39,6 +35,7 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_STATUS_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SUB_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SUB_MAN_HOUR
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
@@ -61,7 +58,10 @@ import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
 import com.intas.metrolog.ui.requests.filter.RequestFilter
-import com.intas.metrolog.util.*
+import com.intas.metrolog.util.AppPreferences
+import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.SingleLiveEvent
+import com.intas.metrolog.util.Util
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -182,6 +182,41 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.requestDao().insertRequestList(requestList)
+
+            requestList.forEach {
+                fillRequestEquipInfo(it)
+            }
+        }
+    }
+
+    /**
+     * Установка наименования оборудования, места установки, тэга оборудования для заявки
+     * Для поиска заявок по введенному тексту в поле поиска
+     *
+     * @param requestItem заявка, объект класса [RequestItem]
+     */
+    private fun fillRequestEquipInfo(requestItem: RequestItem) {
+
+        val equipId = try {
+            requestItem.equipId?.toLong()
+        } catch (e: Exception) {
+            -1
+        }
+
+        if (equipId != null) {
+            if (equipId < 0) {
+                return
+            }
+
+            val equipItem = db.equipDao().getEquipItemById(equipId) ?: return
+            val equipInfo = String.format(
+                    "%s [%s] - %s",
+                    equipItem.equipName,
+                    equipItem.equipTag,
+                    equipItem.mestUstan
+                )
+
+            db.requestDao().updateRequestEquipInfo(requestItem.id, equipInfo)
         }
     }
 
