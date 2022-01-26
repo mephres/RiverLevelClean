@@ -1,13 +1,13 @@
 package com.intas.metrolog.ui.main
 
 import android.app.Application
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.intas.metrolog.R
 import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
@@ -70,7 +70,6 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
-import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -1017,7 +1016,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_SET_REQUEST_SEND", id.toString())
 
         viewModelScope.launch {
-            db.requestDao().setRequestSendedById(id, serverId)
+            try {
+                db.requestDao().setRequestSendedById(id, serverId)
+            } catch (e: SQLiteConstraintException) {
+                db.requestDao().deleteRequestById(id)
+            }
             db.requestPhotoDao().updateRequestPhoto(id, serverId)
         }
     }

@@ -25,4 +25,7 @@ interface RequestDao {
 
     @Query("UPDATE request SET isSended = 1, id = :serverId WHERE id = :id")
     suspend fun setRequestSendedById(id: Long, serverId: Long)
+
+    @Query("DELETE FROM request WHERE id = :id")
+    suspend fun deleteRequestById(id: Long)
 }
