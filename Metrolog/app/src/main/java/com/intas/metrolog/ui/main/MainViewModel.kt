@@ -15,6 +15,12 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ALTITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_BEARING
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_CATEGORY_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMMENT
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMPLETED
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_COMPLETED_USER_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATA
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATETIME
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_END
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_START
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DATE_TIME_START_TIMER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DISCIPLINE_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_DURATION_TIMER
@@ -27,6 +33,8 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OPERATION_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OP_ID
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PHOTO
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PRIORITY
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PROVIDER
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_REQUEST_PHOTO
@@ -55,13 +63,11 @@ import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
 import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
+import com.intas.metrolog.pojo.request.RequestPhoto
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.pojo.userlocation.UserLocation
 import com.intas.metrolog.ui.requests.filter.RequestFilter
-import com.intas.metrolog.util.AppPreferences
-import com.intas.metrolog.util.DateTimeUtil
-import com.intas.metrolog.util.SingleLiveEvent
-import com.intas.metrolog.util.Util
+import com.intas.metrolog.util.*
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -292,7 +298,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MM_INSERT_EQUIP_INFO", equipInfoList.toString())
 
         viewModelScope.launch {
-            db.equipDao().insertEquipInfoList(equipInfoList)
+            db.equipInfoDao().insertEquipInfoList(equipInfoList)
         }
     }
 
