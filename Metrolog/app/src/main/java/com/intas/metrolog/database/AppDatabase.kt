@@ -28,10 +28,11 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
 
 @Database(
     entities = [AuthUser::class, UserLocation::class, JournalItem::class, UserItem::class,
-               EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
-               EventOperationTypeItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
-               EventComment::class, EquipDocument::class, RequestItem::class, EventOperationItem::class,
-               OperControlItem::class, FieldItem::class, FieldDictData::class, EventPhotoItem::class],
+        EquipItem::class, EquipInfo::class, RequestStatusItem::class, DisciplineItem::class,
+        EventOperationTypeItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
+        EventComment::class, EquipDocument::class, RequestItem::class, EventOperationItem::class,
+        OperControlItem::class, FieldItem::class, FieldDictData::class, EventPhotoItem::class,
+        RequestPhoto::class],
     version = 20, exportSchema = false
 )
 
@@ -80,4 +81,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun fieldDao(): FieldDao
     abstract fun fieldDictDataDao(): FieldDictDataDao
     abstract fun eventPhotoDao(): EventPhotoDao
+    abstract fun requestPhotoDao(): RequestPhotoDao
+    abstract fun equipInfoDao(): EquipInfoDao
+
 }

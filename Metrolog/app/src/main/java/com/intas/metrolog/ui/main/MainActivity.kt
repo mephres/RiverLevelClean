@@ -48,6 +48,9 @@ class MainActivity : AppCompatActivity() {
         initNotSendedEventOperationObserver()
         initNotSendedEventOperationControlObserver()
         initNotSendedEventPhotoObserver()
+        initNotSendedRequestObserver()
+        initNotSendedEquipInfoObserver()
+        initNotSendedRequestPhotoObserver()
     }
 
     /**
@@ -166,6 +169,45 @@ class MainActivity : AppCompatActivity() {
         viewModel.getNotSendedEventPhotoList.observe(this, {
             for (eventPhoto in it) {
                 viewModel.sendEventPhoto(eventPhoto)
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных заявок
+     */
+    private fun initNotSendedRequestObserver() {
+        viewModel.getNotSendedRequestList.observe(this, {
+            for (request in it) {
+                if (!Util.requestQueue.contains(request.id)) {
+                    viewModel.sendRequest(request)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка на сервер комментария к оборудованию
+     */
+    private fun initNotSendedEquipInfoObserver() {
+        viewModel.getNotSendedEquipInfoList.observe(this, {
+            for (equipInfo in it) {
+                if (!Util.equipInfoQueue.contains(equipInfo.id)) {
+                    viewModel.sendEquipInfo(equipInfo)
+                }
+            }
+        })
+    }
+
+    /**
+     * Получение и отправка фото к отправленной заявке
+     */
+    private fun initNotSendedRequestPhotoObserver() {
+        viewModel.getNotSendedRequestPhotoList.observe(this, {
+            for (requestPhoto in it) {
+                if (!Util.requestPhoto.contains(requestPhoto.id)) {
+                    viewModel.sendRequestPhoto(requestPhoto)
+                }
             }
         })
     }
