@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventsBinding
+import com.intas.metrolog.ui.scanner.NfcFragment
 
 class EventsFragment : Fragment() {
     private var searchView: SearchView? = null
@@ -35,6 +36,15 @@ class EventsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUI()
+
+        binding.getEventByRfidFab.setOnClickListener {
+            showScanner()
+        }
+    }
+
+    private fun showScanner() {
+        val scanner = NfcFragment.newInstanceGetEvent()
+        scanner.show(requireActivity().supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
     }
 
     private fun setUI() {

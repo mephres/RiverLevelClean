@@ -118,12 +118,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             addRequest()
         }
 
-        binding.addRequestDeleteImageButton.setOnClickListener {
-            deleteImage()
-        }
-
         viewModel.uriList.observe(this) {
-            binding.addRequestDeleteImageButton.isVisible = it.isNotEmpty()
             binding.attachImageView.isVisible = it.isEmpty()
             uriList = it
             imageSliderAdapter = ImageSliderViewAdapter(it)
@@ -131,6 +126,10 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
             imageSliderAdapter.onCropImageListener = {
                 editImage()
+            }
+
+            imageSliderAdapter.onDeleteImageListener = {
+                deleteImage()
             }
         }
     }

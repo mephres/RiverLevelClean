@@ -23,4 +23,7 @@ interface EventDao {
 
         @Query("UPDATE event SET isSended = 1 WHERE opId = :id")
         suspend fun setEventSendedById(id: Long)
+
+        @Query("SELECT * FROM event WHERE equipRfid = :rfid ORDER BY opId ASC")
+        fun getEventListByRfid(rfid: String): LiveData<List<EventItem>>
 }

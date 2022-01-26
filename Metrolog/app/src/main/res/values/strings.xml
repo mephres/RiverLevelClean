@@ -117,4 +117,5 @@
     <string name="add_equip_info_need_comment_title">Для добавления информации для ТО описание необходимо заполнить</string>
     <string name="add_equip_info_need_equip_title">Добавление приоритетной информации для ТО возможно только для оборудования, оснащенного меткой.</string>
     <string name="add_equip_info_success_title">Информация добавлена.</string>
+
 </resources>

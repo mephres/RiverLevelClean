@@ -20,6 +20,7 @@ import com.google.zxing.ResultPoint
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.ui.events.SelectEventFragment
 import com.intas.metrolog.ui.requests.add.AddRequestFragment
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -275,7 +276,9 @@ class NfcFragment : BottomSheetDialogFragment() {
         nfcAdapter?.disableReaderMode(requireActivity())
         when (scannerMode) {
             MODE_SCAN_GET_EVENT_BY_EQUIP -> {
-
+                equipSerialNumber?.let {
+                    getEventByRfid(it)
+                }
             }
             MODE_SCAN_START_EVENT -> {
 
@@ -350,6 +353,12 @@ class NfcFragment : BottomSheetDialogFragment() {
             ).show()
             closeFragment()
         }
+    }
+
+    private fun getEventByRfid(rfid: String) {
+        val fragment = SelectEventFragment.newInstance(rfid)
+        fragment.show(requireActivity().supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
+        closeFragment()
     }
 
     private fun closeFragment() {
