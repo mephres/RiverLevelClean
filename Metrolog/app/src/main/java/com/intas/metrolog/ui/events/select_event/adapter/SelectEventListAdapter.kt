@@ -1,19 +1,15 @@
 package com.intas.metrolog.ui.events.select_event.adapter
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import com.intas.metrolog.R
-import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus
-import com.intas.metrolog.ui.equip.callback.EquipItemDiffCallback
 import com.intas.metrolog.ui.events.select_event.callback.SelectEventItemDiffCallback
 import com.intas.metrolog.util.DateTimeUtil
 
@@ -64,19 +60,19 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
         }
 
         when(eventItem.status) {
-            EventStatus.NEW.ordinal -> {
+            EventStatus.NEW -> {
                 holder.eventStatusImageView.visibility = View.INVISIBLE
             }
-            EventStatus.IN_WORK.ordinal -> {
+            EventStatus.IN_WORK -> {
                 holder.eventStatusImageView.setImageResource(R.drawable.ic_timer_red_24dp)
             }
-            EventStatus.PAUSED.ordinal -> {
+            EventStatus.PAUSED -> {
                 holder.eventStatusImageView.setImageResource(R.drawable.ic_timer_off_red_24dp)
             }
-            EventStatus.COMPLETED.ordinal -> {
+            EventStatus.COMPLETED -> {
                 holder.eventStatusImageView.setImageResource(R.drawable.ic_check_red_24dp)
             }
-            EventStatus.CANCELED.ordinal -> {
+            EventStatus.CANCELED -> {
                 holder.eventStatusImageView.setImageResource(R.drawable.ic_close_red_24dp)
             }
         }

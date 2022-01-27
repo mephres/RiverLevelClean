@@ -10,7 +10,7 @@ class EventStatus {
         /**
          * мероприятие в работе
          */
-        const val INWORK = 1
+        const val IN_WORK = 1
 
         /**
          * мероприятие остановлено

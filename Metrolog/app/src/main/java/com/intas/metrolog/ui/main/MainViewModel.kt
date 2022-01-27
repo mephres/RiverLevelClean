@@ -824,8 +824,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 compositeDisposable.remove(it)
             }
 
-            val month = DateTimeUtil.getDateNowByPattern("MM")
-            val year = DateTimeUtil.getDateNowByPattern("YYYY")
+            val month = DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "MM").toInt()
+            val year = DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(),"YYYY").toInt()
 
             getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
                 .subscribeOn(Schedulers.io())

@@ -15,7 +15,7 @@ import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
-import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.INWORK
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.IN_WORK
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.ui.events.adapter.callback.EventItemDiffCallback
 import com.intas.metrolog.util.DateTimeUtil
@@ -218,7 +218,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
                 DateTimeUtil.getDateTimeFromMili(factDate, "dd.MM.yyyy HH:mm")
 
             when (eventItem.status) {
-                INWORK -> holder.factDateLabelTextView.text =
+                IN_WORK -> holder.factDateLabelTextView.text =
                     context.getString(R.string.event_plan_date_label_in_work)
                 PAUSED -> holder.factDateLabelTextView.text =
                     context.getString(R.string.event_fact_date_label_pause)
