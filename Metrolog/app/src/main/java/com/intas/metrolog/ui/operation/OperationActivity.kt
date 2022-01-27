@@ -5,12 +5,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.transition.TransitionManager
+import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
 import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.util.ViewUtil
 
 class OperationActivity : AppCompatActivity() {
     private var eventItem: EventItem? = null
@@ -24,22 +29,17 @@ class OperationActivity : AppCompatActivity() {
         ViewModelProvider(this)[OperationViewModel::class.java]
     }
 
+    private val enterTransition = MaterialFadeThrough()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
         parseIntent()
         setToolbar()
 
         binding.operationInfoImageView.setOnClickListener {
-            operationInfoIsVisible = !operationInfoIsVisible
-
-            if (operationInfoIsVisible) {
-                binding.operationInfoImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_chevron_down))
-                binding.operationContainer.visibility = View.VISIBLE
-            } else {
-                binding.operationInfoImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_chevron_up))
-                binding.operationContainer.visibility = View.GONE
-            }
+            showOperationInfo(it)
         }
     }
 
@@ -50,6 +50,25 @@ class OperationActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showOperationInfo(view: View) {
+        ViewUtil.runAnimationButton(applicationContext, view)
+
+        operationInfoIsVisible = !operationInfoIsVisible
+
+        if (operationInfoIsVisible) {
+            TransitionManager.beginDelayedTransition(
+                binding.root,
+                enterTransition
+            )
+            binding.operationInfoImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_chevron_down))
+            binding.operationContainer.visibility = View.VISIBLE
+        } else {
+            TransitionManager.endTransitions(binding.root)
+            binding.operationInfoImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_chevron_up))
+            binding.operationContainer.visibility = View.GONE
+        }
     }
 
     private fun setToolbar() {

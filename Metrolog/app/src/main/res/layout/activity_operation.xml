@@ -218,8 +218,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
-                android:textStyle="bold"
                 android:textColor="@android:color/tertiary_text_light"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
                 app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
@@ -276,6 +276,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:paddingBottom="16dp"
                 android:visibility="gone"
                 app:layout_constraintTop_toBottomOf="@+id/equipVerificationLabelTextView">
 
@@ -283,7 +284,7 @@
                     android:id="@+id/nameTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     android:text="@string/operation_activity_name"
@@ -300,7 +301,6 @@
                     android:id="@+id/typeLabelTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/operation_activity_event_type_label"
                     app:layout_constraintStart_toStartOf="@+id/nameTextView"
@@ -320,8 +320,8 @@
                     android:id="@+id/factDateLabelTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
                     android:text="@string/event_fact_date_label_complete"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView" />
@@ -353,7 +353,6 @@
                     android:id="@+id/planDateLabelTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/operation_activity_event_plan_date_label"
                     app:layout_constraintStart_toStartOf="@+id/nameTextView"
@@ -374,16 +373,14 @@
                 android:id="@+id/operationInfoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_chevron_up"
-                android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="true"
                 android:focusable="true"
-                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_chevron_up"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/operationContainer"/>
+                app:layout_constraintTop_toBottomOf="@+id/operationContainer" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
