@@ -1,5 +1,30 @@
 package com.intas.metrolog.pojo.event.event_status
 
-enum class EventStatus {
-    NEW, IN_WORK, PAUSED, COMPLETED, CANCELED
+class EventStatus {
+    companion object {
+        /**
+         * новое мероприятияе
+         */
+        const val NEW = 0
+
+        /**
+         * мероприятие в работе
+         */
+        const val INWORK = 1
+
+        /**
+         * мероприятие остановлено
+         */
+        const val PAUSED = 2
+
+        /**
+         * мероприятияе выполнено
+         */
+        const val COMPLETED = 3
+
+        /**
+         * отказное мероприятие
+         */
+        const val CANCELED = 4
+    }
 }

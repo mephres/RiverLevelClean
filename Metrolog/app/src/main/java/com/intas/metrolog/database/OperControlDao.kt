@@ -10,6 +10,9 @@ interface OperControlDao {
     @Query("SELECT * FROM oper_control WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
     fun getNotSendedEventOperationControlList(): LiveData<List<OperControlItem>>
 
+    @Query("SELECT * FROM oper_control WHERE id = :id")
+    fun getEventOperationControlById(id: Int): OperControlItem?
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateOperControl(operControl: OperControlItem)
 

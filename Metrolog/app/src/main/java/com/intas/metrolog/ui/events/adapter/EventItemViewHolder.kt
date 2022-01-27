@@ -40,4 +40,7 @@ class EventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val equipTagActualImageView: ImageView = view.findViewById(R.id.equipTagActualImageView)
     val equipFullInfoImageView: ImageView = view.findViewById(R.id.equipFullInfoImageView)
     val eventStatusImageView: ImageView = view.findViewById(R.id.eventStatusImageView)
+    val equipLabelImageView: ImageView = view.findViewById(R.id.equipLabelImageView)
+
+    var isFullInfo = false
 }

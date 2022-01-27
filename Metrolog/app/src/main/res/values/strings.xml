@@ -120,6 +120,10 @@
 
     <string name="event_equip_ZavNum_label">Заводской номер:</string>
     <string name="event_type_label">Тип мероприятия:</string>
+
     <string name="event_plan_date_label">Запланировано:</string>
+    <string name="event_plan_date_label_in_work">Выполняется:</string>
+    <string name="event_fact_date_label_pause">Отложено:</string>
     <string name="event_fact_date_label_complete">Выполнено:</string>
+    <string name="event_fact_date_label_cancel">Отменено:</string>
 </resources>

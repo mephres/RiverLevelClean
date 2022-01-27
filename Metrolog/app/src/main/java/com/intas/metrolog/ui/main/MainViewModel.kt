@@ -855,13 +855,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
-            db.eventDao().insertEventList(eventList)
+
+            val tempNotSendedEventList = notSendedEventList.value
+
+            db.eventDao().insertEventList(eventList.map {
+                it.operationListSize = it.operation?.size ?: 0
+                it.needPhotoFix = it.operation?.any {
+                    it.needPhotoFix == 1
+                } == true
+                it.equipId = it.equip?.equipId
+                it.equipRfid = it.equip?.equipRFID
+                it.equipName = it.equip?.equipName
+                it
+            })
+
+            tempNotSendedEventList?.let {
+                if (!tempNotSendedEventList.isNullOrEmpty()) {
+                    db.eventDao().insertEventList(it)
+                }
+            }
 
             eventList.forEach { event ->
+
                 Util.safeLet(event.operation, event.equipId) { eol, equipId ->
                     insertEventOperationList(eol, event.opId, equipId)
                 }
-
             }
         }
     }
@@ -872,10 +890,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         equipId: Long
     ) {
         viewModelScope.launch {
+            val tempNotSendedEventOperationList = notSendedEventOperationList.value
+
             db.eventOperationDao().insertEventOperationList(eventEventOperationList.map {
                 it.opId = eventId
                 it
             })
+
+            tempNotSendedEventOperationList?.let {
+                if (!tempNotSendedEventOperationList.isNullOrEmpty()) {
+                    db.eventOperationDao().insertEventOperationList(it)
+                }
+            }
 
             eventEventOperationList.forEach { eventOperation ->
                 eventOperation.operControl?.let {
@@ -885,12 +911,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     insertOperControl(it)
                 }
             }
-
         }
     }
 
     private fun insertOperControl(operControl: OperControlItem) {
         viewModelScope.launch {
+
+            val tempOperControl = db.operControlDao().getEventOperationControlById(operControl.id ?: 0)
+            tempOperControl?.let {
+                if (it.isSended == 0) {
+                    return@launch
+                }
+            }
+
             db.operControlDao().insertOperControl(operControl)
 
             operControl.fieldList?.let { fieldList ->
@@ -923,6 +956,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         sendEventDisposable?.let {
             compositeDisposable.remove(it)
+        }
+
+        event?.let {
+            Util.eventQueue.addLast(event.opId)
         }
 
         val map = mutableMapOf<String, String>()
@@ -966,6 +1003,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun setEventSendedById(id: Long) {
         Log.d("MM_SET_EVENT_SEND", id.toString())
 
+        if (Util.eventQueue.count() > 100) {
+            Util.eventQueue.removeFirst()
+        }
+
         viewModelScope.launch {
             db.eventDao().setEventSendedById(id)
         }
@@ -982,12 +1023,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             compositeDisposable.remove(it)
         }
 
+        eventOperation?.let {
+            Util.eventOperationQueue.addLast(eventOperation.subId)
+        }
+
         val opId = eventOperation.subId
 
-        var status = EventStatus.CANCELED.ordinal
+        var status = EventStatus.CANCELED
         var comment = "Отклонено"
         if (eventOperation.completed == 1) {
-            status = EventStatus.COMPLETED.ordinal
+            status = EventStatus.COMPLETED
             comment = "Выполнено"
         }
 
@@ -1043,6 +1088,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             compositeDisposable.remove(it)
         }
 
+        eventOperation?.let {
+            Util.eventOperationQueue.addLast(eventOperation.subId)
+        }
+
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_OP_ID] = eventOperation.opId.toString()
@@ -1085,6 +1134,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     @SuppressLint("LongLogTag")
     private fun setEventOperationSendedById(id: Long) {
         Log.d("MM_SET_EVENT_OPERATION_SEND", id.toString())
+
+        if (Util.eventOperationQueue.count() > 100) {
+            Util.eventOperationQueue.removeFirst()
+        }
 
         viewModelScope.launch {
             db.eventOperationDao().setEventOperationSendedById(id)

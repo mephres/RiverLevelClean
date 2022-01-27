@@ -81,6 +81,4 @@ data class FieldItem(
     @Ignore
     @SerializedName("dictData")
     val dictData: Map<String, String>? = null
-
-    constructor() : this(0, 0, 0, "", "", "", "", "", "", 0, 0, "")
 }
