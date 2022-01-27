@@ -192,6 +192,4 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
     override fun getItemViewType(position: Int): Int {
         return 0
     }
-
-
 }

@@ -95,7 +95,7 @@ data class EventItem(
      */
     @SerializedName("status")
     @Expose
-    val status: Int = EventStatus.NEW.ordinal,
+    val status: Int = EventStatus.NEW,
 
     /**
      * приоритет мероприятия: 1 - обычное(плановое), 2 - важное(срочное), 3 - авария
@@ -154,11 +154,11 @@ data class EventItem(
      * месяц, на который запланировано данное мероприятие
      */
     val month: Int
-        get() = DateTimeUtil.getDateNowByPattern("MM", planDate ?: 0)
+        get() = DateTimeUtil.getDateTimeFromMili(planDate ?: 0, "MM").toInt()
 
     /**
      * день, на который запланировано данное мероприятие
      */
     val day: Int
-        get() = DateTimeUtil.getDateNowByPattern("dd", planDate ?: 0)
+        get() = DateTimeUtil.getDateTimeFromMili(planDate ?: 0, "dd").toInt()
 }

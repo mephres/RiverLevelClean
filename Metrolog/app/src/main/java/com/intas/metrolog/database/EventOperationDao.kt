@@ -7,7 +7,7 @@ import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
 @Dao
 interface EventOperationDao {
 
-    @Query("SELECT * FROM eventOperation WHERE isSended = 0 ORDER BY subId ASC LIMIT 1")
+    @Query("SELECT * FROM eventOperation WHERE isSended = 0 ORDER BY subId")
     fun getNotSendedEventOperationList(): LiveData<List<EventOperationItem>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

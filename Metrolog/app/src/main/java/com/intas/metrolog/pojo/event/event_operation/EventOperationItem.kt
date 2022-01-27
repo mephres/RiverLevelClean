@@ -82,19 +82,4 @@ data class EventOperationItem(
     @SerializedName("operControl")
     val operControl: OperControlItem? = null
 
-    constructor() : this(
-        0,
-        0,
-        0,
-        "",
-        0.0,
-        0.0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        1
-    )
 }
