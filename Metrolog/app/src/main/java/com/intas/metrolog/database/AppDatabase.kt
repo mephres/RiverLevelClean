@@ -34,7 +34,7 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
         EventComment::class, EquipDocument::class, RequestItem::class, EventOperationItem::class,
         OperControlItem::class, FieldItem::class, FieldDictData::class, EventPhotoItem::class,
         RequestPhoto::class],
-    version = 20, exportSchema = false
+    version = 21, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {

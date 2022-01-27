@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+    android:clickable="true"
+    android:focusable="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/eventItemContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/eventNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/md_black_1000"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/eventStatusImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="ТО 1" />
+
+        <ImageView
+            android:id="@+id/eventStatusImageView"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_check_red_24dp"
+            app:tint="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/planDateLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="@+id/eventNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/eventNameTextView"
+            android:text="@string/select_event_plan_date_title" />
+
+        <TextView
+            android:id="@+id/planDateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/md_black_1000"
+            app:layout_constraintStart_toEndOf="@+id/eventTypeLabelTextView"
+            app:layout_constraintTop_toTopOf="@+id/planDateLabelTextView"
+            tools:text="22.02.2022" />
+
+        <TextView
+            android:id="@+id/eventTypeLabelTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            app:layout_constraintStart_toStartOf="@+id/eventNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/select_event_type_title" />
+
+        <TextView
+            android:id="@+id/eventTypeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Small"
+            android:textColor="@color/md_black_1000"
+            app:layout_constraintStart_toEndOf="@+id/eventTypeLabelTextView"
+            app:layout_constraintTop_toTopOf="@+id/eventTypeLabelTextView"
+            tools:text="eventTypeTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

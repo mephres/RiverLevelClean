@@ -20,7 +20,7 @@ import com.google.zxing.ResultPoint
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
-import com.intas.metrolog.ui.events.SelectEventFragment
+import com.intas.metrolog.ui.events.select_event.SelectEventFragment
 import com.intas.metrolog.ui.requests.add.AddRequestFragment
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -355,10 +355,30 @@ class NfcFragment : BottomSheetDialogFragment() {
         }
     }
 
+    /**
+     * Функция получения экземпляра оборудования по RFID-тэгу для поиска мероприятий
+     * @param rfid - отсканированная метка
+     */
     private fun getEventByRfid(rfid: String) {
-        val fragment = SelectEventFragment.newInstance(rfid)
-        fragment.show(requireActivity().supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
-        closeFragment()
+        nfcViewModel.getEquipByRFID(rfid)
+        nfcViewModel.onEquipItemSuccess = {
+            val selectEventFragment = SelectEventFragment.newInstance(it)
+            selectEventFragment.show(requireActivity().supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
+            closeFragment()
+        }
+        nfcViewModel.onFailure = {
+            val tagGetFailure = getString(R.string.nfc_tag_get_equip_failure)
+            Toast.makeText(requireContext(), String.format(tagGetFailure, it), Toast.LENGTH_SHORT)
+                .show()
+            closeFragment()
+        }
+        nfcViewModel.onError = {
+            Toast.makeText(
+                requireContext(), getString(R.string.nfc_tag_get_equip_error),
+                Toast.LENGTH_SHORT
+            ).show()
+            closeFragment()
+        }
     }
 
     private fun closeFragment() {

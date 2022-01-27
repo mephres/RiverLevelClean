@@ -855,13 +855,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
-            db.eventDao().insertEventList(eventList)
+
+            db.eventDao().insertEventList(eventList.map {
+                it.operationListSize = it.operation?.size ?: 0
+                it.needPhotoFix = it.operation?.any {
+                    it.needPhotoFix == 1
+                } == true
+                it.equipId = it.equip?.equipId
+                it.equipRfid = it.equip?.equipRFID
+                it.equipName = it.equip?.equipName
+                it
+            })
 
             eventList.forEach { event ->
                 Util.safeLet(event.operation, event.equipId) { eol, equipId ->
                     insertEventOperationList(eol, event.opId, equipId)
                 }
-
             }
         }
     }

@@ -118,4 +118,11 @@
     <string name="add_equip_info_need_equip_title">Добавление приоритетной информации для ТО возможно только для оборудования, оснащенного меткой.</string>
     <string name="add_equip_info_success_title">Информация добавлена.</string>
 
+    <string name="select_event_title">Список мероприятий</string>
+    <string name="select_event_no_data_title">По данному оборудованию мероприятий не найдено</string>
+    <string name="select_event_plan_date_title">Запланировано:</string>
+    <string name="select_event_type_title">Тип мероприятия:</string>
+    <string name="select_event_type_planned_title">Плановое</string>
+    <string name="select_event_type_unscheduled_title">Внеплановое</string>
+
 </resources>
