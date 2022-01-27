@@ -49,7 +49,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_RFIDlabel"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
 
@@ -60,6 +59,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/equipRFIDLabelTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/equipZavNumTextView"
@@ -72,7 +72,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_Tag_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
 
@@ -83,6 +82,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="@+id/equipTagLabelTextView"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
                 app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
@@ -94,6 +94,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/equipZavNumTextView"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
                 app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
@@ -105,7 +106,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_Installation_Location_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
 
@@ -116,7 +116,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_GRSI_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
 
@@ -127,6 +126,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
@@ -139,6 +139,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
@@ -151,7 +152,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_Manufacturer_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView" />
 
@@ -162,7 +162,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_Metering_Type_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView" />
 
@@ -173,6 +172,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
@@ -185,6 +185,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
@@ -197,7 +198,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_Calibration_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView" />
 
@@ -208,7 +208,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/equip_Verification_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
 
@@ -219,43 +218,11 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 android:textColor="@android:color/tertiary_text_light"
                 app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
-                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
                 app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
-
-            <TextView
-                android:id="@+id/factDateLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/event_fact_date_label_complete"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/planDateLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView" />
-
-            <TextView
-                android:id="@+id/factDateTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="02.11.2019 00:11:22"
-                app:layout_constraintStart_toStartOf="@+id/planDateTextView"
-                app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView" />
-
-            <TextView
-                android:id="@+id/statusTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:text="status"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="@color/colorPrimary"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/nameTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/nameTextView" />
 
             <TextView
                 android:id="@+id/equipZavNumLabelTextView"
@@ -264,7 +231,6 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="@string/operation_activity_equip_ZavNum_label"
-                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/equipNameTextView" />
 
@@ -275,66 +241,10 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="TextView"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
                 app:layout_constraintTop_toTopOf="@+id/equipZavNumLabelTextView" />
-
-            <TextView
-                android:id="@+id/nameTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/operation_activity_name"
-                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/statusTextView"
-                app:layout_constraintHorizontal_bias="1.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipVerificationTextView"
-                app:layout_constraintVertical_chainStyle="packed" />
-
-            <TextView
-                android:id="@+id/typeLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/operation_activity_event_type_label"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/nameTextView"
-                app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
-
-            <TextView
-                android:id="@+id/typeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:text="TextView"
-                app:layout_constraintStart_toEndOf="@+id/typeLabelTextView"
-                app:layout_constraintTop_toTopOf="@+id/typeLabelTextView" />
-
-            <TextView
-                android:id="@+id/planDateLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/operation_activity_event_plan_date_label"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="@+id/nameTextView"
-                app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
-
-            <TextView
-                android:id="@+id/planDateTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="01.01.2019"
-                app:layout_constraintStart_toStartOf="@+id/typeTextView"
-                app:layout_constraintTop_toTopOf="@+id/planDateLabelTextView" />
 
             <TextView
                 android:id="@+id/equipNameTextView"
@@ -343,7 +253,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                tools:text="Название оборудования"
+                android:text="Название оборудования"
                 android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
                 android:textSize="18sp"
                 android:textStyle="bold"
@@ -361,10 +271,110 @@
                 app:layout_constraintTop_toTopOf="@+id/equipTagTextView"
                 app:srcCompat="@drawable/ic_warning_red_24dp" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/operationContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/equipVerificationLabelTextView">
+
+                <TextView
+                    android:id="@+id/nameTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/operation_activity_name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toStartOf="@+id/statusTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_chainStyle="packed" />
+
+                <TextView
+                    android:id="@+id/typeLabelTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/operation_activity_event_type_label"
+                    app:layout_constraintStart_toStartOf="@+id/nameTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
+
+                <TextView
+                    android:id="@+id/typeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="TextView"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toEndOf="@+id/typeLabelTextView"
+                    app:layout_constraintTop_toTopOf="@+id/typeLabelTextView" />
+
+                <TextView
+                    android:id="@+id/factDateLabelTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="16dp"
+                    android:text="@string/event_fact_date_label_complete"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView" />
+
+                <TextView
+                    android:id="@+id/factDateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="02.11.2019 00:11:22"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/planDateTextView"
+                    app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView" />
+
+                <TextView
+                    android:id="@+id/statusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="status"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBottom_toBottomOf="@+id/nameTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/nameTextView" />
+
+                <TextView
+                    android:id="@+id/planDateLabelTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/operation_activity_event_plan_date_label"
+                    app:layout_constraintStart_toStartOf="@+id/nameTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/typeLabelTextView" />
+
+                <TextView
+                    android:id="@+id/planDateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="01.01.2019"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="@+id/typeTextView"
+                    app:layout_constraintTop_toTopOf="@+id/planDateLabelTextView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <ImageView
+                android:id="@+id/operationInfoImageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_chevron_down"
+                android:src="@drawable/ic_chevron_up"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"
                 android:clickable="true"
@@ -373,7 +383,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/factDateLabelTextView"/>
+                app:layout_constraintTop_toBottomOf="@+id/operationContainer"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

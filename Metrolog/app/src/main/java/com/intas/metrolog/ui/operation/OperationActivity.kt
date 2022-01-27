@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import com.intas.metrolog.pojo.event.EventItem
 
 class OperationActivity : AppCompatActivity() {
     private var eventItem: EventItem? = null
+    private var operationInfoIsVisible = false
 
     private val binding by lazy {
         ActivityOperationBinding.inflate(layoutInflater)
@@ -27,6 +29,18 @@ class OperationActivity : AppCompatActivity() {
         setContentView(binding.root)
         parseIntent()
         setToolbar()
+
+        binding.operationInfoImageView.setOnClickListener {
+            operationInfoIsVisible = !operationInfoIsVisible
+
+            if (operationInfoIsVisible) {
+                binding.operationInfoImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_chevron_down))
+                binding.operationContainer.visibility = View.VISIBLE
+            } else {
+                binding.operationInfoImageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_chevron_up))
+                binding.operationContainer.visibility = View.GONE
+            }
+        }
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
