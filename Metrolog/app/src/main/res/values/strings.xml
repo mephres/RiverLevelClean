@@ -126,4 +126,12 @@
     <string name="event_fact_date_label_pause">Отложено:</string>
     <string name="event_fact_date_label_complete">Выполнено:</string>
     <string name="event_fact_date_label_cancel">Отменено:</string>
+
+    <string name="select_event_title">Список мероприятий</string>
+    <string name="select_event_no_data_title">По данному оборудованию мероприятий не найдено</string>
+    <string name="select_event_plan_date_title">Запланировано:</string>
+    <string name="select_event_type_title">Тип мероприятия:</string>
+    <string name="select_event_type_planned_title">Плановое</string>
+    <string name="select_event_type_unscheduled_title">Внеплановое</string>
+
 </resources>
