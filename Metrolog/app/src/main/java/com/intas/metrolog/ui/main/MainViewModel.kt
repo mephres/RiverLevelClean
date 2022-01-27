@@ -817,7 +817,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun getEvent() {
+    fun getEvent() {
         Util.authUser?.userId?.let {
 
             getEventDisposable?.let {

@@ -49,7 +49,7 @@ class EventsFragment : Fragment() {
         binding.eventSwipeRefreshLayout.setOnRefreshListener {
             binding.eventSwipeRefreshLayout.isRefreshing = false
             binding.eventProgressIndicator.visibility = View.VISIBLE
-            mainViewModel.getEquip()
+            mainViewModel.getEvent()
         }
     }
 
