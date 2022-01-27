@@ -16,6 +16,7 @@ import com.intas.metrolog.databinding.FragmentBottomSelectEventBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
 import com.intas.metrolog.ui.events.select_event.adapter.SelectEventListAdapter
+import com.intas.metrolog.ui.operation.OperationActivity
 
 class SelectEventFragment : BottomSheetDialogFragment() {
     private lateinit var selectEventListAdapter: SelectEventListAdapter
@@ -84,7 +85,8 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
     private fun setClickListener() {
         selectEventListAdapter.onItemClickListener = {
-
+            val eventItem = it
+            startActivity(OperationActivity.newIntent(requireContext(), eventItem))
         }
     }
 

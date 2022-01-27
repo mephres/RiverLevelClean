@@ -277,7 +277,7 @@ class NfcFragment : BottomSheetDialogFragment() {
         when (scannerMode) {
             MODE_SCAN_GET_EVENT_BY_EQUIP -> {
                 equipSerialNumber?.let {
-                    getEventByRfid(it)
+                    showSelectEventByEquipRfid(it)
                 }
             }
             MODE_SCAN_START_EVENT -> {
@@ -359,9 +359,10 @@ class NfcFragment : BottomSheetDialogFragment() {
      * Функция получения экземпляра оборудования по RFID-тэгу для поиска мероприятий
      * @param rfid - отсканированная метка
      */
-    private fun getEventByRfid(rfid: String) {
+    private fun showSelectEventByEquipRfid(rfid: String) {
         nfcViewModel.getEquipByRFID(rfid)
         nfcViewModel.onEquipItemSuccess = {
+            //поиск мероприятий по найденному оборудованию производится в SelectEventFragment
             val selectEventFragment = SelectEventFragment.newInstance(it)
             selectEventFragment.show(requireActivity().supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
             closeFragment()

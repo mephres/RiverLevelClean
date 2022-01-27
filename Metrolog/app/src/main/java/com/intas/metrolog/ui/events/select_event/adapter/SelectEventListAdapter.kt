@@ -52,10 +52,10 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
             EventPriority.PLANED.ordinal -> {
                 holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_white_1000))
             }
-            EventPriority.ACCIDENT.ordinal -> {
+            EventPriority.SERIOUS.ordinal -> {
                 holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_orange_300))
             }
-            EventPriority.SERIOUS.ordinal -> {
+            EventPriority.ACCIDENT.ordinal -> {
                 holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_red_500))
             }
             EventPriority.UNKNOWN.ordinal -> {
@@ -81,8 +81,9 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
             }
         }
 
-
-        onItemClickListener?.invoke(eventItem)
+        holder.itemView.setOnClickListener {
+            onItemClickListener?.invoke(eventItem)
+        }
     }
 
     override fun onViewRecycled(holder: SelectEventItemViewHolder) {
