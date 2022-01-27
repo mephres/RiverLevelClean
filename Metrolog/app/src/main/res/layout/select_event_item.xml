@@ -2,13 +2,16 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/eventCardView"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="4dp"
+    android:clickable="true"
+    android:focusable="true"
+    app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
     app:cardUseCompatPadding="true"
-    android:clickable="true"
-    android:focusable="true">
+    app:strokeWidth="2dp"
+    tools:strokeColor="@color/md_orange_400">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/eventItemContainer"
@@ -47,10 +50,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:text="@string/select_event_plan_date_title"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="@+id/eventNameTextView"
-            app:layout_constraintTop_toBottomOf="@+id/eventNameTextView"
-            android:text="@string/select_event_plan_date_title" />
+            app:layout_constraintTop_toBottomOf="@+id/eventNameTextView" />
 
         <TextView
             android:id="@+id/planDateTextView"
@@ -69,11 +72,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
+            android:text="@string/select_event_type_title"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            app:layout_constraintStart_toStartOf="@+id/eventNameTextView"
-            app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:text="@string/select_event_type_title" />
+            app:layout_constraintStart_toStartOf="@+id/eventNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView" />
 
         <TextView
             android:id="@+id/eventTypeTextView"

@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.intas.metrolog.R
 
 class SelectEventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -12,4 +13,5 @@ class SelectEventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) 
     val eventTypeTextView: TextView = view.findViewById(R.id.eventTypeTextView)
     val eventStatusImageView: ImageView = view.findViewById(R.id.eventStatusImageView)
     val eventItemContainer: View = view.findViewById(R.id.eventItemContainer)
+    val eventCardView: MaterialCardView = view.findViewById(R.id.eventCardView)
 }

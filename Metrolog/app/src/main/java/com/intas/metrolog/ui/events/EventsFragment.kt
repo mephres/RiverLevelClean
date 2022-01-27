@@ -13,6 +13,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventsBinding
 import com.intas.metrolog.ui.events.adapter.EventListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
+import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.ui.scanner.NfcFragment
 
 class EventsFragment : Fragment() {
@@ -84,8 +85,7 @@ class EventsFragment : Fragment() {
     private fun setupClickListener() {
 
         eventListAdapter.onEventClickListener = {
-
-            val a = it
+            startActivity(OperationActivity.newIntent(requireContext(), it))
         }
 
         binding.searchEventFab.setOnClickListener {

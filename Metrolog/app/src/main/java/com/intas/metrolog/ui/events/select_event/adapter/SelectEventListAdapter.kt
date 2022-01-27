@@ -46,16 +46,16 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
 
         when(eventItem.priority) {
             EventPriority.PLANED.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_white_1000))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white_1000)
             }
             EventPriority.SERIOUS.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_orange_300))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_orange_300)
             }
             EventPriority.ACCIDENT.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_red_500))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_red_500)
             }
             EventPriority.UNKNOWN.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_white_1000))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white_1000)
             }
         }
 
