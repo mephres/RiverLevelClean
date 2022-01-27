@@ -14,21 +14,6 @@ class DateTimeUtil {
         const val DAY_IN_SECONDS = 86399
 
         /**
-         * dd - день
-         * MM - месяц
-         * YYYY - год
-         */
-        fun getDateNowByPattern(pattern: String, timeInMili: Long = 0): Int {
-            val simpleDateFormat = SimpleDateFormat(pattern)
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            if (timeInMili > 0) {
-                calendar.timeInMillis = timeInMili * 1000L
-            }
-            return simpleDateFormat.format(calendar.time).toInt()
-        }
-
-        /**
          * Преобразование даты-времени в милисекундах
          * @param timeInMili время в милисекундах
          * @param chatType тип чата: 0 - список активных чатов, 1 - чат с собеседником
@@ -98,7 +83,7 @@ class DateTimeUtil {
          * @param pattern шаблон, например dd.MM.yyyy HH:mm:ss
          * @return дата-время
          */
-        fun getDateTimeFromMili(timeInMili: Long, pattern: String): String? {
+        fun getDateTimeFromMili(timeInMili: Long, pattern: String): String {
             val simpleDateFormat = SimpleDateFormat(pattern)
             simpleDateFormat.timeZone = timeZone
             val calendar = GregorianCalendar(timeZone)

@@ -154,11 +154,11 @@ data class EventItem(
      * месяц, на который запланировано данное мероприятие
      */
     val month: Int
-        get() = DateTimeUtil.getDateNowByPattern("MM", planDate ?: 0)
+        get() = DateTimeUtil.getDateTimeFromMili(planDate ?: 0, "MM").toInt()
 
     /**
      * день, на который запланировано данное мероприятие
      */
     val day: Int
-        get() = DateTimeUtil.getDateNowByPattern("dd", planDate ?: 0)
+        get() = DateTimeUtil.getDateTimeFromMili(planDate ?: 0, "dd").toInt()
 }
