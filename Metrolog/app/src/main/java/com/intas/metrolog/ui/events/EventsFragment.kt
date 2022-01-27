@@ -37,7 +37,7 @@ class EventsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUI()
 
-        binding.getEventByRfidFab.setOnClickListener {
+        binding.searchEventFab.setOnClickListener {
             showScanner()
         }
     }

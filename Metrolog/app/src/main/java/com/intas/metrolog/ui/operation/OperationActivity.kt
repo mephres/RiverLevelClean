@@ -2,19 +2,17 @@ package com.intas.metrolog.ui.operation
 
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.ViewModelProvider
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
-import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.EventItem
-import com.intas.metrolog.ui.equip_document.EquipDocumentActivity
 
 class OperationActivity : AppCompatActivity() {
+    private var eventItem: EventItem? = null
 
     private val binding by lazy {
         ActivityOperationBinding.inflate(layoutInflater)
@@ -27,6 +25,7 @@ class OperationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+        parseIntent()
         setToolbar()
     }
 
@@ -48,6 +47,19 @@ class OperationActivity : AppCompatActivity() {
             it.setDisplayHomeAsUpEnabled(true)
         }
         this.title = "Мероприятие"
+    }
+
+    private fun parseIntent() {
+        if (!intent.hasExtra(EXTRA_EVENT_ITEM)) {
+            finish()
+            return
+        }
+
+        eventItem = intent.getParcelableExtra(EXTRA_EVENT_ITEM)
+        if (eventItem == null) {
+            finish()
+            return
+        }
     }
 
     companion object {
