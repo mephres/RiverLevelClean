@@ -20,6 +20,7 @@ import com.google.zxing.ResultPoint
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.ui.events.select_event.SelectEventFragment
 import com.intas.metrolog.ui.requests.add.AddRequestFragment
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -275,7 +276,9 @@ class NfcFragment : BottomSheetDialogFragment() {
         nfcAdapter?.disableReaderMode(requireActivity())
         when (scannerMode) {
             MODE_SCAN_GET_EVENT_BY_EQUIP -> {
-
+                equipSerialNumber?.let {
+                    showSelectEventByEquipRfid(it)
+                }
             }
             MODE_SCAN_START_EVENT -> {
 
@@ -335,6 +338,33 @@ class NfcFragment : BottomSheetDialogFragment() {
                 requireActivity().supportFragmentManager,
                 AddRequestFragment.ADD_REQUEST_FRAGMENT_TAG
             )
+            closeFragment()
+        }
+        nfcViewModel.onFailure = {
+            val tagGetFailure = getString(R.string.nfc_tag_get_equip_failure)
+            Toast.makeText(requireContext(), String.format(tagGetFailure, it), Toast.LENGTH_SHORT)
+                .show()
+            closeFragment()
+        }
+        nfcViewModel.onError = {
+            Toast.makeText(
+                requireContext(), getString(R.string.nfc_tag_get_equip_error),
+                Toast.LENGTH_SHORT
+            ).show()
+            closeFragment()
+        }
+    }
+
+    /**
+     * Функция получения экземпляра оборудования по RFID-тэгу для поиска мероприятий
+     * @param rfid - отсканированная метка
+     */
+    private fun showSelectEventByEquipRfid(rfid: String) {
+        nfcViewModel.getEquipByRFID(rfid)
+        nfcViewModel.onEquipItemSuccess = {
+            //поиск мероприятий по найденному оборудованию производится в SelectEventFragment
+            val selectEventFragment = SelectEventFragment.newInstance(it)
+            selectEventFragment.show(requireActivity().supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
             closeFragment()
         }
         nfcViewModel.onFailure = {

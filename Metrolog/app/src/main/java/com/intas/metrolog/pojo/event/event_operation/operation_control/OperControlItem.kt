@@ -53,6 +53,4 @@ data class OperControlItem(
     @Ignore
     @SerializedName("fields")
     val fieldList: List<FieldItem>? = null
-
-    constructor() : this(0, 0, 0, "")
 }

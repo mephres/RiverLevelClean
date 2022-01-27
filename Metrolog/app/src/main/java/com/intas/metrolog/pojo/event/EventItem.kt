@@ -95,7 +95,7 @@ data class EventItem(
      */
     @SerializedName("status")
     @Expose
-    val status: Int = EventStatus.NEW.ordinal,
+    val status: Int = EventStatus.NEW,
 
     /**
      * приоритет мероприятия: 1 - обычное(плановое), 2 - важное(срочное), 3 - авария
@@ -108,7 +108,31 @@ data class EventItem(
      * 0 - не отправлено на сервер
      * 1 - отправлено на сервер
      */
-    val isSended: Int = 1
+    val isSended: Int = 1,
+    /**
+     * количество операций мероприятия
+     */
+    var operationListSize: Int = 0,
+
+    /**
+     * идентификатор оборудования мероприятия [EquipItem]
+     */
+    var equipId: Long? = 0,
+
+    /**
+     * метка оборудования мероприятия
+     */
+    var equipRfid: String? = null,
+
+    /**
+     * Название оборудования мероприятия
+     */
+    var equipName: String? = null,
+
+    /**
+     * признак - фотофиксация при выполнении мероприятия (0 - фото не нужно, 1 - фото нужно)
+     */
+    var needPhotoFix: Boolean = false
 ) : Parcelable {
     /**
      * Оборудование
@@ -125,70 +149,16 @@ data class EventItem(
     @SerializedName("checkList")
     @Expose
     var operation: List<EventOperationItem>? = null
-        /*set(value) {
-            field = value?.let {
-                it.map {
-                    it.opId = opId
-                    it
-                }
-            }
-        }*/
-    /*get() = operation?.map {
-            it.opId = this.opId
-            it
-    }*/
-
-    /**
-     * количество операций мероприятия
-     */
-    var operationListSize: Int = 0
-        get() = operation?.size ?: 0
-
-    /**
-     * идентификатор оборудования мероприятия [EquipItem]
-     */
-    var equipId: Long? = 0
-        get() = equip?.equipId
-
-    /**
-     * метка оборудования мероприятия
-     */
-    var equipRfid: String? = null
-        get() = equip?.equipRFID
-
-    /**
-     * признак - фотофиксация при выполнении мероприятия (0 - фото не нужно, 1 - фото нужно)
-     */
-    var needPhotoFix: Boolean = false
-        get() = operation?.any { it.needPhotoFix == 1 } == true
 
     /**
      * месяц, на который запланировано данное мероприятие
      */
-    var month: Int = 0
-        get() = DateTimeUtil.getDateNowByPattern("MM", planDate ?: 0)
+    val month: Int
+        get() = DateTimeUtil.getDateTimeFromMili(planDate ?: 0, "MM").toInt()
 
     /**
      * день, на который запланировано данное мероприятие
      */
-    var day: Int = 0
-        get() = DateTimeUtil.getDateNowByPattern("dd", planDate ?: 0)
-
-    constructor() : this(
-        0,
-        "",
-        "",
-        0L,
-        1,
-        "",
-        "",
-        "",
-        false,
-        "",
-        0L,
-        0,
-        0,
-        1,
-        1
-    )
+    val day: Int
+        get() = DateTimeUtil.getDateTimeFromMili(planDate ?: 0, "dd").toInt()
 }

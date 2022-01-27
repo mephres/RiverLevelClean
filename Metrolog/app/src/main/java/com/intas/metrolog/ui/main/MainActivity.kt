@@ -132,7 +132,9 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEventObserver() {
         viewModel.notSendedEventList.observe(this, {
             for (event in it) {
-                viewModel.sendEvent(event)
+                if (!Util.eventQueue.contains(event.opId)) {
+                    viewModel.sendEvent(event)
+                }
             }
         })
     }
@@ -143,10 +145,12 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEventOperationObserver() {
         viewModel.notSendedEventOperationList.observe(this, {
             for (eventOperation in it) {
-                if (eventOperation.equipId > 0) {
-                    viewModel.sendComplexEventOperation(eventOperation)
-                } else {
-                    viewModel.sendEventOperation(eventOperation)
+                if (!Util.eventOperationQueue.contains(eventOperation.subId)) {
+                    if (eventOperation.equipId > 0) {
+                        viewModel.sendComplexEventOperation(eventOperation)
+                    } else {
+                        viewModel.sendEventOperation(eventOperation)
+                    }
                 }
             }
         })

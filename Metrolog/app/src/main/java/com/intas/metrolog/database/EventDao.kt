@@ -9,7 +9,7 @@ interface EventDao {
         @Query("SELECT * FROM event order by opId asc")
         fun getEventList(): LiveData<List<EventItem>>
 
-        @Query("SELECT * FROM event WHERE isSended = 0 ORDER BY opId ASC LIMIT 1")
+        @Query("SELECT * FROM event WHERE isSended = 0 ORDER BY opId")
         fun getNotSendedEventList(): LiveData<List<EventItem>>
 
         @Update(onConflict = OnConflictStrategy.REPLACE)
@@ -23,4 +23,7 @@ interface EventDao {
 
         @Query("UPDATE event SET isSended = 1 WHERE opId = :id")
         suspend fun setEventSendedById(id: Long)
+
+        @Query("SELECT * FROM event WHERE equipRfid = :rfid ORDER BY opId ASC")
+        fun getEventListByRfid(rfid: String): LiveData<List<EventItem>>
 }
