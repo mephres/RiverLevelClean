@@ -1,31 +1,32 @@
 package com.intas.metrolog.ui.events
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.RecyclerView
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventsBinding
-import com.intas.metrolog.ui.events.adapter.EventListAdapter
+import com.intas.metrolog.ui.events.viewpager.*
+import com.intas.metrolog.ui.events.viewpager.adapter.ViewPagerAdapter
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.scanner.NfcFragment
 
 class EventsFragment : Fragment() {
 
     private val mainViewModel: MainViewModel by activityViewModels()
-    private lateinit var eventListAdapter: EventListAdapter
+    private val eventsViewModel: EventsViewModel by activityViewModels()
+    private lateinit var viewPagerAdapter: ViewPagerAdapter
     private var searchView: SearchView? = null
 
     private val binding by lazy {
         FragmentEventsBinding.inflate(layoutInflater)
     }
-
-    private lateinit var eventsViewModel: EventsViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,57 +37,43 @@ class EventsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        eventsViewModel = ViewModelProvider(this)[EventsViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupRecyclerView()
         setUI()
-        initEventObserver()
 
-        binding.eventSwipeRefreshLayout.setOnRefreshListener {
-            binding.eventSwipeRefreshLayout.isRefreshing = false
-            binding.eventProgressIndicator.visibility = View.VISIBLE
-            mainViewModel.getEvent()
-        }
-    }
+        viewPagerAdapter = parentFragmentManager.let { ViewPagerAdapter(it) }
 
-    private fun setupRecyclerView() {
+        val fragmentList: List<Fragment> = parentFragmentManager.getFragments() as List<Fragment>
 
-        eventListAdapter = EventListAdapter()
+        viewPagerAdapter.addFragment(EventTodayFragment(), "Сегодня", 0)
+        viewPagerAdapter.addFragment(EventWeekFragment(), "Неделя", 1)
+        viewPagerAdapter.addFragment(EventMonthFragment(), "Месяц", 2)
+        viewPagerAdapter.addFragment(EventCompletedFragment(), "Выполненные", 3)
+        viewPagerAdapter.addFragment(EventCanceledFragment(), "Отмененные", 4)
 
-        binding.eventRecyclerView.let {
-            with(it) {
-                adapter = eventListAdapter
+        binding.eventViewPager.adapter = viewPagerAdapter
+        binding.eventViewPager.offscreenPageLimit = 1
+        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager)
 
-                recycledViewPool.setMaxRecycledViews(0, EventListAdapter.MAX_POOL_SIZE)
-            }
-        }
+        viewPagerAdapter.notifyDataSetChanged()
 
         setupClickListener()
+        setSearchViewListener()
 
-        binding.eventRecyclerView.addOnScrollListener( object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (dy > 0) {
-                    binding.eventFilterFab.visibility = View.INVISIBLE
-                    binding.searchEventFab.visibility = View.INVISIBLE
-                } else {
-                    binding.eventFilterFab.visibility = View.VISIBLE
-                    binding.searchEventFab.visibility = View.VISIBLE
-                }
+        eventsViewModel.scroll.observe(viewLifecycleOwner, {
+            if (it > 0) {
+                binding.searchEventFab.visibility = View.INVISIBLE
+            } else {
+                binding.searchEventFab.visibility = View.VISIBLE
             }
         })
     }
 
+
     private fun setupClickListener() {
-
-        eventListAdapter.onEventClickListener = {
-
-            val a = it
-        }
 
         binding.searchEventFab.setOnClickListener {
             showScanner()
@@ -108,17 +95,56 @@ class EventsFragment : Fragment() {
         searchView?.queryHint = "Поиск мероприятий"
     }
 
-    private fun initEventObserver() {
-        eventsViewModel.eventList.observe(viewLifecycleOwner) {
-            if (!it.isNullOrEmpty()) {
-                eventListAdapter.submitList(it)
-                binding.eventProgressIndicator.visibility = View.GONE
-                binding.eventSwipeRefreshLayout.isRefreshing = false
+    private fun setSearchViewListener() {
+        searchView?.setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
             }
-        }
 
-        mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
-            binding.eventSwipeRefreshLayout.isRefreshing = false
+            val handler = Handler(Looper.getMainLooper())
+            override fun onQueryTextChange(newText: String): Boolean {
+                handler.removeCallbacksAndMessages(null)
+                handler.postDelayed({
+                    setFilter(newText.trim())
+                }, 300)
+                return true
+            }
         })
+    }
+
+    private fun setFilter(text: String) {
+        eventsViewModel.setSearchText(text)
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        try {
+            eraseEventFragmentList()
+        } finally {
+        }
+    }
+
+    /**
+     * Удаление фрагментов для отображения списка за день, неделю и месяц из стэка
+     */
+    private fun eraseEventFragmentList() {
+        try {
+            for (i in 0 until viewPagerAdapter.count) {
+                val eventFragmentTag = "android:switcher:${R.id.eventViewPager}:$i"
+                val findEventFragment =
+                    parentFragmentManager.findFragmentByTag(eventFragmentTag)
+                findEventFragment?.let {
+                    parentFragmentManager.beginTransaction().remove(it).commit()
+                }
+            }
+        } catch (e: Exception) {
+
+        }
     }
 }

@@ -133,5 +133,7 @@
     <string name="select_event_type_title">Тип мероприятия:</string>
     <string name="select_event_type_planned_title">Плановое</string>
     <string name="select_event_type_unscheduled_title">Внеплановое</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

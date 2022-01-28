@@ -61,7 +61,15 @@ class DateTimeUtil {
             while (calendar[Calendar.DAY_OF_WEEK] != Calendar.MONDAY) {
                 calendar.add(Calendar.DAY_OF_MONTH, -1)
             }
-            return calendar.timeInMillis / 1000L
+
+            val day = calendar[Calendar.DAY_OF_MONTH]
+            val month = calendar[Calendar.MONTH] + 1
+            val year = calendar[Calendar.YEAR]
+
+            val dateTimeBeginString = "$year-$month-$day 00:00:00"
+            val dateTime = getUnixDateTime(dateTimeBeginString)
+
+            return dateTime
         }
 
         /**
@@ -74,7 +82,15 @@ class DateTimeUtil {
             while (calendar[Calendar.DAY_OF_WEEK] != Calendar.SUNDAY) {
                 calendar.add(Calendar.DAY_OF_MONTH, 1)
             }
-            return calendar.timeInMillis / 1000L
+
+            val day = calendar[Calendar.DAY_OF_MONTH]
+            val month = calendar[Calendar.MONTH] + 1
+            val year = calendar[Calendar.YEAR]
+
+            val dateTimeEndString = "$year-$month-$day 23:59:59"
+            val dateTime = getUnixDateTime(dateTimeEndString)
+
+            return dateTime
         }
 
         /**
@@ -98,11 +114,7 @@ class DateTimeUtil {
          * @return дата-время в формате HH:mm
          */
         fun getShortTimeFromMili(timeInMili: Long): String {
-            val simpleDateFormat = SimpleDateFormat("HH:mm")
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            calendar.timeInMillis = timeInMili * 1000L
-            return simpleDateFormat.format(calendar.time)
+            return getDateTimeFromMili(timeInMili, "HH:mm")
         }
 
         /**
@@ -111,11 +123,7 @@ class DateTimeUtil {
          * @return дата-время в формате dd.MM.yyyy
          */
         fun getShortDataFromMili(timeInMili: Long): String {
-            val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy")
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            calendar.timeInMillis = timeInMili * 1000L
-            return simpleDateFormat.format(calendar.time)
+            return getDateTimeFromMili(timeInMili, "dd.MM.yyyy")
         }
 
         /**
@@ -124,11 +132,7 @@ class DateTimeUtil {
          * @return дата-время в формате dd.MM
          */
         fun getDayMonthFromMili(timeInMili: Long): String {
-            val simpleDateFormat = SimpleDateFormat("dd.MM")
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            calendar.timeInMillis = timeInMili * 1000L
-            return simpleDateFormat.format(calendar.time)
+            return getDateTimeFromMili(timeInMili, "dd.MM")
         }
 
         /**
@@ -137,11 +141,7 @@ class DateTimeUtil {
          * @return дата-время в формате yyyy
          */
         fun getYearFromMili(timeInMili: Long): String {
-            val simpleDateFormat = SimpleDateFormat("yyyy")
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            calendar.timeInMillis = timeInMili * 1000L
-            return simpleDateFormat.format(calendar.time)
+            return getDateTimeFromMili(timeInMili, "yyyy")
         }
 
         /**
@@ -155,19 +155,63 @@ class DateTimeUtil {
         }
 
         fun getLongDateFromMili(timeInMili: Long): String {
-            val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm:ss")
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            calendar.timeInMillis = timeInMili * 1000L
-            return simpleDateFormat.format(calendar.time)
+            return getDateTimeFromMili(timeInMili, "dd.MM.yyyy HH:mm:ss")
         }
 
         fun getLongDateFromMiliForDbBackup(timeInMili: Long): String {
-            val simpleDateFormat = SimpleDateFormat("dd-MM-yyyy-hh:mm")
-            simpleDateFormat.timeZone = timeZone
-            val calendar = GregorianCalendar(timeZone)
-            calendar.timeInMillis = timeInMili * 1000L
-            return simpleDateFormat.format(calendar.time)
+            return getDateTimeFromMili(timeInMili, "dd-MM-yyyy-hh:mm")
+        }
+
+        fun getFirstDayOfMonth(): Long {
+            val calendar = Calendar.getInstance()
+            calendar.timeZone = timeZone
+
+            val day = 1
+            val month = calendar[Calendar.MONTH] + 1
+            val year = calendar[Calendar.YEAR]
+
+            val dateTimeBeginString = "$year-$month-$day 00:00:00"
+            val dateTime: Long = getUnixDateTime(dateTimeBeginString)
+            return dateTime
+        }
+
+        fun getLastDayOfMonth(): Long {
+            val calendar = Calendar.getInstance()
+            calendar.timeZone = timeZone
+
+            val day = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val month = calendar[Calendar.MONTH] + 1
+            val year = calendar[Calendar.YEAR]
+
+            val dateTimeEndString = "$year-$month-$day 23:59:59"
+            val dateTime: Long = getUnixDateTime(dateTimeEndString)
+            return dateTime
+        }
+
+        fun getBeginToday(): Long {
+            val calendar = Calendar.getInstance()
+            calendar.timeZone = timeZone
+
+            val day = calendar[Calendar.DAY_OF_MONTH]
+            val month = calendar[Calendar.MONTH] + 1
+            val year = calendar[Calendar.YEAR]
+
+            val dateTimeBeginString = "$year-$month-$day 00:00:00"
+            val dateTime: Long = getUnixDateTime(dateTimeBeginString)
+            return dateTime
+        }
+
+        fun getEndToday(): Long {
+            val calendar = Calendar.getInstance()
+            calendar.timeZone = timeZone
+
+            val day = calendar[Calendar.DAY_OF_MONTH]
+            val month = calendar[Calendar.MONTH] + 1
+            val year = calendar[Calendar.YEAR]
+
+            val dateTimeEndString = "$year-$month-$day 23:59:59"
+            val dateTime: Long = getUnixDateTime(dateTimeEndString)
+            return dateTime
         }
     }
 }

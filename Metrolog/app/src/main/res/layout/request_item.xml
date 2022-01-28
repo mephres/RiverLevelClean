@@ -25,7 +25,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/requestPostfixDateTextView"
+            app:layout_constraintTop_toBottomOf="@+id/requestDateTextView"
             app:srcCompat="@drawable/ic_whatshot_red_24dp" />
 
         <ImageView
@@ -57,6 +57,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:text=">"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

@@ -1,6 +1,14 @@
 package com.intas.metrolog.pojo.event.event_status
 
-class EventStatus {
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "event_status")
+data class EventStatus(
+    @PrimaryKey
+    val id: Int = 0,
+    val name: String
+) {
     companion object {
         /**
          * новое мероприятияе

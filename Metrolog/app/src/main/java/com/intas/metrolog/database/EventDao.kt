@@ -9,6 +9,12 @@ interface EventDao {
         @Query("SELECT * FROM event order by opId asc")
         fun getEventList(): LiveData<List<EventItem>>
 
+        @Query("SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND status < 3 order by opId asc")
+        fun getEventList(dateStart: Long, dateEnd: Long): LiveData<List<EventItem>>
+
+        @Query("SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND status = :status order by opId asc")
+        fun getEventList(dateStart: Long, dateEnd: Long, status: Int): LiveData<List<EventItem>>
+
         @Query("SELECT * FROM event WHERE isSended = 0 ORDER BY opId")
         fun getNotSendedEventList(): LiveData<List<EventItem>>
 
