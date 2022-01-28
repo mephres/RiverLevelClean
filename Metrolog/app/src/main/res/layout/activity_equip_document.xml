@@ -131,7 +131,7 @@
         android:elevation="4dp"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="@+id/equipDocumentCardView"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/equipDocumentCardView"
         app:srcCompat="@drawable/ic_baseline_attach_file_24"
         app:tint="@color/md_white_1000" />
 
