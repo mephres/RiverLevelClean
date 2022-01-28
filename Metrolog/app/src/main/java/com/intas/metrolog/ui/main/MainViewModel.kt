@@ -839,6 +839,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribe({
                     it.list?.let { eventList ->
                         insertEventList(eventList)
+                        Log.d("eventList", eventList.toString())
                     }
                 }, {
                     onErrorMessage.postValue(

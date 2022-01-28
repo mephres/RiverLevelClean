@@ -6,385 +6,581 @@
     android:layout_height="match_parent"
     tools:context=".ui.operation.OperationActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/operationAppBarLayout"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/coordinator"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/operationToolbar"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/operationAppBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-    </com.google.android.material.appbar.AppBarLayout>
+            app:layout_constraintTop_toTopOf="parent">
 
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintTop_toBottomOf="@id/operationAppBarLayout"
-        app:strokeColor="@color/colorPrimary"
-        app:strokeWidth="4dp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="4dp"
-            android:paddingBottom="4dp">
-
-            <TextView
-                android:id="@+id/equipRFIDLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_RFIDlabel"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
-
-            <TextView
-                android:id="@+id/equipRFIDTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/equipRFIDLabelTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/equipZavNumTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
-
-            <TextView
-                android:id="@+id/equipTagLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_Tag_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
-
-            <TextView
-                android:id="@+id/equipTagTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@+id/equipTagLabelTextView"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
-
-            <TextView
-                android:id="@+id/equipLocationTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/equipZavNumTextView"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
-
-            <TextView
-                android:id="@+id/equipLocationLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_Installation_Location_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
-
-            <TextView
-                android:id="@+id/equipGRSILabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_GRSI_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
-
-            <TextView
-                android:id="@+id/equipGRSITextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
-
-            <TextView
-                android:id="@+id/equipManufacturerTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView" />
-
-            <TextView
-                android:id="@+id/equipManufacturerLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_Manufacturer_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView" />
-
-            <TextView
-                android:id="@+id/equipMeteringTypeLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_Metering_Type_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView" />
-
-            <TextView
-                android:id="@+id/equipMeteringTypeTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView" />
-
-            <TextView
-                android:id="@+id/equipCalibrationTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView" />
-
-            <TextView
-                android:id="@+id/equipCalibrationLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_Calibration_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView" />
-
-            <TextView
-                android:id="@+id/equipVerificationLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/equip_Verification_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
-
-            <TextView
-                android:id="@+id/equipVerificationTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="TextView"
-                android:textColor="@android:color/tertiary_text_light"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/equipTagActualImageView"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
-
-            <TextView
-                android:id="@+id/equipZavNumLabelTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="@string/operation_activity_equip_ZavNum_label"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/equipNameTextView" />
-
-            <TextView
-                android:id="@+id/equipZavNumTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="TextView"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                app:layout_constraintTop_toTopOf="@+id/equipZavNumLabelTextView" />
-
-            <TextView
-                android:id="@+id/equipNameTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="Название оборудования"
-                android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/equipTagActualImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
-                app:layout_constraintBottom_toBottomOf="@+id/equipTagTextView"
-                app:layout_constraintStart_toEndOf="@+id/equipTagTextView"
-                app:layout_constraintTop_toTopOf="@+id/equipTagTextView"
-                app:srcCompat="@drawable/ic_warning_red_24dp" />
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/operationContainer"
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/operationToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingBottom="16dp"
-                android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@+id/equipVerificationLabelTextView">
-
-                <TextView
-                    android:id="@+id/nameTextView"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/operation_activity_name"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintEnd_toStartOf="@+id/statusTextView"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="packed" />
-
-                <TextView
-                    android:id="@+id/typeLabelTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/operation_activity_event_type_label"
-                    app:layout_constraintStart_toStartOf="@+id/nameTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/nameTextView" />
-
-                <TextView
-                    android:id="@+id/typeTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:text="TextView"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toEndOf="@+id/typeLabelTextView"
-                    app:layout_constraintTop_toTopOf="@+id/typeLabelTextView" />
-
-                <TextView
-                    android:id="@+id/factDateLabelTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/event_fact_date_label_complete"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/planDateLabelTextView" />
-
-                <TextView
-                    android:id="@+id/factDateTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="02.11.2019 00:11:22"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/planDateTextView"
-                    app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView" />
-
-                <TextView
-                    android:id="@+id/statusTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:text="status"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-                    android:textColor="@color/colorPrimary"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/nameTextView"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/nameTextView" />
-
-                <TextView
-                    android:id="@+id/planDateLabelTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/operation_activity_event_plan_date_label"
-                    app:layout_constraintStart_toStartOf="@+id/nameTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/typeLabelTextView" />
-
-                <TextView
-                    android:id="@+id/planDateTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="01.01.2019"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="@+id/typeTextView"
-                    app:layout_constraintTop_toTopOf="@+id/planDateLabelTextView" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <ImageView
-                android:id="@+id/operationInfoImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="8dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:src="@drawable/ic_chevron_up"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:background="?attr/colorPrimary"
+                android:minHeight="?attr/actionBarSize"
+                android:theme="?attr/actionBarTheme"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/operationContainer" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_scrollFlags="scroll|enterAlways|snap" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.appbar.AppBarLayout>
 
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </com.google.android.material.card.MaterialCardView>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="4dp"
+                    app:cardUseCompatPadding="true"
+                    app:layout_constraintTop_toBottomOf="@id/operationAppBarLayout"
+                    app:strokeColor="@color/colorPrimary"
+                    app:strokeWidth="4dp">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="4dp"
+                        android:paddingBottom="4dp">
+
+                        <TextView
+                            android:id="@+id/equipNameTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="Название оборудования" />
+
+                        <TextView
+                            android:id="@+id/equipZavNumLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/operation_activity_equip_ZavNum_label"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipNameTextView" />
+
+                        <TextView
+                            android:id="@+id/equipZavNumTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toTopOf="@+id/equipZavNumLabelTextView" />
+
+                        <TextView
+                            android:id="@+id/equipRFIDLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_RFIDlabel"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
+
+                        <TextView
+                            android:id="@+id/equipRFIDTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="@+id/equipRFIDLabelTextView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/equipZavNumTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
+
+                        <TextView
+                            android:id="@+id/equipTagLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Tag_label"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
+
+                        <TextView
+                            android:id="@+id/equipTagTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="@+id/equipTagLabelTextView"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
+
+                        <TextView
+                            android:id="@+id/equipLocationLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Installation_Location_label"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
+
+                        <TextView
+                            android:id="@+id/equipLocationTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toEndOf="@+id/equipZavNumTextView"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
+
+                        <TextView
+                            android:id="@+id/equipGRSILabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_GRSI_label"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
+
+                        <TextView
+                            android:id="@+id/equipGRSITextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
+
+                        <TextView
+                            android:id="@+id/equipManufacturerLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Manufacturer_label"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView" />
+
+                        <TextView
+                            android:id="@+id/equipManufacturerTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView" />
+
+                        <TextView
+                            android:id="@+id/equipMeteringTypeLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Metering_Type_label"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView" />
+
+                        <TextView
+                            android:id="@+id/equipMeteringTypeTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView" />
+
+                        <TextView
+                            android:id="@+id/equipCalibrationLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Calibration_label"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView" />
+
+                        <TextView
+                            android:id="@+id/equipCalibrationTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView" />
+
+                        <TextView
+                            android:id="@+id/equipVerificationLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Verification_label"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
+
+                        <TextView
+                            android:id="@+id/equipVerificationTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="TextView"
+                            android:textColor="@android:color/tertiary_text_light"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
+
+                        <ImageView
+                            android:id="@+id/equipTagActualImageView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="4dp"
+                            app:layout_constraintBottom_toBottomOf="@+id/equipTagTextView"
+                            app:layout_constraintStart_toEndOf="@+id/equipTagTextView"
+                            app:layout_constraintTop_toTopOf="@+id/equipTagTextView"
+                            app:srcCompat="@drawable/ic_warning_red_24dp" />
+
+                        <TextView
+                            android:id="@+id/operationNameTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="16dp"
+                            android:layout_marginEnd="8dp"
+                            android:text="@string/operation_activity_name"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                            android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toStartOf="@+id/statusTextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipVerificationTextView"
+                            app:layout_constraintVertical_chainStyle="packed" />
+
+                        <TextView
+                            android:id="@+id/typeLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/operation_activity_event_type_label"
+                            app:layout_constraintStart_toStartOf="@+id/operationNameTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/operationNameTextView" />
+
+                        <TextView
+                            android:id="@+id/typeTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toStartOf="@+id/timerImageView"
+                            app:layout_constraintStart_toEndOf="@+id/typeLabelTextView"
+                            app:layout_constraintTop_toTopOf="@+id/typeLabelTextView"
+                            tools:text="TextView" />
+
+                        <TextView
+                            android:id="@+id/planDateLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/operation_activity_event_plan_date_label"
+                            app:layout_constraintStart_toStartOf="@+id/operationNameTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/typeTextView" />
+
+                        <TextView
+                            android:id="@+id/planDateTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:textStyle="bold"
+                            app:layout_constraintEnd_toStartOf="@+id/timerImageView"
+                            app:layout_constraintStart_toStartOf="@+id/typeTextView"
+                            app:layout_constraintTop_toTopOf="@+id/planDateLabelTextView"
+                            tools:text="01.01.2019" />
+
+                        <TextView
+                            android:id="@+id/factDateLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/event_fact_date_label_complete"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/planDateTextView" />
+
+                        <TextView
+                            android:id="@+id/factDateTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            app:layout_constraintStart_toStartOf="@+id/planDateTextView"
+                            app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView"
+                            tools:text="02.11.2019 00:11:22" />
+
+                        <TextView
+                            android:id="@+id/statusTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="@+id/operationNameTextView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/operationNameTextView"
+                            tools:text="status" />
+
+                        <ImageView
+                            android:id="@+id/timerImageView"
+                            android:layout_width="35dp"
+                            android:layout_height="35dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginBottom="8dp"
+                            android:src="@drawable/ic_access_time_red_24dp"
+                            app:layout_constraintEnd_toStartOf="@+id/timerValueTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/operationNameTextView"
+                            app:tint="@color/colorPrimary" />
+
+                        <TextView
+                            android:id="@+id/timerValueTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:text="000:00:00"
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="@+id/timerImageView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/timerImageView" />
+
+                        <ImageView
+                            android:id="@+id/operationInfoImageView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:src="@drawable/ic_chevron_down"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/factDateTextView" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </com.google.android.material.card.MaterialCardView>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/operationRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/event_operation_item" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <View
+            android:id="@+id/shadow_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:alpha="0.5"
+            android:background="@android:color/black"
+            android:clickable="true"
+            android:focusable="true"
+            android:translationZ="10dp"
+            android:visibility="invisible" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/operationControlFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:clickable="true"
+        android:focusable="true"
+        android:text="Управление"
+        android:textColor="@color/md_white_1000"
+        app:icon="@drawable/ic_baseline_construction_black_24dp"
+        app:iconTint="@color/md_white_1000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/cancelOperationFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/operationControlFab"
+        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:srcCompat="@drawable/ic_close_red_24dp"
+        app:tint="@color/md_white_1000" />
+
+    <TextView
+        android:id="@+id/cancelOperationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Отменить выполнение"
+        android:textColor="@color/md_white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/cancelOperationFab"
+        app:layout_constraintEnd_toStartOf="@+id/cancelOperationFab"
+        app:layout_constraintTop_toTopOf="@+id/cancelOperationFab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/completeOperationFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/cancelOperationFab"
+        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:srcCompat="@drawable/ic_baseline_check_24dp"
+        app:tint="@color/md_white_1000" />
+
+    <TextView
+        android:id="@+id/completeOperationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Закончить мероприятие"
+        android:textColor="@color/md_white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/completeOperationFab"
+        app:layout_constraintEnd_toStartOf="@+id/completeOperationFab"
+        app:layout_constraintTop_toTopOf="@+id/completeOperationFab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/stopOperationFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/completeOperationFab"
+        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:srcCompat="@drawable/ic_timer_off_red_24dp"
+        app:tint="@color/md_white_1000" />
+
+    <TextView
+        android:id="@+id/stopOperationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Остановить выполнение мероприятие"
+        android:textColor="@color/md_white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/stopOperationFab"
+        app:layout_constraintEnd_toStartOf="@+id/stopOperationFab"
+        app:layout_constraintTop_toTopOf="@+id/stopOperationFab" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/startOperationFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
+        app:backgroundTint="@color/colorPrimary"
+        app:layout_constraintBottom_toTopOf="@+id/stopOperationFab"
+        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:srcCompat="@drawable/ic_timer_red_24dp"
+        app:tint="@color/md_white_1000" />
+
+    <TextView
+        android:id="@+id/startOperationTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Начать мероприятие"
+        android:textColor="@color/md_white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/startOperationFab"
+        app:layout_constraintEnd_toStartOf="@+id/startOperationFab"
+        app:layout_constraintTop_toTopOf="@+id/startOperationFab" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
