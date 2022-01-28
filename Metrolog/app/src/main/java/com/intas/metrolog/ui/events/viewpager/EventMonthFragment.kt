@@ -73,7 +73,7 @@ class EventMonthFragment : Fragment() {
         }
 
         eventListAdapter.submitList(eventList.filter {
-            it.equipName?.trim()?.contains(text, true) == true
+            it.name?.contains(text, true) == true || it.equipName?.trim()?.contains(text, true) == true
         })
     }
 
