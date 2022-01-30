@@ -3,6 +3,7 @@ package com.intas.metrolog.util
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.concurrent.timerTask
 
 class DateTimeUtil {
 
@@ -23,7 +24,7 @@ class DateTimeUtil {
             var result = ""
             val timeNow = getUnixDateTimeNow()
             if (timeNow - timeInMili <= 86400) {
-                when(chatType) {
+                when (chatType) {
                     0 -> result = getShortTimeFromMili(timeInMili)
                     1 -> result = "Сегодня"
                 }
@@ -168,6 +169,36 @@ class DateTimeUtil {
             val calendar = GregorianCalendar(timeZone)
             calendar.timeInMillis = timeInMili * 1000L
             return simpleDateFormat.format(calendar.time)
+        }
+
+        /**
+         * Преобразование количества милисекунд в строку вида d д. HH:mm:ss
+         * @param timeMili время в милисекундах
+         * @return время в формате d д. HH:mm:ss
+         */
+        fun getTimerTimeFromMili(timeMili: Long): String {
+            var param = timeMili
+            val hours = (param / 60 / 60).toInt()
+            param -= hours * 3600
+            val minutes = (param / 60).toInt()
+            param -= minutes * 60
+            val seconds = param.toInt()
+
+            var result = "$hours:"
+            if (hours < 10) {
+                result = "0$result"
+            }
+            result = if (minutes < 10) {
+                result + "0" + minutes + ":"
+            } else {
+                "$result$minutes:"
+            }
+            result = if (seconds < 10) {
+                result + "0" + seconds
+            } else {
+                result + seconds
+            }
+            return result
         }
     }
 }

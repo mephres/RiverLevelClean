@@ -26,4 +26,7 @@ interface EventDao {
 
         @Query("SELECT * FROM event WHERE equipRfid = :rfid ORDER BY opId ASC")
         fun getEventListByRfid(rfid: String): LiveData<List<EventItem>>
+
+        @Query("SELECT * FROM event WHERE opId = :id LIMIT 1")
+        fun getEvent(id: Long): EventItem?
 }

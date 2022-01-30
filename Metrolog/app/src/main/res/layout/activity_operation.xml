@@ -93,11 +93,33 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toTopOf="@+id/equipZavNumLabelTextView" />
+                            app:layout_constraintTop_toTopOf="@+id/equipZavNumLabelTextView"
+                            tools:text="TextView" />
+
+                        <TextView
+                            android:id="@+id/equipTagLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/equip_Tag_label"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
+
+                        <TextView
+                            android:id="@+id/equipTagTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:textStyle="bold"
+                            app:layout_constraintBottom_toBottomOf="@+id/equipTagLabelTextView"
+                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
+                            app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipRFIDLabelTextView"
@@ -108,43 +130,20 @@
                             android:text="@string/equip_RFIDlabel"
                             android:visibility="gone"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
 
                         <TextView
                             android:id="@+id/equipRFIDTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="@+id/equipRFIDLabelTextView"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/equipZavNumTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipZavNumTextView" />
-
-                        <TextView
-                            android:id="@+id/equipTagLabelTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/equip_Tag_label"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
-
-                        <TextView
-                            android:id="@+id/equipTagTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:text="TextView"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="@+id/equipTagLabelTextView"
-                            app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
+                            app:layout_constraintTop_toTopOf="@+id/equipRFIDLabelTextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipLocationLabelTextView"
@@ -162,11 +161,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="@+id/equipZavNumTextView"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipTagTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipTagTextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipGRSILabelTextView"
@@ -177,21 +176,20 @@
                             android:text="@string/equip_GRSI_label"
                             android:visibility="gone"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipRFIDTextView" />
 
                         <TextView
                             android:id="@+id/equipGRSITextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipLocationTextView" />
+                            app:layout_constraintTop_toTopOf="@+id/equipGRSILabelTextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipManufacturerLabelTextView"
@@ -211,12 +209,12 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipGRSITextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipMeteringTypeLabelTextView"
@@ -236,12 +234,12 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipManufacturerTextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipCalibrationLabelTextView"
@@ -261,12 +259,12 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipMeteringTypeTextView"
+                            tools:text="TextView" />
 
                         <TextView
                             android:id="@+id/equipVerificationLabelTextView"
@@ -286,13 +284,13 @@
                             android:layout_marginStart="8dp"
                             android:layout_marginTop="8dp"
                             android:layout_marginEnd="8dp"
-                            android:text="TextView"
                             android:textColor="@android:color/tertiary_text_light"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
-                            app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/equipCalibrationTextView"
+                            tools:text="TextView" />
 
                         <ImageView
                             android:id="@+id/equipTagActualImageView"
@@ -368,6 +366,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="8dp"
+                            android:visibility="gone"
                             android:text="@string/event_fact_date_label_complete"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@+id/planDateTextView" />
@@ -377,6 +376,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
+                            android:visibility="gone"
                             app:layout_constraintStart_toStartOf="@+id/planDateTextView"
                             app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView"
                             tools:text="02.11.2019 00:11:22" />
@@ -404,6 +404,7 @@
                             android:layout_marginEnd="8dp"
                             android:layout_marginBottom="8dp"
                             android:src="@drawable/ic_access_time_red_24dp"
+                            android:visibility="gone"
                             app:layout_constraintEnd_toStartOf="@+id/timerValueTextView"
                             app:layout_constraintTop_toBottomOf="@+id/operationNameTextView"
                             app:tint="@color/colorPrimary" />
@@ -413,10 +414,11 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            android:text="000:00:00"
+                            tools:text="000:00:00"
                             android:textColor="@android:color/black"
                             android:textSize="14sp"
                             android:textStyle="bold"
+                            android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="@+id/timerImageView"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@+id/timerImageView" />
@@ -454,12 +456,12 @@
             android:id="@+id/shadow_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:alpha="0.5"
+            android:alpha="0.6"
             android:background="@android:color/black"
             android:clickable="true"
             android:focusable="true"
             android:translationZ="10dp"
-            android:visibility="invisible" />
+            android:visibility="gone" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
@@ -470,9 +472,7 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:backgroundTint="@color/colorPrimary"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="Управление"
+        android:text="@string/operation_activity_control_button_title"
         android:textColor="@color/md_white_1000"
         app:icon="@drawable/ic_baseline_construction_black_24dp"
         app:iconTint="@color/md_white_1000"
@@ -484,8 +484,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
         android:visibility="gone"
+        android:backgroundTint="@color/colorPrimary"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/operationControlFab"
         app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
@@ -497,7 +498,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Отменить выполнение"
+        android:text="@string/operation_activity_cancel_event_button"
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
@@ -511,8 +512,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorPrimary"
-        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/cancelOperationFab"
         app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
         app:srcCompat="@drawable/ic_baseline_check_24dp"
@@ -523,7 +525,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Закончить мероприятие"
+        android:text="@string/operation_activity_complete_event_button"
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
@@ -537,8 +539,9 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorPrimary"
-        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/completeOperationFab"
         app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
         app:srcCompat="@drawable/ic_timer_off_red_24dp"
@@ -549,7 +552,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Остановить выполнение мероприятие"
+        android:text="@string/operation_activity_pause_event_button_work_state"
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
@@ -562,8 +565,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/colorPrimary"
+        app:fabSize="normal"
         android:visibility="gone"
+        android:backgroundTint="@color/colorPrimary"
         app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@+id/stopOperationFab"
         app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
@@ -575,7 +579,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="Начать мероприятие"
+        android:text="@string/operation_activity_begin_event_button"
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"

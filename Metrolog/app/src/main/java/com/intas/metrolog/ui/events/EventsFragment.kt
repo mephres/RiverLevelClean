@@ -85,7 +85,7 @@ class EventsFragment : Fragment() {
     private fun setupClickListener() {
 
         eventListAdapter.onEventClickListener = {
-            startActivity(OperationActivity.newIntent(requireContext(), it))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
         }
 
         binding.searchEventFab.setOnClickListener {

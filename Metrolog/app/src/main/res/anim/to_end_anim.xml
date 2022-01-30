@@ -8,7 +8,7 @@
         android:toXDelta="100%" />
 
     <alpha
-        android:duration="800"
+        android:duration="200"
         android:fromAlpha="1"
         android:toAlpha="0" />
 </set>

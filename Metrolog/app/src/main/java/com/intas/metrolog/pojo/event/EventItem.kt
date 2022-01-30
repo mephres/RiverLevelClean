@@ -95,7 +95,7 @@ data class EventItem(
      */
     @SerializedName("status")
     @Expose
-    val status: Int = EventStatus.NEW,
+    var status: Int = EventStatus.NEW,
 
     /**
      * приоритет мероприятия: 1 - обычное(плановое), 2 - важное(срочное), 3 - авария

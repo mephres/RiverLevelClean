@@ -85,8 +85,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
     private fun setClickListener() {
         selectEventListAdapter.onItemClickListener = {
-            val eventItem = it
-            startActivity(OperationActivity.newIntent(requireContext(), eventItem))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
         }
     }
 

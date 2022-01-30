@@ -4,14 +4,14 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.view.animation.Animation
-import android.view.animation.AnimationUtils
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionManager
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
@@ -21,12 +21,12 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.ViewUtil
+import java.util.*
 
 class OperationActivity : AppCompatActivity() {
-    private var eventItem: EventItem? = null
-    private var equipItem: EquipItem? = null
+    private var eventId: Long = 0
     private var equipFullInfoVisible = false
-    private var operationMenuVisibleControl = false
+    private var currentEventStatus: Int = 0
 
     private lateinit var operationListAdapter: OperationListAdapter
 
@@ -34,29 +34,15 @@ class OperationActivity : AppCompatActivity() {
         ActivityOperationBinding.inflate(layoutInflater)
     }
 
+    private val viewModelFactory by lazy {
+        OperationViewModelFactory(eventId, this.application)
+    }
+
     private val viewModel by lazy {
-        ViewModelProvider(this)[OperationViewModel::class.java]
+        ViewModelProvider(this, viewModelFactory)[OperationViewModel::class.java]
     }
 
     private val enterTransition = MaterialFadeThrough()
-    private val rotateOpen: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.rotate_open_anim)
-    }
-    private val rotateClose: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.rotate_close_anim)
-    }
-    private val fromBottom: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.from_bottom_anim)
-    }
-    private val toBottom: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.to_bottom_anim)
-    }
-    private val fromEnd: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.from_end_anim)
-    }
-    private val toEnd: Animation by lazy {
-        AnimationUtils.loadAnimation(this, R.anim.to_end_anim)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,22 +50,9 @@ class OperationActivity : AppCompatActivity() {
 
         parseIntent()
         setToolbar()
-        setObservers()
         setRecyclerView()
-        setUi()
-
-        binding.operationInfoImageView.setOnClickListener {
-            showFullEquipInfo(it)
-        }
-        binding.operationControlFab.setOnClickListener {
-            operationMenuVisibleControl = !operationMenuVisibleControl
-
-            setControlButtonAnimation(operationMenuVisibleControl)
-            configureControlButtonVisibility(operationMenuVisibleControl)
-        }
-        binding.shadowView.setOnClickListener {
-            shadowViewClick()
-        }
+        observeViewModel()
+        setClickListeners()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -91,154 +64,179 @@ class OperationActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun setObservers() {
-        val opId = eventItem?.opId ?: 0
-        val equipId = eventItem?.equipId ?: 0
-        val checkListSize = eventItem?.operationListSize ?: 0
-
-        equipItem = viewModel.getEquip(equipId) ?: return
-
-        if (checkListSize > 0) {
-            viewModel.getCheckList(opId).observe(this, {
-                operationListAdapter.submitList(it)
-            })
-        }
-    }
-
-    private fun shadowViewClick() {
-        if (operationMenuVisibleControl) {
-            binding.operationControlFab.shrink()
-
-            binding.shadowView.visibility = View.GONE
-
-            binding.startOperationFab.visibility = View.GONE
-            binding.stopOperationFab.visibility = View.GONE
-            binding.cancelOperationFab.visibility = View.GONE
-            binding.completeOperationFab.visibility = View.GONE
-
-            binding.startOperationFab.startAnimation(toBottom)
-            binding.stopOperationFab.startAnimation(toBottom)
-            binding.cancelOperationFab.startAnimation(toBottom)
-            binding.completeOperationFab.startAnimation(toBottom)
-
-            binding.startOperationTextView.startAnimation(toEnd)
-            binding.stopOperationTextView.startAnimation(toEnd)
-            binding.cancelOperationTextView.startAnimation(toEnd)
-            binding.completeOperationTextView.startAnimation(toEnd)
-        }
-        operationMenuVisibleControl = !operationMenuVisibleControl
-    }
-
-    private fun setControlButtonAnimation(clicked: Boolean) {
-        if (clicked) {
-            binding.startOperationFab.startAnimation(fromBottom)
-            binding.stopOperationFab.startAnimation(fromBottom)
-            binding.cancelOperationFab.startAnimation(fromBottom)
-            binding.completeOperationFab.startAnimation(fromBottom)
-
-            binding.startOperationTextView.startAnimation(fromEnd)
-            binding.stopOperationTextView.startAnimation(fromEnd)
-            binding.cancelOperationTextView.startAnimation(fromEnd)
-            binding.completeOperationTextView.startAnimation(fromEnd)
+    override fun onBackPressed() {
+        if (viewModel.controlButtonClicked.value == true) {
+            viewModel.changeControlButtonVisibleValue()
         } else {
-            binding.startOperationFab.startAnimation(toBottom)
-            binding.stopOperationFab.startAnimation(toBottom)
-            binding.cancelOperationFab.startAnimation(toBottom)
-            binding.completeOperationFab.startAnimation(toBottom)
-
-            binding.startOperationTextView.startAnimation(toEnd)
-            binding.stopOperationTextView.startAnimation(toEnd)
-            binding.cancelOperationTextView.startAnimation(toEnd)
-            binding.completeOperationTextView.startAnimation(toEnd)
+            super.onBackPressed()
         }
+    }
+
+    private fun setClickListeners() {
+
+        binding.operationInfoImageView.setOnClickListener {
+            showFullEquipInfo(it)
+        }
+
+        binding.operationControlFab.setOnClickListener {
+            viewModel.changeControlButtonVisibleValue()
+        }
+
+        binding.shadowView.setOnClickListener {
+            viewModel.changeControlButtonVisibleValue()
+        }
+
+        binding.startOperationFab.setOnClickListener {
+            viewModel.startTimer()
+            viewModel.updateEventStatus(EventStatus.IN_WORK)
+            viewModel.changeControlButtonVisibleValue()
+        }
+
+        binding.stopOperationFab.setOnClickListener {
+            viewModel.stopTimer()
+            viewModel.updateEventStatus(EventStatus.PAUSED)
+            viewModel.changeControlButtonVisibleValue()
+        }
+
+        binding.cancelOperationFab.setOnClickListener {
+            viewModel.updateEventStatus(EventStatus.CANCELED)
+            viewModel.changeControlButtonVisibleValue()
+            binding.operationControlFab.visibility = View.GONE
+        }
+
+        binding.completeOperationFab.setOnClickListener {
+            viewModel.stopTimer()
+            viewModel.updateEventStatus(EventStatus.COMPLETED)
+            viewModel.changeControlButtonVisibleValue()
+            binding.operationControlFab.visibility = View.GONE
+        }
+    }
+
+    private fun observeViewModel() {
+
+        viewModel.getCheckList().observe(this, { checkList ->
+            if (checkList.isNullOrEmpty()) {
+                showSnackBar(getString(R.string.operation_activity_empty_operations_list))
+            } else {
+                operationListAdapter.submitList(checkList)
+            }
+        })
+
+        viewModel.eventItem.observe(this, { event ->
+            setUi(event)
+            fillEquipTagActual(event.equip)
+            fillOperationStatus(event)
+
+            currentEventStatus = event.status
+        })
+
+        viewModel.controlButtonClicked.observe(this, { click ->
+            configureControlButtonVisibility(click)
+        })
+
+        viewModel.timerDuration.observe(this, {
+            if (it > 0) {
+                val strDate = DateTimeUtil.getTimerTimeFromMili(it)
+                runOnUiThread {
+                    binding.timerValueTextView.text = strDate
+                }
+                binding.timerValueTextView.visibility = View.VISIBLE
+                binding.timerImageView.visibility = View.VISIBLE
+            }
+        })
     }
 
     private fun configureControlButtonVisibility(clicked: Boolean) {
         if (clicked) {
-            binding.operationControlFab.extend()
-            binding.shadowView.visibility = View.VISIBLE
-
-            when (eventItem?.status) {
+            when (currentEventStatus) {
                 EventStatus.NEW -> {
-                    binding.startOperationFab.visibility = View.VISIBLE
+                    binding.startOperationFab.show()
                     binding.startOperationTextView.visibility = View.VISIBLE
-                    binding.cancelOperationFab.visibility = View.VISIBLE
+
+                    binding.cancelOperationFab.show()
                     binding.cancelOperationTextView.visibility = View.VISIBLE
                 }
                 EventStatus.IN_WORK -> {
-                    binding.stopOperationFab.visibility = View.VISIBLE
+                    binding.stopOperationFab.show()
                     binding.stopOperationTextView.visibility = View.VISIBLE
-                    binding.completeOperationFab.visibility = View.VISIBLE
+
+                    binding.completeOperationFab.show()
                     binding.completeOperationTextView.visibility = View.VISIBLE
-                    binding.cancelOperationFab.visibility = View.VISIBLE
+
+                    binding.cancelOperationFab.show()
                     binding.cancelOperationTextView.visibility = View.VISIBLE
                 }
                 EventStatus.PAUSED -> {
-                    binding.cancelOperationFab.visibility = View.VISIBLE
+                    binding.startOperationFab.show()
+                    binding.startOperationTextView.text =
+                        getString(R.string.operation_activity_pause_event_button_pause_state)
+                    binding.startOperationTextView.visibility = View.VISIBLE
+
+                    binding.cancelOperationFab.show()
                     binding.cancelOperationTextView.visibility = View.VISIBLE
                 }
             }
-        } else {
-            binding.operationControlFab.shrink()
-            binding.shadowView.visibility = View.GONE
 
-            binding.startOperationFab.visibility = View.GONE
-            binding.stopOperationFab.visibility = View.GONE
-            binding.cancelOperationFab.visibility = View.GONE
-            binding.completeOperationFab.visibility = View.GONE
+            binding.operationControlFab.extend()
+            binding.shadowView.visibility = View.VISIBLE
+        } else {
+            when (currentEventStatus) {
+                EventStatus.COMPLETED, EventStatus.CANCELED -> {
+                    binding.operationControlFab.visibility = View.GONE
+                }
+            }
+
+            binding.startOperationFab.hide()
+            binding.stopOperationFab.hide()
+            binding.cancelOperationFab.hide()
+            binding.completeOperationFab.hide()
 
             binding.startOperationTextView.visibility = View.GONE
             binding.stopOperationTextView.visibility = View.GONE
             binding.cancelOperationTextView.visibility = View.GONE
             binding.completeOperationTextView.visibility = View.GONE
+
+            binding.operationControlFab.shrink()
+            binding.shadowView.visibility = View.GONE
         }
     }
 
-    private fun setUi() {
-        binding.operationControlFab.shrink()
+    private fun setUi(event: EventItem) {
+        val equip = event.equip
 
-        when (eventItem?.status) {
-            EventStatus.COMPLETED, EventStatus.CANCELED -> {
-                binding.operationControlFab.visibility = View.GONE
-            }
-        }
-
-        binding.equipNameTextView.text = eventItem?.equipName ?: getString(R.string.no_data)
-        binding.operationNameTextView.text = eventItem?.name ?: getString(R.string.no_data)
-        binding.equipRFIDTextView.text = equipItem?.equipRFID ?: getString(R.string.no_data)
-
+        binding.equipNameTextView.text =
+            if (!equip?.equipName.isNullOrEmpty()) equip?.equipName else getString(R.string.no_data)
+        binding.equipRFIDTextView.text =
+            if (!equip?.equipRFID.isNullOrEmpty()) equip?.equipRFID else getString(R.string.no_data)
         binding.equipZavNumTextView.text =
-            if (!equipItem?.equipZavNum.isNullOrEmpty()) equipItem?.equipZavNum else getString(R.string.no_data)
+            if (!equip?.equipZavNum.isNullOrEmpty()) equip?.equipZavNum else getString(R.string.no_data)
         binding.equipTagTextView.text =
-            if (!equipItem?.equipTag.isNullOrEmpty()) equipItem?.equipTag else getString(R.string.no_data)
+            if (!equip?.equipTag.isNullOrEmpty()) equip?.equipTag else getString(R.string.no_data)
         binding.equipLocationTextView.text =
-            if (!equipItem?.mestUstan.isNullOrEmpty()) equipItem?.mestUstan else getString(R.string.no_data)
+            if (!equip?.mestUstan.isNullOrEmpty()) equip?.mestUstan else getString(R.string.no_data)
         binding.equipGRSITextView.text =
-            if (!equipItem?.equipGRSI.isNullOrEmpty()) equipItem?.equipGRSI else getString(R.string.no_data)
+            if (!equip?.equipGRSI.isNullOrEmpty()) equip?.equipGRSI else getString(R.string.no_data)
         binding.equipManufacturerTextView.text =
-            if (!equipItem?.equipZavodIzg.isNullOrEmpty()) equipItem?.equipZavodIzg else getString(R.string.no_data)
+            if (!equip?.equipZavodIzg.isNullOrEmpty()) equip?.equipZavodIzg else getString(R.string.no_data)
         binding.equipMeteringTypeTextView.text =
-            if (!equipItem?.equipVidIzm.isNullOrEmpty()) equipItem?.equipVidIzm else getString(R.string.no_data)
+            if (!equip?.equipVidIzm.isNullOrEmpty()) equip?.equipVidIzm else getString(R.string.no_data)
         binding.equipCalibrationTextView.text =
-            if (!equipItem?.lastCalibr.isNullOrEmpty()) equipItem?.lastCalibr else getString(R.string.no_data)
+            if (!equip?.lastCalibr.isNullOrEmpty()) equip?.lastCalibr else getString(R.string.no_data)
         binding.equipVerificationTextView.text =
-            if (!equipItem?.lastVerif.isNullOrEmpty()) equipItem?.lastVerif else getString(R.string.no_data)
+            if (!equip?.lastVerif.isNullOrEmpty()) equip?.lastVerif else getString(R.string.no_data)
+
+        binding.operationNameTextView.text = event.name ?: getString(R.string.no_data)
+        binding.planDateTextView.text =
+            DateTimeUtil.getDateTimeFromMili(event.planDate ?: 0, "dd.MM.yyyy")
 
         binding.typeTextView.text = "Плановое"
-        if (eventItem?.unscheduled != 0) {
+        if (event.unscheduled != 0) {
             binding.typeTextView.text = "Внеплановое"
         }
-
-
-        binding.planDateTextView.text =
-            DateTimeUtil.getDateTimeFromMili(eventItem?.planDate ?: 0, "dd.MM.yyyy")
-
-        fillTagActual()
-        fillOperationStatus()
     }
 
-    private fun fillTagActual() {
-        when (equipItem?.equipTagActual) {
+    private fun fillEquipTagActual(equip: EquipItem?) {
+        when (equip?.equipTagActual) {
             0 -> {
                 binding.equipTagActualImageView.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -284,8 +282,8 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
-    private fun fillOperationStatus() {
-        when (eventItem?.status) {
+    private fun fillOperationStatus(event: EventItem) {
+        when (event.status) {
             EventStatus.NEW -> {
                 binding.statusTextView.text = "Можно выполнить"
             }
@@ -378,25 +376,26 @@ class OperationActivity : AppCompatActivity() {
     }
 
     private fun parseIntent() {
-        if (!intent.hasExtra(EXTRA_EVENT_ITEM)) {
+        if (!intent.hasExtra(EVENT_ID)) {
             finish()
             return
         }
 
-        eventItem = intent.getParcelableExtra(EXTRA_EVENT_ITEM)
-        if (eventItem == null) {
-            finish()
-            return
-        }
+        eventId = intent.getLongExtra(EVENT_ID, 0)
+    }
+
+    private fun showSnackBar(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
+            .setAction("OK") { }.show()
     }
 
     companion object {
 
-        private const val EXTRA_EVENT_ITEM = "event_item"
+        private const val EVENT_ID = "event_item"
 
-        fun newIntent(context: Context, eventItem: EventItem): Intent {
+        fun newIntent(context: Context, eventId: Long): Intent {
             val intent = Intent(context, OperationActivity::class.java)
-            intent.putExtra(EXTRA_EVENT_ITEM, eventItem)
+            intent.putExtra(EVENT_ID, eventId)
             return intent
         }
     }
