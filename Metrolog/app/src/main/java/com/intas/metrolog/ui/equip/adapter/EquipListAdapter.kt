@@ -38,12 +38,8 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
 
         if (!equipItem.equipRFID.isNullOrEmpty()) {
             holder.equipRFIDTextView.text = equipItem.equipRFID
-            holder.equipRFIDTextView.setBackgroundResource(R.drawable.rounded_corner_area_green)
-            holder.equipRFIDTextView.setTextColor(Color.WHITE)
         } else {
             holder.equipRFIDTextView.text = context.getString(R.string.no_data)
-            holder.equipRFIDTextView.setBackgroundResource(R.drawable.rounded_corner_area_red)
-            holder.equipRFIDTextView.setTextColor(Color.WHITE)
         }
 
         if (!equipItem.equipTag.isNullOrEmpty()) {
@@ -110,19 +106,8 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
 
         if (!equipItem.mestUstan.isNullOrEmpty()) {
             holder.equipLocationTextView.text = equipItem.mestUstan
-            holder.equipLocationTextView.setBackgroundResource(R.drawable.rounded_corner_area_white)
-            holder.equipLocationTextView.background
-                .setTint(ContextCompat.getColor(context, R.color.md_white_1000))
-            holder.equipLocationTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.colorSecondaryTextMaterialLight
-                )
-            )
         } else {
             holder.equipLocationTextView.text = context.getString(R.string.no_data)
-            holder.equipLocationTextView.setBackgroundResource(R.drawable.rounded_corner_area_red)
-            holder.equipLocationTextView.setTextColor(Color.WHITE)
         }
 
         if (!equipItem.equipGRSI.isNullOrEmpty()) {

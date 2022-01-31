@@ -25,10 +25,6 @@ object AppPreferences {
     private const val PREF_BIOMETRIC_SUPPORT = "biometricSupport"
     private const val PREF_SAVE_FINGERPRINT = "saveFingerprint"
 
-    private const val TASK_FILTER_FIELD_LIST = "taskFilterFieldList"
-    private const val TASK_FILTER_STATUS_LIST = "taskFilterStatusList"
-    private const val OBJECT_FILTER_STATUS_LIST = "objectFilterStatusList"
-
     private const val REQUEST_FILTER_DISC_LIST = "requestFilterDiscList"
     private const val REQUEST_FILTER_STATUS_LIST = "requestFilterStatusList"
     private const val REQUEST_FILTER_DATE_START = "requestFilterDateStart"
@@ -36,7 +32,6 @@ object AppPreferences {
 
     private const val VERSION_KEY = "versionKey"
     private const val LAST_DATE_JOB = "lastDateJob"
-
 
     fun init(context: Context) {
         preferences = context.getSharedPreferences(FILE_NAME, MODE)
@@ -199,58 +194,4 @@ object AppPreferences {
     var requestFilterDateEnd: Long?
         get() = preferences.getLong(REQUEST_FILTER_DATE_END, 0)
         set(value) = preferences.edit { it.putLong(REQUEST_FILTER_DATE_END, value ?: 0) }
-
-    /**
-     * Фильтр для отображения задач по выбранным месторождениям
-     */
-    var taskFilterFieldList: ArrayList<Int>
-        get() {
-            val gson = Gson()
-            val json: String? = preferences.getString(TASK_FILTER_FIELD_LIST, "")
-            val type: Type = object : TypeToken<java.util.ArrayList<Int?>?>() {}.getType()
-            return gson.fromJson(json, type)
-        }
-        set(value) {
-            val textList: List<Int> = ArrayList(value)
-            val jsonText = Gson().toJson(textList)
-            preferences.edit {
-                it.putString(TASK_FILTER_FIELD_LIST, jsonText)
-            }
-        }
-
-    /**
-     * Фильтр для отображения задач по выбранным статусам
-     */
-    var taskFilterStatusList: ArrayList<Int>
-        get() {
-            val gson = Gson()
-            val json: String? = preferences.getString(TASK_FILTER_STATUS_LIST, "")
-            val type: Type = object : TypeToken<java.util.ArrayList<Int?>?>() {}.getType()
-            return gson.fromJson(json, type)
-        }
-        set(value) {
-            val textList: List<Int> = ArrayList(value)
-            val jsonText = Gson().toJson(textList)
-            preferences.edit {
-                it.putString(TASK_FILTER_STATUS_LIST, jsonText)
-            }
-        }
-
-    /**
-     * Фильтр для отображения объектов по выбранным статусам
-     */
-    var objectFilterStatusList: ArrayList<Int>
-        get() {
-            val gson = Gson()
-            val json: String? = preferences.getString(OBJECT_FILTER_STATUS_LIST, "")
-            val type: Type = object : TypeToken<java.util.ArrayList<Int?>?>() {}.getType()
-            return gson.fromJson(json, type)
-        }
-        set(value) {
-            val textList: List<Int> = ArrayList(value)
-            val jsonText = Gson().toJson(textList)
-            preferences.edit {
-                it.putString(OBJECT_FILTER_STATUS_LIST, jsonText)
-            }
-        }
 }

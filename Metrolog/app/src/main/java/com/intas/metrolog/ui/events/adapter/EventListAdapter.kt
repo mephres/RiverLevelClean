@@ -124,7 +124,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
                 holder.equipTagActualImageView.setColorFilter(
                     ContextCompat.getColor(
                         context,
-                        R.color.colorAccent
+                        R.color.colorPrimary
                     ), PorterDuff.Mode.MULTIPLY
                 )
             }
