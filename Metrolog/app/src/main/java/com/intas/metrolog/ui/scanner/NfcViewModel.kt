@@ -3,12 +3,14 @@ package com.intas.metrolog.ui.scanner
 import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.launch
 
 class NfcViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getInstance(application)
@@ -40,7 +42,9 @@ class NfcViewModel(application: Application) : AndroidViewModel(application) {
                         isSendRFID = 0
                     }
                     val update = db.equipDao().updateEquip(equip)
+                    db.eventDao().updateEventByRfid(equipId = equip.equipId, rfid = rfid)
                     onSuccess?.invoke(update)
+
                 }
             }, {
                 onError?.invoke(it.localizedMessage)
