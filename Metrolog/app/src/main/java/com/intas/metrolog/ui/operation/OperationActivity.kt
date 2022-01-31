@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
-import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +20,6 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.ViewUtil
-import java.util.*
 
 class OperationActivity : AppCompatActivity() {
     private var eventId: Long = 0
@@ -115,8 +113,12 @@ class OperationActivity : AppCompatActivity() {
     private fun observeViewModel() {
 
         viewModel.getCheckList().observe(this, { checkList ->
-            if (checkList.isNotEmpty()) {
+            if (checkList.isNullOrEmpty()) {
+                showSnackBar(getString(R.string.operation_activity_empty_operations_list))
+                binding.operationListTitleTextView.visibility = View.GONE
+            } else {
                 operationListAdapter.submitList(checkList)
+                binding.operationListTitleTextView.visibility = View.VISIBLE
             }
         })
 

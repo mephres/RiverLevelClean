@@ -114,7 +114,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedRequestList = db.requestDao().getNotSendedRequestList()
     val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
-
+    val _eventList = db.eventDao().getEventList()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -123,6 +123,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _requestFilter
 
     init {
+        getEventStatus()
         getUserList()
         getRequestList()
         getEquip()
@@ -216,11 +217,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             val equipItem = db.equipDao().getEquipItemById(equipId) ?: return
             val equipInfo = String.format(
-                    "%s [%s] - %s",
-                    equipItem.equipName,
-                    equipItem.equipTag,
-                    equipItem.mestUstan
-                )
+                "%s [%s] - %s",
+                equipItem.equipName,
+                equipItem.equipTag,
+                equipItem.mestUstan
+            )
 
             db.requestDao().updateRequestEquipInfo(requestItem.id, equipInfo)
         }
@@ -824,8 +825,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 compositeDisposable.remove(it)
             }
 
-            val month = DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "MM").toInt()
-            val year = DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(),"YYYY").toInt()
+            val month =
+                DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "MM").toInt()
+            val year =
+                DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "YYYY").toInt()
 
             getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
                 .subscribeOn(Schedulers.io())
@@ -857,9 +860,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
 
-            val tempNotSendedEventList = notSendedEventList.value
-
-            db.eventDao().insertEventList(eventList.map {
+            val list = eventList.filter {
+                val event = db.eventDao().getEvent(it.opId)
+                (event?.isSended == 0 || event?.status ?: 0 > 0) == false
+            }.map {
                 it.operationListSize = it.operation?.size ?: 0
                 it.needPhotoFix = it.operation?.any {
                     it.needPhotoFix == 1
@@ -868,15 +872,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 it.equipRfid = it.equip?.equipRFID
                 it.equipName = it.equip?.equipName
                 it
-            })
-
-            tempNotSendedEventList?.let {
-                if (!tempNotSendedEventList.isNullOrEmpty()) {
-                    db.eventDao().insertEventList(it)
-                }
             }
 
-            eventList.forEach { event ->
+            db.eventDao().insertEventList(list)
+
+            list.forEach { event ->
 
                 Util.safeLet(event.operation, event.equipId) { eol, equipId ->
                     insertEventOperationList(eol, event.opId, equipId)
@@ -918,7 +918,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertOperControl(operControl: OperControlItem) {
         viewModelScope.launch {
 
-            val tempOperControl = db.operControlDao().getEventOperationControlById(operControl.id ?: 0)
+            val tempOperControl =
+                db.operControlDao().getEventOperationControlById(operControl.id ?: 0)
             tempOperControl?.let {
                 if (it.isSended == 0) {
                     return@launch
@@ -1155,7 +1156,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             compositeDisposable.remove(it)
         }
 
-        val jsonObject = getOperControlJSON(operControl.eventId, operControl.opId, operControl.equipId)
+        val jsonObject =
+            getOperControlJSON(operControl.eventId, operControl.opId, operControl.equipId)
 
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
@@ -1306,7 +1308,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             compositeDisposable.remove(it)
         }
 
-        val screen = ImageUtil.getBase64ScreenFromUri(getApplication<Application>().applicationContext, eventPhoto.photoUrl)
+        val screen = ImageUtil.getBase64ScreenFromUri(
+            getApplication<Application>().applicationContext,
+            eventPhoto.photoUrl
+        )
 
         val map = mutableMapOf<String, String>()
 
@@ -1559,6 +1564,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.equipInfoDao().setEquipInfoSendedById(id, serverId)
+        }
+    }
+
+    private fun getEventStatus() {
+
+        val eventStatusList = mutableListOf<EventStatus>().apply {
+            add(EventStatus(0, "Новое мероприятие"))
+            add(EventStatus(1, "Выполняется"))
+            add(EventStatus(2, "Остановлено"))
+            add(EventStatus(3, "Выполнено"))
+            add(EventStatus(4, "Отменено"))
+        }
+
+        viewModelScope.launch {
+            db.eventStatusDao().insertEventStatusList(eventStatusList)
         }
     }
 
