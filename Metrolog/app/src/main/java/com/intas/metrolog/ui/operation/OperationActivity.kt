@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.transition.TransitionManager
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
@@ -114,7 +113,6 @@ class OperationActivity : AppCompatActivity() {
 
         viewModel.getCheckList().observe(this, { checkList ->
             if (checkList.isNullOrEmpty()) {
-                showSnackBar(getString(R.string.operation_activity_empty_operations_list))
                 binding.operationListTitleTextView.visibility = View.GONE
             } else {
                 operationListAdapter.submitList(checkList)
@@ -203,8 +201,6 @@ class OperationActivity : AppCompatActivity() {
 
     private fun setUi(event: EventItem) {
         val equip = event.equip
-
-        if (event.operationListSize == 0) binding.emptyCheckListTextView.visibility = View.VISIBLE
 
         binding.equipNameTextView.text =
             if (!equip?.equipName.isNullOrEmpty()) equip?.equipName else getString(R.string.no_data)

@@ -44,7 +44,7 @@
             android:textSize="10sp"
             android:textStyle="normal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/checkListNameTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/equipInfoTextView" />
 
         <TextView
             android:id="@+id/manHourNormTextView"
@@ -107,6 +107,19 @@
             app:layout_constraintEnd_toEndOf="@+id/completedUserTextView"
             app:layout_constraintStart_toEndOf="@+id/completedDateTimeLabelTextView"
             app:layout_constraintTop_toTopOf="@+id/completedDateTimeLabelTextView" />
+
+        <TextView
+            android:id="@+id/equipInfoTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:text="TextView"
+            android:textColor="@color/md_black"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="@+id/checkListNameTextView"
+            app:layout_constraintStart_toStartOf="@+id/checkListNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/checkListNameTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
