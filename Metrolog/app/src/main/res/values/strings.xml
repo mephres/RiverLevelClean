@@ -154,5 +154,6 @@
     <string name="operation_activity_event_plan_date_label">Запланировано:</string>
     <string name="operation_activity_operations_label">Список операций</string>
     <string name="operation_activity_empty_operations_list">Список операций пуст</string>
+    <string name="operation_activity_operations_list_title">Список операций</string>
 
 </resources>

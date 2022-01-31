@@ -26,7 +26,7 @@
             android:layout_marginEnd="8dp"
             android:text="TextView"
             android:textColor="@color/colorPrimaryTextDefaultMaterialLight"
-            android:textSize="18sp"
+            android:textSize="12sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -38,23 +38,24 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="Норматив, чел/час:"
             android:textSize="10sp"
-            android:textStyle="bold"
+            android:textStyle="normal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/equipInfoTextView" />
+            app:layout_constraintTop_toBottomOf="@+id/checkListNameTextView" />
 
         <TextView
             android:id="@+id/manHourNormTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            tools:ignore="HardcodedText"
             android:text="TextView"
             android:textSize="10sp"
+            android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/manHourNormLabelTextView"
-            app:layout_constraintTop_toTopOf="@+id/manHourNormLabelTextView" />
+            app:layout_constraintTop_toTopOf="@+id/manHourNormLabelTextView"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/completedUserLabelTextView"
@@ -62,8 +63,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Выполнил:"
-            android:textSize="12sp"
-            android:textStyle="bold"
+            android:textSize="10sp"
+            android:textStyle="normal"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/checkListNameTextView"
             app:layout_constraintTop_toBottomOf="@+id/manHourNormLabelTextView" />
 
@@ -73,7 +75,9 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="TextView"
-            android:textSize="12sp"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/checkListNameTextView"
             app:layout_constraintStart_toEndOf="@+id/completedUserLabelTextView"
             app:layout_constraintTop_toTopOf="@+id/completedUserLabelTextView" />
@@ -82,10 +86,11 @@
             android:id="@+id/completedDateTimeLabelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:text="Дата выполнения:"
-            android:textSize="12sp"
-            android:textStyle="bold"
+            android:textSize="10sp"
+            android:textStyle="normal"
+            android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/completedUserLabelTextView"
             app:layout_constraintTop_toBottomOf="@+id/completedUserTextView" />
 
@@ -95,21 +100,12 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="TextView"
-            android:textSize="12sp"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="@+id/completedUserTextView"
             app:layout_constraintStart_toEndOf="@+id/completedDateTimeLabelTextView"
             app:layout_constraintTop_toTopOf="@+id/completedDateTimeLabelTextView" />
-
-        <TextView
-            android:id="@+id/equipInfoTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:text="TextView"
-            app:layout_constraintEnd_toEndOf="@+id/checkListNameTextView"
-            app:layout_constraintStart_toStartOf="@+id/checkListNameTextView"
-            app:layout_constraintTop_toBottomOf="@+id/checkListNameTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

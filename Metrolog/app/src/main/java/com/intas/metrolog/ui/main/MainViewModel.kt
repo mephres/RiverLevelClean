@@ -114,6 +114,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedRequestList = db.requestDao().getNotSendedRequestList()
     val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
+    val _eventList = db.eventDao().getEventList()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -859,9 +860,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
 
-            val tempNotSendedEventList = notSendedEventList.value
-
-            db.eventDao().insertEventList(eventList.map {
+            val list = eventList.filter {
+                val event = db.eventDao().getEvent(it.opId)
+                (event?.isSended == 0 || event?.status ?: 0 > 0) == false
+            }.map {
                 it.operationListSize = it.operation?.size ?: 0
                 it.needPhotoFix = it.operation?.any {
                     it.needPhotoFix == 1
@@ -870,15 +872,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 it.equipRfid = it.equip?.equipRFID
                 it.equipName = it.equip?.equipName
                 it
-            })
-
-            tempNotSendedEventList?.let {
-                if (!tempNotSendedEventList.isNullOrEmpty()) {
-                    db.eventDao().insertEventList(it)
-                }
             }
 
-            eventList.forEach { event ->
+            db.eventDao().insertEventList(list)
+
+            list.forEach { event ->
 
                 Util.safeLet(event.operation, event.equipId) { eol, equipId ->
                     insertEventOperationList(eol, event.opId, equipId)

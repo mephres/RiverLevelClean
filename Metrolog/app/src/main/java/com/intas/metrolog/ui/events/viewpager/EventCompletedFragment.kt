@@ -11,6 +11,7 @@ import com.intas.metrolog.databinding.FragmentEventTodayBinding
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.ui.events.EventsViewModel
 import com.intas.metrolog.ui.events.adapter.EventListAdapter
+import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.Journal
 
 
@@ -98,7 +99,7 @@ class EventCompletedFragment : Fragment() {
 
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventCompletedFragment->onEventClickListener", it)
-            //startActivity(EditTaskActivity.newIntent(requireContext(), it))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
         }
     }
 
