@@ -28,22 +28,23 @@
             android:textColor="@color/md_black_1000"
             android:textSize="16sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@+id/eventStatusImageView"
+            app:layout_constraintEnd_toStartOf="@+id/eventStatusTextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="ТО 1" />
 
-        <ImageView
-            android:id="@+id/eventStatusImageView"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+        <TextView
+            android:id="@+id/eventStatusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:visibility="visible"
+            tools:text="Можно выполнить"
+            android:textStyle="bold"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_check_red_24dp"
-            app:tint="@color/colorPrimary" />
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <TextView
             android:id="@+id/planDateLabelTextView"

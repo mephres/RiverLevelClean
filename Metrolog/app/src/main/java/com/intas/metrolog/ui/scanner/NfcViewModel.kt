@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.pojo.event.EventItem
 import io.reactivex.Scheduler
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -74,6 +75,10 @@ class NfcViewModel(application: Application) : AndroidViewModel(application) {
                 }
             })
         compositeDisposable.add(disposable)
+    }
+
+    fun getEventListByRfid(rfid: String): List<EventItem> {
+        return db.eventDao().getEventListByRfid(rfid)
     }
 
     override fun onCleared() {

@@ -21,6 +21,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.events.select_event.SelectEventFragment
+import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.ui.requests.add.AddRequestFragment
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
@@ -362,9 +363,22 @@ class NfcFragment : BottomSheetDialogFragment() {
     private fun showSelectEventByEquipRfid(rfid: String) {
         nfcViewModel.getEquipByRFID(rfid)
         nfcViewModel.onEquipItemSuccess = {
-            //поиск мероприятий по найденному оборудованию производится в SelectEventFragment
-            val selectEventFragment = SelectEventFragment.newInstance(it)
-            selectEventFragment.show(requireActivity().supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
+            val eventList = nfcViewModel.getEventListByRfid(rfid)
+
+            if (eventList.size > 1) {
+                val selectEventFragment = SelectEventFragment.newInstance(it)
+                selectEventFragment.show(
+                    requireActivity().supportFragmentManager,
+                    SelectEventFragment.SELECT_EVENT_FRAGMENT
+                )
+            } else if (eventList.isEmpty()) {
+                Toast.makeText(
+                    requireContext(), getString(R.string.select_event_no_data_title),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                startActivity(OperationActivity.newIntent(requireContext(), eventList.last().opId))
+            }
             closeFragment()
         }
         nfcViewModel.onFailure = {

@@ -9,7 +9,7 @@ import com.intas.metrolog.pojo.event.EventItem
 class SelectEventViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getInstance(application)
 
-    fun getEventByRfid(rfid: String): LiveData<List<EventItem>> {
+    fun getEventByRfid(rfid: String): List<EventItem> {
         return db.eventDao().getEventListByRfid(rfid)
     }
 

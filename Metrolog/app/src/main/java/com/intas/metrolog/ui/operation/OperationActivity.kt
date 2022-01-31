@@ -115,9 +115,7 @@ class OperationActivity : AppCompatActivity() {
     private fun observeViewModel() {
 
         viewModel.getCheckList().observe(this, { checkList ->
-            if (checkList.isNullOrEmpty()) {
-                showSnackBar(getString(R.string.operation_activity_empty_operations_list))
-            } else {
+            if (checkList.isNotEmpty()) {
                 operationListAdapter.submitList(checkList)
             }
         })
@@ -203,6 +201,8 @@ class OperationActivity : AppCompatActivity() {
 
     private fun setUi(event: EventItem) {
         val equip = event.equip
+
+        if (event.operationListSize == 0) binding.emptyCheckListTextView.visibility = View.VISIBLE
 
         binding.equipNameTextView.text =
             if (!equip?.equipName.isNullOrEmpty()) equip?.equipName else getString(R.string.no_data)

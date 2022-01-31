@@ -11,7 +11,7 @@ class SelectEventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) 
     val eventNameTextView: TextView = view.findViewById(R.id.eventNameTextView)
     val planDateTextView: TextView = view.findViewById(R.id.planDateTextView)
     val eventTypeTextView: TextView = view.findViewById(R.id.eventTypeTextView)
-    val eventStatusImageView: ImageView = view.findViewById(R.id.eventStatusImageView)
+    val eventStatusTextView: TextView = view.findViewById(R.id.eventStatusTextView)
     val eventItemContainer: View = view.findViewById(R.id.eventItemContainer)
     val eventCardView: MaterialCardView = view.findViewById(R.id.eventCardView)
 }
