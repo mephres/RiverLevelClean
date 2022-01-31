@@ -49,11 +49,10 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
         binding.equipInfoTextView.text = equipItem?.equipName
 
-        viewModel.getEventByRfid(equipRfid).observe(viewLifecycleOwner, {
-            binding.eventNotFoundTextView.isVisible = it.isEmpty()
-            selectEventListAdapter.submitList(it)
-        })
-
+        val eventList = viewModel.getEventByRfid(equipRfid)
+        if (eventList.isNotEmpty()) {
+            selectEventListAdapter.submitList(eventList)
+        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -85,8 +84,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
     private fun setClickListener() {
         selectEventListAdapter.onItemClickListener = {
-            val eventItem = it
-            startActivity(OperationActivity.newIntent(requireContext(), eventItem))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
         }
     }
 

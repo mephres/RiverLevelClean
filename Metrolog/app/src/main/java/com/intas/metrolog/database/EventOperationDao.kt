@@ -21,4 +21,7 @@ interface EventOperationDao {
 
     @Query("UPDATE eventOperation SET isSended = 1 WHERE subId = :id")
     suspend fun setEventOperationSendedById(id: Long)
+
+    @Query("SELECT * FROM eventOperation WHERE opId = :opId")
+    fun getCheckList(opId: Long): LiveData<List<EventOperationItem>>
 }

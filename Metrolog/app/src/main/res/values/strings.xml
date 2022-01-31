@@ -133,5 +133,27 @@
     <string name="select_event_type_title">Тип мероприятия:</string>
     <string name="select_event_type_planned_title">Плановое</string>
     <string name="select_event_type_unscheduled_title">Внеплановое</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="operation_activity_begin_event_button">Начать мероприятие</string>
+    <string name="operation_activity_pause_event_button_work_state">Остановить выполнение мероприятия</string>
+    <string name="operation_activity_pause_event_button_pause_state">Продолжить выполнение мероприятия</string>
+    <string name="operation_activity_complete_event_button">Закончить мероприятие</string>
+    <string name="operation_activity_cancel_event_button">Отменить выполнение мероприятия</string>
+    <string name="operation_activity_control_button_title">Управление</string>
+    <string name="operation_activity_equip_name">Название оборудования</string>
+    <string name="operation_activity_name">Название ТО</string>
+    <string name="operation_activity_menu_begin_event_button">Начать мероприятие</string>
+    <string name="operation_activity_menu_pause_event_button_work_state">Остановить мероприятие</string>
+    <string name="operation_activity_menu_pause_event_button_pause_state">Продолжить мероприятие</string>
+    <string name="operation_activity_menu_complete_event_button">Закончить мероприятие</string>
+    <string name="operation_activity_menu_cancel_event_button">Отменить мероприятие</string>
+    <string name="operation_activity_equip_ZavNum_label">Заводской номер:</string>
+    <string name="operation_activity_event_type_label">Тип мероприятия:</string>
+    <string name="operation_activity_event_plan_date_label">Запланировано:</string>
+    <string name="operation_activity_operations_label">Список операций</string>
+    <string name="operation_activity_empty_operations_list">Список операций пуст</string>
+    <string name="operation_activity_operations_list_title">Список операций</string>
 
 </resources>

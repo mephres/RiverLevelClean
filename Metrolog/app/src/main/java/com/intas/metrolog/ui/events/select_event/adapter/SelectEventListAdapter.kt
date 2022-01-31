@@ -46,34 +46,34 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
 
         when(eventItem.priority) {
             EventPriority.PLANED.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_white_1000))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white_1000)
             }
             EventPriority.SERIOUS.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_orange_300))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_orange_300)
             }
             EventPriority.ACCIDENT.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_red_500))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_red_500)
             }
             EventPriority.UNKNOWN.ordinal -> {
-                holder.eventItemContainer.setBackgroundColor(ContextCompat.getColor(context, R.color.md_white_1000))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white_1000)
             }
         }
 
         when(eventItem.status) {
             EventStatus.NEW -> {
-                holder.eventStatusImageView.visibility = View.INVISIBLE
+                holder.eventStatusTextView.text = "Можно выполнить"
             }
             EventStatus.IN_WORK -> {
-                holder.eventStatusImageView.setImageResource(R.drawable.ic_timer_red_24dp)
+                holder.eventStatusTextView.text = "Выполняется"
             }
             EventStatus.PAUSED -> {
-                holder.eventStatusImageView.setImageResource(R.drawable.ic_timer_off_red_24dp)
+                holder.eventStatusTextView.text = "Остановлено"
             }
             EventStatus.COMPLETED -> {
-                holder.eventStatusImageView.setImageResource(R.drawable.ic_check_red_24dp)
+                holder.eventStatusTextView.text = "Завершено"
             }
             EventStatus.CANCELED -> {
-                holder.eventStatusImageView.setImageResource(R.drawable.ic_close_red_24dp)
+                holder.eventStatusTextView.text = "Отменено"
             }
         }
 
