@@ -15,7 +15,6 @@ class OperationViewModel(
     private val application: Application,
     private val eventId: Long
 ) : ViewModel() {
-
     private val db = AppDatabase.getInstance(application)
     private var timer: Timer? = null
 

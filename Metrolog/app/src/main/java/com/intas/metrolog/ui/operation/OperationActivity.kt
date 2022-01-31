@@ -384,11 +384,6 @@ class OperationActivity : AppCompatActivity() {
         eventId = intent.getLongExtra(EVENT_ID, 0)
     }
 
-    private fun showSnackBar(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG)
-            .setAction("OK") { }.show()
-    }
-
     companion object {
 
         private const val EVENT_ID = "event_item"
