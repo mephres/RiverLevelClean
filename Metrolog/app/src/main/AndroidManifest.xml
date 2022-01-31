@@ -49,7 +49,7 @@
 
         <activity
             android:name=".ui.operation.OperationActivity"
-            android:screenOrientation="fullSensor"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="false" />
         <activity
