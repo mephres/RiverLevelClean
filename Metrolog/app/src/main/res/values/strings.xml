@@ -4,6 +4,7 @@
     <string name="login_activity_app_title">Мобильный метролог</string>
     <string name="no_data">Нет данных</string>
     <string name="save_title">Сохранить</string>
+    <string name="search_title">Поиск</string>
 
     <string name="exit_message">Нажмите еще раз для выхода</string>
 

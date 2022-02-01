@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/chatItemCardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardUseCompatPadding="true"
+    tools:ignore="ContentDescription">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/chatUserPhotoImageView"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_worker"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/chatUserNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/md_black_1000"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/chatItemMessageDateTimeTextView"
+            app:layout_constraintStart_toEndOf="@id/chatUserPhotoImageView"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Иванов И.И." />
+
+        <TextView
+            android:id="@+id/chatMessageTextTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:lines="1"
+            android:visibility="gone"
+            app:layout_constraintEnd_toStartOf="@+id/chatIncomingMessagesCountTextView"
+            app:layout_constraintStart_toEndOf="@id/chatUserPhotoImageView"
+            app:layout_constraintTop_toBottomOf="@id/chatUserNameTextView"
+            tools:text="Принято, спасибо!"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/chatIncomingMessagesCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/circular_area"
+            android:backgroundTint="@color/colorAccent"
+            android:gravity="center"
+            android:textColor="@color/md_white_1000"
+            android:textSize="12sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/chatItemMessageDateTimeTextView"
+            tools:text="9"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/chatItemMessageDateTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:textColor="@color/md_black_1000"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/chatUserNameTextView"
+            tools:text="12:25" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.cardview.widget.CardView>
