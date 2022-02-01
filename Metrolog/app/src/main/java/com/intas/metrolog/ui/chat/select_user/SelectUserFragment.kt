@@ -1,6 +1,8 @@
 package com.intas.metrolog.ui.chat.select_user
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentSelectUserBinding
 import com.intas.metrolog.pojo.UserItem
+import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.adapter.UserListAdapter
 import com.intas.metrolog.util.Util
 
@@ -21,9 +24,8 @@ class SelectUserFragment : Fragment() {
 
     private var chatUserList = mutableListOf<UserItem>()
 
-    private val binding by lazy {
-        FragmentSelectUserBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentSelectUserBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by lazy {
         ViewModelProvider(this)[SelectUserViewModel::class.java]
@@ -39,6 +41,7 @@ class SelectUserFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentSelectUserBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -46,7 +49,15 @@ class SelectUserFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUI()
         setupRecyclerView()
+        setupSearchViewListener()
+        observeUsers()
 
+        binding.includeToolbar.toolbar.setNavigationOnClickListener {
+            findNavController().navigateUp()
+        }
+    }
+
+    private fun observeUsers() {
         viewModel.chatUserList.observe(
             viewLifecycleOwner
         ) {
@@ -65,10 +76,6 @@ class SelectUserFragment : Fragment() {
 
             binding.includeToolbar.toolbar.subtitle = usersCount
             userListAdapter.submitList(chatUserList)
-        }
-
-        binding.includeToolbar.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
         }
     }
 
@@ -96,7 +103,39 @@ class SelectUserFragment : Fragment() {
 
     private fun setupClickListener() {
         userListAdapter.onUserItemClickListener = {
-
+            val args = Bundle().apply {
+                putParcelable(MessageFragment.COMPANION_ITEM, it)
+            }
+            findNavController().navigate(R.id.action_selectUserFragment_to_messageFragment, args)
         }
+    }
+
+    private fun setupSearchViewListener() {
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                setFilter(newText.trim())
+                return true
+            }
+        })
+    }
+
+    private fun setFilter(text: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
+            userListAdapter.submitList(chatUserList.filter {
+                it.fio?.contains(text, true) ?: false ||
+                        it.position?.contains(text, true) ?: false
+            })
+        }, 200)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

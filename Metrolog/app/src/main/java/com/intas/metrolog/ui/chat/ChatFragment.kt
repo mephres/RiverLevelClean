@@ -1,6 +1,8 @@
 package com.intas.metrolog.ui.chat
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +19,7 @@ import com.intas.metrolog.databinding.FragmentChatBinding
 import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.ui.chat.adapter.ChatListAdapter
+import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
 
@@ -24,9 +27,8 @@ class ChatFragment : Fragment() {
     private var searchView: SearchView? = null
     private lateinit var chatListAdapter: ChatListAdapter
 
-    private val binding by lazy {
-        FragmentChatBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentChatBinding? = null
+    private val binding get() = _binding!!
 
     private val chatViewModel by lazy {
         ViewModelProvider(this)[ChatViewModel::class.java]
@@ -44,7 +46,8 @@ class ChatFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
+        _binding = FragmentChatBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -52,7 +55,15 @@ class ChatFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUI()
         setupRecyclerView()
+        createChatItems()
+        setupSearchViewListener()
 
+        binding.chatListSelectUserFab.setOnClickListener {
+            findNavController().navigate(R.id.action_navigation_chat_to_selectUserFragment)
+        }
+    }
+
+    private fun createChatItems() {
         chatViewModel.messageList.observe(viewLifecycleOwner) { messages ->
             binding.chatProgressIndicator.isVisible = messages.isEmpty()
 
@@ -76,25 +87,22 @@ class ChatFragment : Fragment() {
                         companion = chatViewModel.getCompanionById(companionId)
                     }
 
-                    val userName = companion?.fio ?: ""
-                    val messageText = message.message ?: ""
-                    val companionId = companion?.id ?: 0
-                    val companionPosition = companion?.position  ?: ""
-                    val messageId = message.id ?: 0
-                    val messageDateTime = DateTimeUtil.getShortDataFromMili(message.dateTime ?: 0)
+                    companion?.let {
+                        val messageText = message.message ?: ""
+                        val messageId = message.id ?: 0
+                        val messageDateTime = DateTimeUtil.getShortDataFromMili(message.dateTime ?: 0)
 
-                    val chatItem = ChatItem(
-                        id = messageId,
-                        userName = userName,
-                        lastMessage = messageText,
-                        notViewedMessageCount = messageNotViewedCount,
-                        companionId = companionId,
-                        userPosition = companionPosition,
-                        lastMessageDate = messageDateTime
-                    )
-                    chatItemList.add(chatItem)
+                        val chatItem = ChatItem(
+                            id = messageId,
+                            lastMessage = messageText,
+                            notViewedMessageCount = messageNotViewedCount,
+                            companion = it,
+                            lastMessageDate = messageDateTime
+                        )
+                        chatItemList.add(chatItem)
+                    }
                 }
-                chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companionId == it.companionId && it.id > chatItem.id} }
+                chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
                 chatItemList.sortByDescending {
                     it.lastMessageDate
                 }
@@ -104,10 +112,6 @@ class ChatFragment : Fragment() {
 
         this.chatItemList.observe(viewLifecycleOwner) {
             chatListAdapter.submitList(it)
-        }
-
-        binding.chatListSelectUserFab.setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_chat_to_selectUserFragment)
         }
     }
 
@@ -124,17 +128,20 @@ class ChatFragment : Fragment() {
 
     private fun setupRecyclerView() {
         chatListAdapter = ChatListAdapter()
-            with(binding.chatListRecyclerView) {
-                adapter = chatListAdapter
-                recycledViewPool.setMaxRecycledViews(0, ChatListAdapter.MAX_POOL_SIZE)
-            }
+        with(binding.chatListRecyclerView) {
+            adapter = chatListAdapter
+            recycledViewPool.setMaxRecycledViews(0, ChatListAdapter.MAX_POOL_SIZE)
+        }
         setupClickListener()
         setupScrollListener()
     }
 
     private fun setupClickListener() {
         chatListAdapter.onChatItemClickListener = {
-
+            val args = Bundle().apply {
+                putParcelable(MessageFragment.COMPANION_ITEM, it.companion)
+            }
+            findNavController().navigate(R.id.action_navigation_chat_to_messageFragment, args)
         }
     }
 
@@ -149,5 +156,34 @@ class ChatFragment : Fragment() {
                 }
             }
         })
+    }
+
+    private fun setupSearchViewListener() {
+        searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                setFilter(newText.trim())
+                return true
+            }
+        })
+    }
+
+    private fun setFilter(text: String) {
+        val handler = Handler(Looper.getMainLooper())
+        handler.removeCallbacksAndMessages(null)
+        handler.postDelayed({
+            chatListAdapter.submitList(_chatItemList.value?.filter {
+                it.companion.fio?.contains(other = text, ignoreCase = true) ?: false ||
+                        it.companion.position?.contains(text, true) ?: false
+            })
+        }, 200)
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }

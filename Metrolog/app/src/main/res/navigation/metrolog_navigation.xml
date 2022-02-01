@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_navigation_chat_to_selectUserFragment"
             app:destination="@id/selectUserFragment" />
+        <action
+            android:id="@+id/action_navigation_chat_to_messageFragment"
+            app:destination="@id/messageFragment" />
     </fragment>
     <fragment
         android:id="@+id/navigation_more"
@@ -38,5 +41,18 @@
         android:id="@+id/selectUserFragment"
         android:name="com.intas.metrolog.ui.chat.select_user.SelectUserFragment"
         android:label="SelectUserFragment"
-        tools:layout="@layout/fragment_select_user"/>
+        tools:layout="@layout/fragment_select_user">
+        <action
+            android:id="@+id/action_selectUserFragment_to_messageFragment"
+            app:destination="@id/messageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.intas.metrolog.ui.chat.messages.MessageFragment"
+        android:label="fragment_message"
+        tools:layout="@layout/fragment_message">
+        <action
+            android:id="@+id/action_messageFragment_to_navigation_chat"
+            app:destination="@id/navigation_chat" />
+    </fragment>
 </navigation>

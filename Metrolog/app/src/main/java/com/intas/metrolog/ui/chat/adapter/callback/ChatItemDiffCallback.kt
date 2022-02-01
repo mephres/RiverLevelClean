@@ -5,7 +5,7 @@ import com.intas.metrolog.pojo.chat.ChatItem
 
 class ChatItemDiffCallback: DiffUtil.ItemCallback<ChatItem>() {
     override fun areItemsTheSame(oldItem: ChatItem, newItem: ChatItem): Boolean {
-        return oldItem.userName == newItem.userName
+        return oldItem.id == newItem.id
     }
 
     override fun areContentsTheSame(oldItem: ChatItem, newItem: ChatItem): Boolean {

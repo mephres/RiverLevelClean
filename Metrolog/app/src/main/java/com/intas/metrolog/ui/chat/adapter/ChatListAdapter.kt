@@ -29,10 +29,10 @@ class ChatListAdapter : ListAdapter<ChatItem, ChatItemViewHolder>(ChatItemDiffCa
 
         val chatItem = getItem(position)
 
-        holder.chatUserNameTextView.text = chatItem.userName
+        holder.chatUserNameTextView.text = chatItem.companion.fio
         holder.chatMessageTextTextView.text = chatItem.lastMessage
         holder.chatItemMessageDateTimeTextView.text = chatItem.lastMessageDate
-        holder.chatUserPositionTextView.text = chatItem.userPosition
+        holder.chatUserPositionTextView.text = chatItem.companion.position
 
         if (chatItem.notViewedMessageCount > 0) {
             holder.chatIncomingMessagesCountTextView.text = chatItem.notViewedMessageCount.toString()
