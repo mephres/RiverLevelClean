@@ -39,17 +39,30 @@
             tools:text="Иванов И.И." />
 
         <TextView
+            android:id="@+id/chatUserPositionTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:lines="1"
+            android:textStyle="bold"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@+id/chatIncomingMessagesCountTextView"
+            app:layout_constraintStart_toEndOf="@id/chatUserPhotoImageView"
+            app:layout_constraintTop_toBottomOf="@id/chatUserNameTextView"
+            tools:text="Слесарь УТОиР" />
+
+        <TextView
             android:id="@+id/chatMessageTextTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
+            android:paddingBottom="4dp"
             android:lines="1"
-            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/chatIncomingMessagesCountTextView"
             app:layout_constraintStart_toEndOf="@id/chatUserPhotoImageView"
-            app:layout_constraintTop_toBottomOf="@id/chatUserNameTextView"
+            app:layout_constraintTop_toBottomOf="@id/chatUserPositionTextView"
             tools:text="Принято, спасибо!"
             tools:visibility="visible" />
 

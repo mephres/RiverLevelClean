@@ -47,6 +47,7 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
+import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
@@ -102,6 +103,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var sendRequestDisposable: Disposable? = null
     private var sendRequestPhotoDisposable: Disposable? = null
     private var sendEquipInfoDisposable: Disposable? = null
+    private var loadMessageDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
     val notSendedEquipDocumentList = db.equipDocumentDao().getNotSendedEquipDocumentList()
@@ -115,6 +117,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
     val _eventList = db.eventDao().getEventList()
+    val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
+    val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -1579,6 +1583,52 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             db.eventStatusDao().insertEventStatusList(eventStatusList)
+        }
+    }
+
+    fun loadMessageList(messageLastId: Int) {
+        loadMessageDisposable?.let {
+            compositeDisposable.remove(it)
+        }
+
+        loadMessageDisposable =
+            ApiFactory.apiService.getChatMessage(userId = Util.authUser?.userId ?: 0, id = messageLastId)
+                .subscribeOn(Schedulers.io())
+                .repeatWhen { completed ->
+                    completed.delay(10, TimeUnit.MINUTES)
+                }
+                .retryWhen { f: Flowable<Throwable?> ->
+                    f.take(600).delay(1, TimeUnit.MINUTES)
+                }
+                .doOnError {
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_EQUIP_INFO", it.message.toString())
+                }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    it.list?.let {
+                        insertMessageList(it)
+                    }
+                    it.requestError?.let {
+                        Log.d("MM_LOAD_MESSAGES", it.message.toString())
+                    }
+                }, {
+                    it.printStackTrace()
+                    Log.d("MM_LOAD_MESSAGES", it.message.toString())
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                })
+
+        loadMessageDisposable?.let {
+            compositeDisposable.add(it)
+        }
+    }
+
+    private fun insertMessageList(list: List<MessageItem>) {
+        viewModelScope.launch {
+
+            Log.d("MM_INSERT_MESSAGES", list.size.toString())
+
+            db.chatMessageDao().insertMessageList(list)
         }
     }
 

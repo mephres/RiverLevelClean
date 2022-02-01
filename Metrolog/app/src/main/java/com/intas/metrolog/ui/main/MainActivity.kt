@@ -51,6 +51,8 @@ class MainActivity : AppCompatActivity() {
         initNotSendedRequestObserver()
         initNotSendedEquipInfoObserver()
         initNotSendedRequestPhotoObserver()
+        initLoadMessageObserver()
+        initNewChatMessageCountObserver()
     }
 
     /**
@@ -166,6 +168,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
     /**
      * Получение и отправка на сервер неотправленного операционного контроля
      */
@@ -214,6 +217,28 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    /**
+     * Получение идентификатора последнего сообщения в БД
+     */
+    private fun initLoadMessageObserver() {
+        viewModel.chatMessageLastId.observe(this) {
+            var messageLastId = 0
+            if (it != null) {
+                messageLastId = it
+            }
+            viewModel.loadMessageList(messageLastId)
+        }
+    }
+
+    private fun initNewChatMessageCountObserver() {
+        viewModel.newChatMessageCount.observe(this) {
+            val count = it
+            val badge = binding.bottomNavigationView.getOrCreateBadge(R.id.navigation_chat)
+            badge.isVisible = count >= 1
+            badge.number = count
+        }
     }
 
     private fun showToast(text: String) {

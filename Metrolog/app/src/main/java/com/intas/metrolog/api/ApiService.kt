@@ -2,6 +2,7 @@ package com.intas.metrolog.api
 
 import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.authuser.AuthResponse
+import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
@@ -248,6 +249,29 @@ interface ApiService {
     @FormUrlEncoded
     @POST("addRequestPhoto")
     fun addRequestPhoto(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
+    /**
+     * Получение списка сообщений для переписки с сервера ЦНО
+     *
+     * @param userId параметр для запроса
+     * @param id параметр для запроса
+     * @return список заявок [MessageItem]
+     */
+    @GET("getChatMessage")
+    fun getChatMessage(
+        @Query(QUERY_PARAM_USER_ID) userId: Int,
+        @Query(QUERY_PARAM_ID) id: Int
+    ): Single<ResponseApi<MessageItem>>
+
+    /**
+     * Добавление сообщения переписки на сервер
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addChatMessage")
+    fun addChatMessage(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
