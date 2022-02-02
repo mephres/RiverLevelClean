@@ -117,6 +117,7 @@ class ChatFragment : Fragment() {
 
         this.chatItemList.observe(viewLifecycleOwner) {
             chatListAdapter.submitList(it)
+            binding.chatListRecyclerView.scrollToTop()
         }
     }
 
@@ -148,6 +149,14 @@ class ChatFragment : Fragment() {
             }
             findNavController().navigate(R.id.action_navigation_chat_to_messageFragment, args)
         }
+    }
+
+    private fun RecyclerView.scrollToTop() {
+
+        postDelayed({
+            val position = 0
+            scrollToPosition(position)
+        }, 100)
     }
 
     private fun setupScrollListener() {
