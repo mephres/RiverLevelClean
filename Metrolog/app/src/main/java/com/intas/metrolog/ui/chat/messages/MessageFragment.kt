@@ -246,12 +246,5 @@ class MessageFragment : Fragment() {
 
     companion object {
         const val COMPANION_ITEM = "companion_item"
-
-        fun newInstance(companionId: Int) =
-            MessageFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(COMPANION_ITEM, companionId)
-                }
-            }
     }
 }
