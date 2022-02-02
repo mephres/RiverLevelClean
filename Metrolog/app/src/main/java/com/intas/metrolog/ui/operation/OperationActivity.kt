@@ -26,6 +26,7 @@ import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.ViewUtil
 
 class OperationActivity : AppCompatActivity() {
@@ -194,6 +195,10 @@ class OperationActivity : AppCompatActivity() {
             }
             operationListAdapter.submitList(checkList)
         })
+    }
+
+    private fun loadEquipPriorityInfo() {
+
     }
 
     private fun setTimer(eventState: Int) {
@@ -525,7 +530,15 @@ class OperationActivity : AppCompatActivity() {
 
     private fun beginEvent() {
 
-        needVerify = false //TODO: УБРАТЬ!!!!
+        val deviceId = Util.getDeviceUniqueID(this)
+
+        Util.deviceUniqueIdArray.forEach {
+            if (it.equals(deviceId,true)) {
+                needVerify = false
+                return@forEach
+            }
+        }
+
         if (needVerify) {
             showToast("Для начала выполнения мероприятия необходимо считать метку оборудования")
             showScanner()

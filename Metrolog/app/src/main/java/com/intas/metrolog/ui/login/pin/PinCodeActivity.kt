@@ -27,9 +27,9 @@ import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.login.LoginActivity
 import com.intas.metrolog.ui.main.MainActivity
 import com.intas.metrolog.util.*
-import com.intas.metrolog.util.Util.Companion.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
-import com.intas.metrolog.util.Util.Companion.PIN_COUNT_OF_ATTEMPTS
-import com.intas.metrolog.util.Util.Companion.PIN_COUNT_OF_DIGITS
+import com.intas.metrolog.util.Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
+import com.intas.metrolog.util.Util.PIN_COUNT_OF_ATTEMPTS
+import com.intas.metrolog.util.Util.PIN_COUNT_OF_DIGITS
 import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
 

@@ -35,11 +35,9 @@ import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.ChangeLogXmlParser
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.Util.Companion.PERMISSION_REQUEST_CODE
+import com.intas.metrolog.util.Util.PERMISSION_REQUEST_CODE
 import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set

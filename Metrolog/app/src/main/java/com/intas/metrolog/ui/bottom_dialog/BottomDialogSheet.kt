@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.intas.metrolog.databinding.FragmentBottomDialogSheetBinding
-import com.intas.metrolog.util.Util.Companion.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
+import com.intas.metrolog.util.Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
 
 private const val DIALOG_TITLE = "dialogTitle"
 private const val DIALOG_TEXT = "dialogText"
@@ -62,7 +62,7 @@ class BottomDialogSheet : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         return binding.root
     }
 

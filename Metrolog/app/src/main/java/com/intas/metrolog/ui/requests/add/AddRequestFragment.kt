@@ -17,7 +17,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -41,9 +40,8 @@ import com.intas.metrolog.ui.requests.add.adapter.OperationTypeSpinnerAdapter
 import com.intas.metrolog.ui.requests.add.adapter.PrioritySpinnerAdapter
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
+import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import com.intas.metrolog.util.ViewUtil
-import com.intas.metrolog.util.loadImage
 import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.io.IOException

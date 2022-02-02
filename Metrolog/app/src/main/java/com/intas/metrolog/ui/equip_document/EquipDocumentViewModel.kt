@@ -18,7 +18,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
-import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
+import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import java.io.File

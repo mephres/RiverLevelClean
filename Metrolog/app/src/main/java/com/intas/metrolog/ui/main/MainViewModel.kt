@@ -283,7 +283,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             for (equip in equipList) {
                 equip.equipInfoList?.let { eil ->
                     if (eil.isNotEmpty()) {
-                        insertEquipInfoList(eil)
+                        insertEquipInfoList(eil.map {
+                            it.equipId = equip.equipId
+                            it
+                        })
                     }
                 }
             }
