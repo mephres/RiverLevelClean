@@ -23,11 +23,16 @@
         android:layout_height="wrap_content"
         app:menu="@menu/toolbar_menu"/>
 
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300" />
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chatUserRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="500dp"
-        android:background="@color/md_grey_200"
         android:scrollbars="vertical"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:listitem="@layout/user_item" />
