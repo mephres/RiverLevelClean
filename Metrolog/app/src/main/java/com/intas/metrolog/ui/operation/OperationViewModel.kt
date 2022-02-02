@@ -118,7 +118,8 @@ class OperationViewModel(
 
             val dateTime = DateTimeUtil.getUnixDateTimeNow() // получаем текущее время
             val duration =
-                eventItem.value?.durationTimer ?: 0 // получаем продолжительность выполнения мероприятия
+                eventItem.value?.durationTimer
+                    ?: 0 // получаем продолжительность выполнения мероприятия
 
             if (eventItem.value?.dateTimeStartTimer ?: 0 > 0) { // если таймер уже запущен
                 val delta = dateTime - (eventItem.value?.dateTimeStartTimer
@@ -131,7 +132,8 @@ class OperationViewModel(
                 }
             }
 
-            eventItem.value?.dateTimeStartTimer =  dateTime // записываем дату-время начала работы таймера
+            eventItem.value?.dateTimeStartTimer =
+                dateTime // записываем дату-время начала работы таймера
 
             eventItem.value?.let {
                 db.eventDao().updateEvent(it)
@@ -143,34 +145,30 @@ class OperationViewModel(
      * Установка статуса для текущего открытого мероприятия
      * @param status статус мероприятия (0 - новое мероприятие, 1 - выполняется, 2 - остановлено, 3 - выполнено, 4 - отказ от выполнения)
      */
-    fun setEventStatus(status: Int) {
+    fun setEventStatus(status: Int, comment: String? = null) {
 
         viewModelScope.launch {
-
-            eventItem.value?.status = status
-
-            if (status >= PAUSED) { // мероприятие остановлено, выполнено или отказано
-                eventItem.value?.factDate = eventItem.value?.dateTimeStartTimer.toString() // установка текущей даты-время
-                eventItem.value?.userId =
-                    (Util.authUser?.userId
-                        ?: 0).toString()  // установка идентификатора пользователя
-                eventItem.value?.otv = Util.authUser?.fio // установка фио ответственного
-                eventItem.value?.eventDone = true
-                if (status != PAUSED) {
-                    eventItem.value?.isSended = 0
-                }
-            }
-            Journal.insertJournal("OperationViewModel->setEventStatus->Event", eventItem.value.toString())
             eventItem.value?.let {
+                comment?.let { comment->
+                    it.comment = comment
+                }
+                it.status = status
+
+                if (status >= PAUSED) { // мероприятие остановлено, выполнено или отказано
+                    it.factDate = it.dateTimeStartTimer.toString() // установка текущей даты-время
+                    it.userId =
+                        (Util.authUser?.userId
+                            ?: 0).toString()  // установка идентификатора пользователя
+                    it.otv = Util.authUser?.fio // установка фио ответственного
+                    it.eventDone = true
+                    if (status != PAUSED) {
+                        it.isSended = 0
+                    }
+                }
+                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it.toString())
                 db.eventDao().updateEvent(it)
             }
         }
-    }
-
-    // Extension. CopyPaste it anywhere in your project
-    fun <T> MutableLiveData<T>.mutation(actions: (MutableLiveData<T>) -> Unit) {
-        actions(this)
-        this.value = this.value
     }
 
     override fun onCleared() {

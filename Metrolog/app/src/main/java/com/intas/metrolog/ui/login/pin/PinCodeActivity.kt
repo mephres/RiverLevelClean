@@ -181,7 +181,7 @@ class PinCodeActivity : AppCompatActivity() {
             whatsNew.titleText = "Что нового в ${BuildConfig.VERSION_NAME}?"
             whatsNew.buttonText = "Понятно"
             whatsNew.buttonBackground = ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            whatsNew.buttonTextColor = ContextCompat.getColor(this, R.color.md_white_1000)
+            whatsNew.buttonTextColor = ContextCompat.getColor(this, R.color.md_white)
             whatsNew.itemTitleColor = ContextCompat.getColor(this, R.color.colorAccent)
             whatsNew.itemContentColor = Color.parseColor("#808080")
 

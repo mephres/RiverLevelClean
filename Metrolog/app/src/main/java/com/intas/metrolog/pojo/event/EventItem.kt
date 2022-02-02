@@ -77,7 +77,7 @@ data class EventItem(
      */
     @SerializedName("comment")
     @Expose
-    val comment: String? = null,
+    var comment: String? = null,
     /**
      * дата-время начала выполнения мероприятия в UNIX формате
      */

@@ -62,7 +62,7 @@ class OperationListAdapter : ListAdapter<EventOperationItem, OperationItemViewHo
         } else {
             holder.checkListCardView.strokeColor = ContextCompat.getColor(
                 context,
-                R.color.md_white_1000
+                R.color.md_white
             )
         }
 

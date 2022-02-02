@@ -490,9 +490,9 @@
         android:layout_margin="16dp"
         android:backgroundTint="@color/colorPrimary"
         android:text="@string/operation_activity_control_button_title"
-        android:textColor="@color/md_white_1000"
+        android:textColor="@color/md_white"
         app:icon="@drawable/ic_baseline_construction_black_24dp"
-        app:iconTint="@color/md_white_1000"
+        app:iconTint="@color/md_white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
@@ -507,8 +507,8 @@
         app:fabSize="normal"
         app:layout_constraintBottom_toTopOf="@+id/eventControlFab"
         app:layout_constraintEnd_toEndOf="@+id/eventControlFab"
-        app:srcCompat="@drawable/ic_close_red_24dp"
-        app:tint="@color/md_white_1000"
+        app:srcCompat="@drawable/ic_close_24dp"
+        app:tint="@color/md_white"
         tools:visibility="visible" />
 
     <TextView
@@ -537,7 +537,7 @@
         app:layout_constraintBottom_toTopOf="@+id/cancelEventFab"
         app:layout_constraintEnd_toEndOf="@+id/eventControlFab"
         app:srcCompat="@drawable/ic_baseline_check_24dp"
-        app:tint="@color/md_white_1000"
+        app:tint="@color/md_white"
         tools:visibility="visible" />
 
     <TextView
@@ -566,7 +566,7 @@
         app:layout_constraintBottom_toTopOf="@+id/completeEventFab"
         app:layout_constraintEnd_toEndOf="@+id/completeEventFab"
         app:srcCompat="@drawable/ic_timer_off_red_24dp"
-        app:tint="@color/md_white_1000"
+        app:tint="@color/md_white"
         tools:visibility="visible" />
 
     <TextView
@@ -595,7 +595,7 @@
         app:layout_constraintBottom_toTopOf="@+id/stopEventFab"
         app:layout_constraintEnd_toEndOf="@+id/stopEventFab"
         app:srcCompat="@drawable/ic_timer_red_24dp"
-        app:tint="@color/md_white_1000"
+        app:tint="@color/md_white"
         tools:visibility="visible" />
 
     <TextView

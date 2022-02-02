@@ -142,12 +142,12 @@ class RequestListAdapter :
             }
             6 -> {
                 holder.requestColorStatusTextView.background
-                    .setTint(ContextCompat.getColor(context, R.color.md_white_1000))
+                    .setTint(ContextCompat.getColor(context, R.color.md_white))
                 holder.requestIsNotSendImageView.visibility = View.GONE
             }
             else -> {
                 holder.requestColorStatusTextView.background
-                    .setTint(ContextCompat.getColor(context, R.color.md_white_1000))
+                    .setTint(ContextCompat.getColor(context, R.color.md_white))
                 holder.requestIsNotSendImageView.visibility = View.VISIBLE
             }
         }

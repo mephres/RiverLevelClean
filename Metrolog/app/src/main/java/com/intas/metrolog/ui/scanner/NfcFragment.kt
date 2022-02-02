@@ -170,7 +170,7 @@ class NfcFragment : BottomSheetDialogFragment() {
      */
     private fun setUI() {
         val colorFrom = ContextCompat.getColor(requireContext(), R.color.colorAccent)
-        val colorTo = ContextCompat.getColor(requireContext(), R.color.md_white_1000)
+        val colorTo = ContextCompat.getColor(requireContext(), R.color.md_white)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom)
         colorAnimation.duration = 3000 // milliseconds
         colorAnimation.repeatCount = 100

@@ -89,7 +89,7 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
                     val canvas = page.canvas
 
                     val paint = Paint()
-                    paint.color = ContextCompat.getColor(context, R.color.md_white_1000)
+                    paint.color = ContextCompat.getColor(context, R.color.md_white)
                     canvas.drawPaint(paint)
 
                     val bitmap = Bitmap.createScaledBitmap(imageBitmap, tempWidth, tempHeight, true)

@@ -22,6 +22,8 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETE
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.IN_WORK
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.NEW
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
+import com.intas.metrolog.ui.events.event_comment.EventCommentFragment
+import com.intas.metrolog.ui.events.event_comment.EventCommentFragment.Companion.EVENT_COMMENT_FRAGMENT_TAG
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
 import com.intas.metrolog.ui.scanner.NfcFragment
@@ -114,15 +116,23 @@ class OperationActivity : AppCompatActivity() {
         }
 
         binding.cancelEventFab.setOnClickListener {
-            cancelEvent()
+            showEventComment(CANCELED)
             viewModel.changeControlButtonVisibleValue()
             binding.eventControlFab.visibility = View.GONE
         }
 
         binding.completeEventFab.setOnClickListener {
-            completeEvent()
+            operationListAdapter.currentList.let {
+                it.forEach {
+                    if (it.completed == 0) {
+                        showToast("Для выполнения мероприятия необходимо выполнить все операции!")
+                        viewModel.changeControlButtonVisibleValue()
+                        return@setOnClickListener
+                    }
+                }
+            }
+            showEventComment(COMPLETED)
             viewModel.changeControlButtonVisibleValue()
-            binding.eventControlFab.visibility = View.GONE
         }
     }
 
@@ -142,8 +152,7 @@ class OperationActivity : AppCompatActivity() {
             viewModel.setOperationComplete(it)
 
             if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
-                val b = 1
-                showToast("Size -null")
+                showEventComment(COMPLETED)
             }
         }
     }
@@ -164,6 +173,7 @@ class OperationActivity : AppCompatActivity() {
             currentEventStatus = event.status
             setTimer(currentEventStatus)
             loadOperationList()
+            loadEquipPriorityInfo()
             initTouchHelper()
             controlButtons()
         })
@@ -180,11 +190,32 @@ class OperationActivity : AppCompatActivity() {
         })
     }
 
+    private fun showEventComment(status: Int) {
+
+        currentEvent?.let {
+            val eventCommentFragment: EventCommentFragment
+            if (currentEvent?.needPhotoFix == true) {
+                eventCommentFragment = EventCommentFragment.newInstanceWithImage(it.opId, status)
+            } else {
+                eventCommentFragment = EventCommentFragment.newInstanceWithoutImage(it.opId, status)
+            }
+            eventCommentFragment.show(supportFragmentManager, EVENT_COMMENT_FRAGMENT_TAG)
+            eventCommentFragment.onSaveCommentListener = { comment, eventStatus ->
+                when (eventStatus) {
+                    COMPLETED, CANCELED -> finishEvent(eventStatus, comment)
+                    /*COMPLETED -> completeEvent()
+                    CANCELED -> cancelEvent()*/
+                }
+            }
+        }
+    }
+
     private fun controlButtons() {
         viewModel.controlButtonClicked.observe(this, { click ->
             configureControlButtonVisibility(click)
         })
     }
+
     private fun loadOperationList() {
 
         viewModel.getOperationList().observe(this, { checkList ->
@@ -198,7 +229,7 @@ class OperationActivity : AppCompatActivity() {
     }
 
     private fun loadEquipPriorityInfo() {
-
+        showToast("Сделать вывод приоритетной информации об оборудовании!!!")
     }
 
     private fun setTimer(eventState: Int) {
@@ -497,19 +528,26 @@ class OperationActivity : AppCompatActivity() {
         this.title = "Мероприятие"
     }
 
-    private fun cancelEvent() {
+    private fun finishEvent(status: Int, comment: String? = null) {
+        viewModel.setDateTimeTimer(false)
+        viewModel.stopTimer()
+        setTimer(status)
+        viewModel.setEventStatus(status, comment)
+    }
+
+    private fun cancelEvent(comment: String? = null) {
 
         viewModel.setDateTimeTimer(false)
         viewModel.stopTimer()
         setTimer(CANCELED)
-        viewModel.setEventStatus(CANCELED)
+        viewModel.setEventStatus(CANCELED, comment)
     }
 
-    private fun completeEvent() {
+    private fun completeEvent(comment: String? = null) {
         viewModel.setDateTimeTimer(false)
         viewModel.stopTimer()
         setTimer(COMPLETED)
-        viewModel.setEventStatus(COMPLETED)
+        viewModel.setEventStatus(COMPLETED, comment)
     }
 
     private fun pauseEvent() {
@@ -533,7 +571,7 @@ class OperationActivity : AppCompatActivity() {
         val deviceId = Util.getDeviceUniqueID(this)
 
         Util.deviceUniqueIdArray.forEach {
-            if (it.equals(deviceId,true)) {
+            if (it.equals(deviceId, true)) {
                 needVerify = false
                 return@forEach
             }

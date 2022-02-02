@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
 import androidx.transition.TransitionManager
+import com.bumptech.glide.Glide
 import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.database.AppDatabase
@@ -70,8 +71,8 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
         holder.planDateTextView.text = DateTimeUtil.getDateTimeFromMili(eventItem.planDate ?: 0, "dd.MM.yyyy")
 
         fillFactDate(eventItem, holder)
-
         fillTagActual(equipItem, holder)
+        fillStatus(eventItem, holder)
 
         holder.itemView.setOnClickListener {
             onEventClickListener?.invoke(eventItem)
@@ -95,6 +96,52 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
         }
     }
 
+    private fun fillStatus(eventItem: EventItem,
+                           holder: EventItemViewHolder
+    ) {
+        holder.eventStatusImageView.visibility = View.VISIBLE
+        when (eventItem.status) {
+            IN_WORK -> {
+                Glide.with(context).load(R.drawable.ic_baseline_play_circle_outline_24dp).into(holder.eventStatusImageView)
+                holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.md_blue_500))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(
+                    context,
+                    R.color.md_blue_500
+                )
+            }
+            PAUSED -> {
+                Glide.with(context).load(R.drawable.ic_baseline_pause_circle_outline_24dp).into(holder.eventStatusImageView)
+                holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(
+                    context,
+                    R.color.colorAccent
+                )
+            }
+            COMPLETED -> {
+                Glide.with(context).load(R.drawable.ic_baseline_check_circle_outline_24dp).into(holder.eventStatusImageView)
+                holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(
+                    context,
+                    R.color.colorPrimary
+                )
+            }
+            CANCELED -> {
+                Glide.with(context).load(R.drawable.ic_baseline_block_24dp).into(holder.eventStatusImageView)
+                holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.md_red_600))
+                holder.eventCardView.strokeColor = ContextCompat.getColor(
+                    context,
+                    R.color.md_red_600
+                )
+            }
+            else -> {
+                holder.eventStatusImageView.visibility = View.GONE
+                holder.eventCardView.strokeColor = ContextCompat.getColor(
+                    context,
+                    R.color.md_white
+                )
+            }
+        }
+    }
     private fun fillTagActual(
         equipItem: EquipItem,
         holder: EventItemViewHolder
