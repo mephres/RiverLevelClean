@@ -2,8 +2,11 @@ package com.intas.metrolog.ui.chat.select_user
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
+import com.intas.metrolog.pojo.chat.MessageItem
+import kotlinx.coroutines.launch
 
 class SelectUserViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getInstance(application)
@@ -12,5 +15,11 @@ class SelectUserViewModel(application: Application) : AndroidViewModel(applicati
 
     fun getCompanionById(companionId: Int): UserItem? {
         return db.userDao().getUserById(companionId)
+    }
+
+    fun insertMessage(message: MessageItem) {
+        viewModelScope.launch {
+            db.chatMessageDao().insertMessage(message)
+        }
     }
 }

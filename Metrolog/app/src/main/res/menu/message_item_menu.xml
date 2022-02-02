@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/message_item_action_forward_message"
+        android:icon="@drawable/ic_arrow_right_top_black_24dp"
+        android:title="@string/chat_item_menu_forward_title"
+        android:iconTint="@color/md_black_1000"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/message_item_action_delete_message"
+        android:icon="@drawable/ic_baseline_delete_24"
+        android:title="@string/chat_item_menu_delete_title"
+        android:iconTint="@color/md_black_1000"
+        app:showAsAction="always" />
+</menu>

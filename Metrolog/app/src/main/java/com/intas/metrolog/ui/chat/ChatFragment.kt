@@ -60,7 +60,7 @@ class ChatFragment : Fragment() {
         setupSearchViewListener()
 
         binding.chatListSelectUserFab.setOnClickListener {
-            val selectUserFragment = SelectUserFragment()
+            val selectUserFragment = SelectUserFragment.newInstanceAddCompanion()
             selectUserFragment.show(requireActivity().supportFragmentManager, SelectUserFragment.SELECT_USER_FRAGMENT_TAG)
         }
     }

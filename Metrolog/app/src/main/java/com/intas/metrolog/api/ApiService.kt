@@ -322,5 +322,8 @@ interface ApiService {
 
         const val QUERY_PARAM_DATA = "data"
         const val QUERY_PARAM_PHOTO = "photo"
+
+        const val QUERY_PARAM_MESSAGE_TEXT = "message"
+        const val QUERY_PARAM_TO_USER_ID = "toUserId"
     }
 }

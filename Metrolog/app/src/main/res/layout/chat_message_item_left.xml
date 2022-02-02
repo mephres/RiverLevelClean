@@ -119,17 +119,4 @@
         android:orientation="vertical"
         app:layout_constraintGuide_percent="0.75" />
 
-    <ImageView
-        android:id="@+id/forwardMessageImageView"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/circular_area"
-        android:backgroundTint="@color/md_grey_500"
-        app:layout_constraintBottom_toBottomOf="@+id/messageContainer"
-        app:layout_constraintStart_toEndOf="@+id/messageContainer"
-        app:layout_constraintTop_toTopOf="@+id/messageContainer"
-        app:srcCompat="@drawable/ic_arrow_right_top_black_24dp"
-        app:tint="@color/md_white_1000" />
-
 </androidx.constraintlayout.widget.ConstraintLayout>

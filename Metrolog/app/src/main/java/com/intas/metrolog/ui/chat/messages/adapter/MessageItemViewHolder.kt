@@ -11,7 +11,6 @@ class MessageItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val showMessageTextView: TextView = view.findViewById(R.id.showMessageTextView)
     val messageDateTextView: TextView = view.findViewById(R.id.messageDateTextView)
     val messageGroupDateTextView: TextView = view.findViewById(R.id.messageGroupDateTextView)
-    val forwardMessageImageView: ImageView = view.findViewById(R.id.forwardMessageImageView)
     val messageStatusImageView: ImageView = view.findViewById(R.id.messageStatusImageView)
     val messageTextCardView: MaterialCardView = view.findViewById(R.id.messageTextCardView)
     val forwardedTextMessageTextView: TextView = view.findViewById(R.id.forwardedTextMessageTextView)

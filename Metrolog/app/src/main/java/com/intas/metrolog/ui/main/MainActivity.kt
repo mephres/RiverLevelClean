@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -53,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         initNotSendedRequestPhotoObserver()
         initLoadMessageObserver()
         initNewChatMessageCountObserver()
+        initNotSentChatMessageObserver()
     }
 
     /**
@@ -238,6 +240,18 @@ class MainActivity : AppCompatActivity() {
             val badge = binding.bottomNavigationView.getOrCreateBadge(R.id.navigation_chat)
             badge.isVisible = count >= 1
             badge.number = count
+        }
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных записей переписки
+     */
+    private fun initNotSentChatMessageObserver() {
+        viewModel.notSendedChatMessageList.observe(this) {
+            Log.d("UPLOAD_CHAT_MESSAGES", it.toString())
+            it.forEach {
+                //viewModel.sendChatMessage(it)
+            }
         }
     }
 

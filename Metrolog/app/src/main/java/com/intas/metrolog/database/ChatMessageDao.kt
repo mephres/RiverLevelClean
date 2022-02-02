@@ -6,9 +6,16 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.intas.metrolog.pojo.chat.MessageItem
+import io.reactivex.Flowable
 
 @Dao
 interface ChatMessageDao {
+    @Query("INSERT INTO chat_message (id) VALUES(1000000000)")
+    fun insertValue()
+
+    @Query("DELETE FROM chat_message WHERE id = 1000000000")
+    fun deleteValue()
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertMessageList(messageList: List<MessageItem>)
 
@@ -21,6 +28,9 @@ interface ChatMessageDao {
     @Query("SELECT id FROM chat_message WHERE isSent = 1 order by id desc limit 1")
     fun getChatMessageLastId(): LiveData<Int>
 
+    @Query("SELECT id FROM chat_message WHERE isSent = 1 order by id desc limit 1")
+    fun getChatMessageLastIdFlow(): Flowable<Int>
+
     @Query("SELECT count(*) FROM chat_message WHERE isViewed = 0 and (senderUserId = :senderId AND companionUserId =:companionId)")
     fun getNotViewedCount(senderId: Int, companionId: Int): Int
 
@@ -32,4 +42,13 @@ interface ChatMessageDao {
 
     @Query("SELECT * FROM chat_message WHERE ((senderUserId = :senderId AND companionUserId =:companionId) OR (senderUserId = :companionId AND companionUserId =:senderId))")
     fun getMessageListBy(senderId: Int, companionId: Int): LiveData<List<MessageItem>>
+
+    @Query("UPDATE chat_message SET isSent = 1, isViewed = 1, id = :serverId WHERE id == :id")
+    fun setMessageSentBy(id: Int, serverId: Int)
+
+    @Query("SELECT * FROM chat_message WHERE isSent = 0")
+    fun getNotSendedMessageList(): LiveData<List<MessageItem>>
+
+    @Query("DELETE FROM chat_message WHERE id = :id")
+    suspend fun deleteMessageBy(id: Int)
 }

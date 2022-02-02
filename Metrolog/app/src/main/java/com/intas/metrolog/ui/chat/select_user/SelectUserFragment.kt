@@ -11,7 +11,6 @@ import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -19,23 +18,33 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentSelectUserBinding
 import com.intas.metrolog.pojo.UserItem
+import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.adapter.UserListAdapter
+import com.intas.metrolog.ui.scanner.NfcFragment
+import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
 
 class SelectUserFragment : BottomSheetDialogFragment() {
     private var searchView: SearchView? = null
     private lateinit var userListAdapter: UserListAdapter
 
+    private var screenMode: String = MODE_UNKNOWN
     private var chatUserList = mutableListOf<UserItem>()
+    private var forwardedMessage: MessageItem? = null
 
     private var _binding: FragmentSelectUserBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: SelectUserViewModel by viewModels()
 
+    private val modes = arrayOf(
+        MODE_FORWARD_MESSAGE, MODE_ADD_COMPANION
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        parseArgs()
         setHasOptionsMenu(true)
     }
 
@@ -91,9 +100,16 @@ class SelectUserFragment : BottomSheetDialogFragment() {
 
     private fun setUI() {
         binding.selectUserToolbar.title = "Выбрать"
-        binding.selectUserToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_arrow_back_24dp)
-        binding.selectUserToolbar.setTitleTextAppearance(requireContext(), R.style.Toolbar_TitleText)
-        binding.selectUserToolbar.setSubtitleTextAppearance(requireContext(), R.style.Toolbar_SubTitleText)
+        binding.selectUserToolbar.navigationIcon =
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_arrow_back_24dp)
+        binding.selectUserToolbar.setTitleTextAppearance(
+            requireContext(),
+            R.style.Toolbar_TitleText
+        )
+        binding.selectUserToolbar.setSubtitleTextAppearance(
+            requireContext(),
+            R.style.Toolbar_SubTitleText
+        )
 
         val menu = binding.selectUserToolbar.menu
         val menuItemSearch = menu?.findItem(R.id.action_search)
@@ -112,12 +128,8 @@ class SelectUserFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupClickListener() {
-        userListAdapter.onUserItemClickListener = {
-            val args = Bundle().apply {
-                putParcelable(MessageFragment.COMPANION_ITEM, it)
-            }
-            findNavController().navigate(R.id.messageFragment, args)
-            closeFragment()
+        userListAdapter.onUserItemClickListener = { companion ->
+            launchMode(companion)
         }
     }
 
@@ -153,8 +165,76 @@ class SelectUserFragment : BottomSheetDialogFragment() {
         }
     }
 
+    private fun launchMode(companion: UserItem) {
+        when(screenMode) {
+            MODE_ADD_COMPANION -> {
+                val args = Bundle().apply {
+                    putParcelable(MessageFragment.COMPANION_ITEM, companion)
+                }
+                findNavController().navigate(R.id.messageFragment, args)
+                closeFragment()
+            }
+
+            MODE_FORWARD_MESSAGE -> {
+                forwardedMessage?.let {
+                    val message = MessageItem(
+                        message = it.message,
+                        senderUserId = Util.authUser?.userId,
+                        companionUserId = companion.id,
+                        isSent = 0,
+                        isViewed = 1,
+                        dateTime = DateTimeUtil.getUnixDateTimeNow()
+                    )
+                    viewModel.insertMessage(message)
+                }
+                findNavController().popBackStack()
+                closeFragment()
+            }
+        }
+    }
+
+    private fun parseArgs() {
+        val args = requireArguments()
+        if (!args.containsKey(SCREEN_MODE)) {
+            return
+        }
+        val mode = args.getString(SCREEN_MODE)
+        if (!modes.contains(mode)) {
+            return
+        }
+        mode?.let { screenMode = it }
+        if (screenMode == MODE_FORWARD_MESSAGE) {
+            if (!args.containsKey(FORWARDED_MESSAGE)) {
+                return
+            }
+            forwardedMessage = args.getParcelable(FORWARDED_MESSAGE)
+
+            if (forwardedMessage == null) {
+                return
+            }
+        }
+    }
+
     companion object {
         const val SELECT_USER_FRAGMENT_TAG = "select_user_fragment_tag"
+        private const val SCREEN_MODE = "mode"
+        private const val MODE_UNKNOWN = ""
+        private const val MODE_ADD_COMPANION = "mode_add_companion"
+        private const val MODE_FORWARD_MESSAGE = "mode_forward_message"
+        private const val FORWARDED_MESSAGE = "forwarded_message"
+
+        fun newInstanceAddCompanion() = SelectUserFragment().apply {
+            arguments = Bundle().apply {
+                putString(SCREEN_MODE, MODE_ADD_COMPANION)
+            }
+        }
+
+        fun newInstanceForwardMessage(message: MessageItem) = SelectUserFragment().apply {
+            arguments = Bundle().apply {
+                putString(SCREEN_MODE, MODE_FORWARD_MESSAGE)
+                putParcelable(FORWARDED_MESSAGE, message)
+            }
+        }
     }
 
     override fun onDestroyView() {

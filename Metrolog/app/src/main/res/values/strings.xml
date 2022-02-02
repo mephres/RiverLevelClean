@@ -157,4 +157,7 @@
     <string name="operation_activity_empty_operations_list">Список операций пуст</string>
     <string name="operation_activity_operations_list_title">Список операций</string>
 
+    <string name="chat_item_menu_forward_title">Переслать</string>
+    <string name="chat_item_menu_delete_title">Удалить</string>
+
 </resources>

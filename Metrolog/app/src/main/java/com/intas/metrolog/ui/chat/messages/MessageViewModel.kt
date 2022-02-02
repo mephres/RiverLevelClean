@@ -32,4 +32,10 @@ class MessageViewModel(
             db.chatMessageDao().insertMessage(message)
         }
     }
+
+    fun deleteMessageBy(id: Int) {
+        viewModelScope.launch {
+            db.chatMessageDao().deleteMessageBy(id)
+        }
+    }
 }

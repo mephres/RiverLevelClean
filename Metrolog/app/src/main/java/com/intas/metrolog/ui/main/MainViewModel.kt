@@ -4,10 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.api.ApiFactory
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ACCURACY
@@ -31,6 +28,7 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_FACT_DATE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LATITUDE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_LONGITUDE
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_MESSAGE_TEXT
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OPERATION_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_OP_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_PHOTO
@@ -43,6 +41,7 @@ import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_STATUS_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SUB_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_SUB_MAN_HOUR
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TIME
+import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TO_USER_ID
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_TYPE
 import com.intas.metrolog.api.ApiService.Companion.QUERY_PARAM_USER_ID
 import com.intas.metrolog.database.AppDatabase
@@ -119,6 +118,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val _eventList = db.eventDao().getEventList()
     val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
+    val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -138,6 +138,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         getEquipInfoPriority()
         getEventComment()
         getEvent()
+        initMessageFirstId()
     }
 
     fun addRequestFilter(requestFilter: RequestFilter) {
@@ -1630,6 +1631,68 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             db.chatMessageDao().insertMessageList(list)
         }
+    }
+
+    fun sendChatMessage(chatMessage: MessageItem) {
+
+        val messagesMap = mutableMapOf<String, String>()
+        messagesMap[QUERY_PARAM_USER_ID] = Util.authUser?.userId.toString()
+        messagesMap[QUERY_PARAM_ID] = chatMessage.id.toString()
+        messagesMap[QUERY_PARAM_MESSAGE_TEXT] = chatMessage.message.toString()
+        messagesMap[QUERY_PARAM_TO_USER_ID] = chatMessage.companionUserId.toString()
+        messagesMap[QUERY_PARAM_DATETIME] = chatMessage.dateTime.toString()
+
+        val disposable = ApiFactory.apiService.addChatMessage(messagesMap)
+            .retryWhen { f: Flowable<Throwable?> ->
+                f.take(500).delay(1, TimeUnit.MINUTES)
+            }
+            .doOnError {
+                Log.d("MM_UPLOAD_CHAT_MESSAGES", it.message.toString())
+                FirebaseCrashlytics.getInstance().recordException(it)
+            }
+            .subscribeOn(Schedulers.io())
+            .subscribe({
+                it.requestSuccess?.let {
+                    Util.safeLet(it.id, it.serverId) { id, serverId ->
+                        setChatMessageSended(id.toInt(), serverId.toInt())
+                    }
+                }
+
+                it.requestError?.let {
+                    Log.d("MM_SEND_CHAT_MESSAGES", it.message.toString())
+                }
+                Log.d("MM_SEND_CHAT_MESSAGES", it.toString())
+            },
+                {
+                    it.printStackTrace()
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                    Log.d("MM_SEND_CHAT_MESSAGES", it.message.toString())
+                })
+        compositeDisposable.add(disposable)
+    }
+
+    /**
+     * Установка признака успешной отсылки сообщения чата на сервер
+     * @param id - идентификатор записи сообщения на стороне мобильного устройства
+     * @param serverId - идентификатор записи на стороне сервера
+     */
+    private fun setChatMessageSended(id: Int, serverId: Int) {
+        viewModelScope.launch {
+            try {
+                db.chatMessageDao().setMessageSentBy(id = id, serverId = serverId)
+            } catch (e: SQLiteConstraintException) {
+                e.printStackTrace()
+                if (e.localizedMessage.contains("UNIQUE constraint")) {
+                    db.chatMessageDao().deleteMessageBy(id)
+                }
+            }
+        }
+    }
+
+    private fun initMessageFirstId() {
+        db.chatMessageDao().deleteValue()
+        db.chatMessageDao().insertValue()
+        db.chatMessageDao().deleteValue()
     }
 
     override fun onCleared() {

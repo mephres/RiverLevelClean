@@ -23,8 +23,6 @@ class MessageListAdapter :
     var textSize = 14F
 
     var onMessageItemLongClickListener: ((View, MessageItem) -> Unit)? = null
-    var onMessageItemForwardClickListener: ((View, MessageItem) -> Unit)? = null
-    var onMessageItemClickListener: ((View, MessageItem) -> Unit)? = null
 
     companion object {
         const val MAX_POOL_SIZE = 15
@@ -96,22 +94,11 @@ class MessageListAdapter :
             }
         }
 
-        holder.forwardMessageImageView.visibility = View.GONE
+
 
         holder.itemView.setOnLongClickListener {
             onMessageItemLongClickListener?.invoke(it, messageItem)
             true
-        }
-
-        holder.forwardMessageImageView.setOnClickListener {
-
-            ViewUtil.runAnimationButton(context, it)
-
-            onMessageItemForwardClickListener?.invoke(it, messageItem)
-        }
-
-        holder.itemView.setOnClickListener {
-            onMessageItemClickListener?.invoke(it, messageItem)
         }
     }
 
