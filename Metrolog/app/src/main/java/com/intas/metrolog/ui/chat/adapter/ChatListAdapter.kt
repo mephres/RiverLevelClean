@@ -5,9 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
 import com.intas.metrolog.R
 import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.ui.chat.adapter.callback.ChatItemDiffCallback
+import com.intas.metrolog.util.DateTimeUtil
 
 class ChatListAdapter : ListAdapter<ChatItem, ChatItemViewHolder>(ChatItemDiffCallback()) {
 
@@ -31,8 +33,11 @@ class ChatListAdapter : ListAdapter<ChatItem, ChatItemViewHolder>(ChatItemDiffCa
 
         holder.chatUserNameTextView.text = chatItem.companion.fio
         holder.chatMessageTextTextView.text = chatItem.lastMessage
-        holder.chatItemMessageDateTimeTextView.text = chatItem.lastMessageDate
+        holder.chatItemMessageDateTimeTextView.text = DateTimeUtil.getShortDataFromMili(chatItem.lastMessageDate)
         holder.chatUserPositionTextView.text = chatItem.companion.position
+
+        Glide.with(context).load(R.drawable.ic_worker).circleCrop()
+            .into(holder.chatUserPhotoImageView)
 
         if (chatItem.notViewedMessageCount > 0) {
             holder.chatIncomingMessagesCountTextView.text = chatItem.notViewedMessageCount.toString()

@@ -1594,8 +1594,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         loadMessageDisposable =
             ApiFactory.apiService.getChatMessage(userId = Util.authUser?.userId ?: 0, id = messageLastId)
                 .subscribeOn(Schedulers.io())
-                .repeatWhen { completed ->
-                    completed.delay(10, TimeUnit.MINUTES)
+                .repeatWhen {
+                    it.delay(60, TimeUnit.SECONDS)
                 }
                 .retryWhen { f: Flowable<Throwable?> ->
                     f.take(600).delay(1, TimeUnit.MINUTES)

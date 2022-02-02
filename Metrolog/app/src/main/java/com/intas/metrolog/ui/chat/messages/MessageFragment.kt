@@ -11,10 +11,15 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentMessageBinding
 import com.intas.metrolog.pojo.UserItem
+import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.ui.chat.messages.adapter.MessageListAdapter
+import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.Util
 
 class MessageFragment : Fragment() {
     private lateinit var messageListAdapter: MessageListAdapter
@@ -52,6 +57,8 @@ class MessageFragment : Fragment() {
 
         viewModel.getMessageList().observe(viewLifecycleOwner) {
             messageListAdapter.submitList(it)
+            binding.messageRecyclerView.scrollToBottom()
+            viewModel.setChatMessageViewed(companion.id)
         }
 
         binding.chatMessageTextView.doOnTextChanged { _, _, _, count ->
@@ -60,6 +67,8 @@ class MessageFragment : Fragment() {
 
         binding.userName.text = companion.fio
         binding.userPosition.text = companion.position
+        Glide.with(requireContext()).load(R.drawable.ic_worker).circleCrop()
+            .into(binding.userPhoto)
     }
 
     private fun setClickListeners() {
@@ -80,7 +89,18 @@ class MessageFragment : Fragment() {
     }
 
     private fun sendMessage(text: String) {
-
+        val senderId = Util.authUser?.userId
+        val companionId = companion.id
+        val message = MessageItem(
+            message = text,
+            senderUserId = senderId,
+            companionUserId = companionId,
+            isSent = 0,
+            isViewed = 1,
+            dateTime = DateTimeUtil.getUnixDateTimeNow()
+        )
+        viewModel.insertMessage(message)
+        binding.messageRecyclerView.scrollToBottom()
     }
 
     private fun messageSendButtonEnable(enabled: Boolean) {
@@ -122,6 +142,16 @@ class MessageFragment : Fragment() {
         args.getParcelable<UserItem>(COMPANION_ITEM)?.let {
             companion = it
         }
+    }
+
+    private fun RecyclerView.scrollToBottom() {
+        postDelayed({
+            var position = 0
+            adapter?.let {
+                position = it.itemCount - 1
+            }
+            scrollToPosition(position)
+        }, 100)
     }
 
     companion object {

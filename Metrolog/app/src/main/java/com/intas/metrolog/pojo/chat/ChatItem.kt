@@ -6,6 +6,6 @@ data class ChatItem(
     val id: Int,
     val lastMessage: String,
     val notViewedMessageCount: Int,
-    val lastMessageDate: String,
+    val lastMessageDate: Long,
     val companion: UserItem,
 )

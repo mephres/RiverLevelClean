@@ -26,4 +26,10 @@ class MessageViewModel(
             db.chatMessageDao().setMessageViewedBy(senderId)
         }
     }
+
+    fun insertMessage(message: MessageItem) {
+        viewModelScope.launch {
+            db.chatMessageDao().insertMessage(message)
+        }
+    }
 }

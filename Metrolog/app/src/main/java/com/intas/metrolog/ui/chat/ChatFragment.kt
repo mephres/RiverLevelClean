@@ -20,6 +20,7 @@ import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.ui.chat.adapter.ChatListAdapter
 import com.intas.metrolog.ui.chat.messages.MessageFragment
+import com.intas.metrolog.ui.chat.select_user.SelectUserFragment
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
 
@@ -59,7 +60,8 @@ class ChatFragment : Fragment() {
         setupSearchViewListener()
 
         binding.chatListSelectUserFab.setOnClickListener {
-            findNavController().navigate(R.id.action_navigation_chat_to_selectUserFragment)
+            val selectUserFragment = SelectUserFragment()
+            selectUserFragment.show(requireActivity().supportFragmentManager, SelectUserFragment.SELECT_USER_FRAGMENT_TAG)
         }
     }
 
@@ -90,7 +92,7 @@ class ChatFragment : Fragment() {
                     companion?.let {
                         val messageText = message.message ?: ""
                         val messageId = message.id ?: 0
-                        val messageDateTime = DateTimeUtil.getShortDataFromMili(message.dateTime ?: 0)
+                        val messageDateTime = message.dateTime ?: 0
 
                         val chatItem = ChatItem(
                             id = messageId,

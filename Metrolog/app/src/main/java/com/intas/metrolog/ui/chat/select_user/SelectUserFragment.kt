@@ -1,16 +1,21 @@
 package com.intas.metrolog.ui.chat.select_user
 
+import android.app.Dialog
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentSelectUserBinding
 import com.intas.metrolog.pojo.UserItem
@@ -18,7 +23,7 @@ import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.adapter.UserListAdapter
 import com.intas.metrolog.util.Util
 
-class SelectUserFragment : Fragment() {
+class SelectUserFragment : BottomSheetDialogFragment() {
     private var searchView: SearchView? = null
     private lateinit var userListAdapter: UserListAdapter
 
@@ -27,9 +32,7 @@ class SelectUserFragment : Fragment() {
     private var _binding: FragmentSelectUserBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel by lazy {
-        ViewModelProvider(this)[SelectUserViewModel::class.java]
-    }
+    private val viewModel: SelectUserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,9 +55,16 @@ class SelectUserFragment : Fragment() {
         setupSearchViewListener()
         observeUsers()
 
-        binding.includeToolbar.toolbar.setNavigationOnClickListener {
-            findNavController().navigateUp()
+        binding.selectUserToolbar.setNavigationOnClickListener {
+            closeFragment()
         }
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = BottomSheetDialog(requireContext(), theme)
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        dialog.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNCHANGED)
+        return dialog
     }
 
     private fun observeUsers() {
@@ -74,18 +84,18 @@ class SelectUserFragment : Fragment() {
                 else -> "${chatUserList.count()} контактов"
             }
 
-            binding.includeToolbar.toolbar.subtitle = usersCount
+            binding.selectUserToolbar.subtitle = usersCount
             userListAdapter.submitList(chatUserList)
         }
     }
 
     private fun setUI() {
-        binding.includeToolbar.toolbar.title = "Выбрать"
-        binding.includeToolbar.toolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_arrow_back_24dp)
-        binding.includeToolbar.toolbar.setTitleTextAppearance(requireContext(), R.style.Toolbar_TitleText)
-        binding.includeToolbar.toolbar.setSubtitleTextAppearance(requireContext(), R.style.Toolbar_SubTitleText)
+        binding.selectUserToolbar.title = "Выбрать"
+        binding.selectUserToolbar.navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_arrow_back_24dp)
+        binding.selectUserToolbar.setTitleTextAppearance(requireContext(), R.style.Toolbar_TitleText)
+        binding.selectUserToolbar.setSubtitleTextAppearance(requireContext(), R.style.Toolbar_SubTitleText)
 
-        val menu = binding.includeToolbar.toolbar.menu
+        val menu = binding.selectUserToolbar.menu
         val menuItemSearch = menu?.findItem(R.id.action_search)
 
         searchView = menuItemSearch?.actionView as SearchView
@@ -106,7 +116,8 @@ class SelectUserFragment : Fragment() {
             val args = Bundle().apply {
                 putParcelable(MessageFragment.COMPANION_ITEM, it)
             }
-            findNavController().navigate(R.id.action_selectUserFragment_to_messageFragment, args)
+            findNavController().navigate(R.id.messageFragment, args)
+            closeFragment()
         }
     }
 
@@ -132,6 +143,18 @@ class SelectUserFragment : Fragment() {
                         it.position?.contains(text, true) ?: false
             })
         }, 200)
+    }
+
+    private fun closeFragment() {
+        val fragment =
+            parentFragmentManager.findFragmentByTag(SELECT_USER_FRAGMENT_TAG)
+        fragment?.let {
+            parentFragmentManager.beginTransaction().remove(it).commit()
+        }
+    }
+
+    companion object {
+        const val SELECT_USER_FRAGMENT_TAG = "select_user_fragment_tag"
     }
 
     override fun onDestroyView() {

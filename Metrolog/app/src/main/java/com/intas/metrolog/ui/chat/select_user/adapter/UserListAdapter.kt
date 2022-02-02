@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
 import com.intas.metrolog.R
 import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.ui.chat.select_user.adapter.callback.UserItemDiffCallback
@@ -32,6 +33,9 @@ class UserListAdapter :
 
         holder.chatUserItemFullNameTextView.text = userItem.fio
         holder.chatUserItemPositionTextView.text = userItem.position
+
+        Glide.with(context).load(R.drawable.ic_worker).circleCrop()
+            .into(holder.chatUserPhotoImageView)
 
         holder.itemView.setOnClickListener {
             onUserItemClickListener?.invoke(userItem)
