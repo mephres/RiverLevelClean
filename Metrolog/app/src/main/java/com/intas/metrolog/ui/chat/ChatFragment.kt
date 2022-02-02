@@ -21,7 +21,6 @@ import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.ui.chat.adapter.ChatListAdapter
 import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.SelectUserFragment
-import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
 
 class ChatFragment : Fragment() {
@@ -61,7 +60,10 @@ class ChatFragment : Fragment() {
 
         binding.chatListSelectUserFab.setOnClickListener {
             val selectUserFragment = SelectUserFragment.newInstanceAddCompanion()
-            selectUserFragment.show(requireActivity().supportFragmentManager, SelectUserFragment.SELECT_USER_FRAGMENT_TAG)
+            selectUserFragment.show(
+                requireActivity().supportFragmentManager,
+                SelectUserFragment.SELECT_USER_FRAGMENT_TAG
+            )
         }
     }
 
@@ -74,19 +76,14 @@ class ChatFragment : Fragment() {
             messages.forEach { message ->
 
                 message.senderUserId?.let { messageSenderId ->
-                    var messageNotViewedCount = 0
                     val companion: UserItem?
                     val currentUserId = Util.authUser?.userId
 
-                    if (messageSenderId != currentUserId) {
-                        companion = chatViewModel.getCompanionById(messageSenderId)
-                        messageNotViewedCount = chatViewModel.getNotViewedMessagesCount(
-                            messageSenderId,
-                            currentUserId ?: 0
-                        )
+                    companion = if (messageSenderId != currentUserId) {
+                        chatViewModel.getCompanionById(messageSenderId)
                     } else {
                         val companionId = message.companionUserId ?: 0
-                        companion = chatViewModel.getCompanionById(companionId)
+                        chatViewModel.getCompanionById(companionId)
                     }
 
                     companion?.let {
@@ -97,7 +94,6 @@ class ChatFragment : Fragment() {
                         val chatItem = ChatItem(
                             id = messageId,
                             lastMessage = messageText,
-                            notViewedMessageCount = messageNotViewedCount,
                             companion = it,
                             lastMessageDate = messageDateTime
                         )
@@ -107,6 +103,13 @@ class ChatFragment : Fragment() {
                 chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
                 chatItemList.sortByDescending {
                     it.lastMessageDate
+                }
+
+                chatItemList.forEach {
+                    it.notViewedMessageCount = chatViewModel.getNotViewedMessagesCount(
+                        it.companion.id,
+                        Util.authUser?.userId ?: 0
+                    )
                 }
             }
             this._chatItemList.value = chatItemList

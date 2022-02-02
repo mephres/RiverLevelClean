@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
-import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.MessageItem
 import kotlinx.coroutines.launch
 
@@ -12,10 +11,6 @@ class SelectUserViewModel(application: Application) : AndroidViewModel(applicati
     private val db = AppDatabase.getInstance(application)
 
     val chatUserList = db.userDao().getUserList()
-
-    fun getCompanionById(companionId: Int): UserItem? {
-        return db.userDao().getUserById(companionId)
-    }
 
     fun insertMessage(message: MessageItem) {
         viewModelScope.launch {

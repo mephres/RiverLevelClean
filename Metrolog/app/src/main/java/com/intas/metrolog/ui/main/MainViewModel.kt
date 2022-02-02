@@ -1635,6 +1635,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sendChatMessage(chatMessage: MessageItem) {
 
+        chatMessage.id?.let {
+            Util.chatMessageQueue.addLast(it)
+        }
+
         val messagesMap = mutableMapOf<String, String>()
         messagesMap[QUERY_PARAM_USER_ID] = Util.authUser?.userId.toString()
         messagesMap[QUERY_PARAM_ID] = chatMessage.id.toString()
@@ -1677,6 +1681,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param serverId - идентификатор записи на стороне сервера
      */
     private fun setChatMessageSended(id: Int, serverId: Int) {
+        if (Util.chatMessageQueue.count() > 100) {
+            Util.chatMessageQueue.removeFirst()
+        }
+
         viewModelScope.launch {
             try {
                 db.chatMessageDao().setMessageSentBy(id = id, serverId = serverId)

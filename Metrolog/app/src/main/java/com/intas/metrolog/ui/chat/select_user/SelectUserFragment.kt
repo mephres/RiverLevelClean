@@ -21,7 +21,6 @@ import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.adapter.UserListAdapter
-import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
 
@@ -166,7 +165,7 @@ class SelectUserFragment : BottomSheetDialogFragment() {
     }
 
     private fun launchMode(companion: UserItem) {
-        when(screenMode) {
+        when (screenMode) {
             MODE_ADD_COMPANION -> {
                 val args = Bundle().apply {
                     putParcelable(MessageFragment.COMPANION_ITEM, companion)
@@ -183,7 +182,8 @@ class SelectUserFragment : BottomSheetDialogFragment() {
                         companionUserId = companion.id,
                         isSent = 0,
                         isViewed = 1,
-                        dateTime = DateTimeUtil.getUnixDateTimeNow()
+                        dateTime = DateTimeUtil.getUnixDateTimeNow(),
+                        isForwarded = 1
                     )
                     viewModel.insertMessage(message)
                 }

@@ -33,5 +33,7 @@ data class MessageItem(
 
     var isSent: Int? = 1,
 
-    var isViewed: Int? = 0
+    var isViewed: Int? = 0,
+
+    var isForwarded: Int? = 0
 ) : Parcelable

@@ -248,9 +248,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun initNotSentChatMessageObserver() {
         viewModel.notSendedChatMessageList.observe(this) {
-            Log.d("UPLOAD_CHAT_MESSAGES", it.toString())
             it.forEach {
-                //viewModel.sendChatMessage(it)
+                if (!Util.chatMessageQueue.contains(it.id)) {
+                    viewModel.sendChatMessage(it)
+                }
             }
         }
     }

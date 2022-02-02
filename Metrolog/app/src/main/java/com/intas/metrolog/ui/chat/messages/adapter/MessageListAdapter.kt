@@ -13,7 +13,6 @@ import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.ui.chat.messages.adapter.callback.MessageItemDiffCallback
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.ViewUtil
 import java.util.*
 
 class MessageListAdapter :
@@ -76,8 +75,13 @@ class MessageListAdapter :
             }
         }
 
-        holder.forwardedTextMessageImageView.visibility = View.GONE
-        holder.forwardedTextMessageTextView.visibility = View.GONE
+        if (messageItem.isForwarded == 1) {
+            holder.forwardedTextMessageImageView.visibility = View.VISIBLE
+            holder.forwardedTextMessageTextView.visibility = View.VISIBLE
+        } else {
+            holder.forwardedTextMessageImageView.visibility = View.GONE
+            holder.forwardedTextMessageTextView.visibility = View.GONE
+        }
 
         holder.showMessageTextView.text = messageItem.message
         holder.showMessageTextView.textSize = textSize
