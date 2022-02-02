@@ -51,17 +51,17 @@ data class EventOperationItem(
     /**
      * дата-время окончания выполнения операции
      */
-    val dateEnd: Long = 0,
+    var dateEnd: Long = 0,
 
     /**
      * признак - операция выполнена (0 - не выполнена, 1 - выполнена)
      */
-    val completed: Int = 0,
+    var completed: Int = 0,
 
     /**
      * идентификатор пользователя, выполнивший операцию мероприятия
      */
-    val completedUserId: Long = 0,
+    var completedUserId: Long = 0,
 
     /**
      * признак - фотофиксация при выполнении мероприятия (0 - фото не нужно, 1 - фото нужно)

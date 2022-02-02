@@ -366,10 +366,11 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="16dp"
                             android:layout_marginTop="4dp"
-                            android:visibility="gone"
                             android:text="@string/event_fact_date_label_complete"
+                            android:visibility="gone"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/planDateTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/planDateTextView"
+                            tools:visibility="visible" />
 
                         <TextView
                             android:id="@+id/factDateTextView"
@@ -379,7 +380,8 @@
                             android:visibility="gone"
                             app:layout_constraintStart_toStartOf="@+id/planDateTextView"
                             app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView"
-                            tools:text="02.11.2019 00:11:22" />
+                            tools:text="02.11.2019 00:11:22"
+                            tools:visibility="visible" />
 
                         <TextView
                             android:id="@+id/statusTextView"
@@ -481,7 +483,7 @@
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/operationControlFab"
+        android:id="@+id/eventControlFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
@@ -495,21 +497,22 @@
         app:layout_constraintRight_toRightOf="parent" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/cancelOperationFab"
+        android:id="@+id/cancelEventFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:fabSize="normal"
-        android:visibility="gone"
         android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/operationControlFab"
-        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/eventControlFab"
+        app:layout_constraintEnd_toEndOf="@+id/eventControlFab"
         app:srcCompat="@drawable/ic_close_red_24dp"
-        app:tint="@color/md_white_1000" />
+        app:tint="@color/md_white_1000"
+        tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/cancelOperationTextView"
+        android:id="@+id/cancelEventTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -517,26 +520,28 @@
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/cancelOperationFab"
-        app:layout_constraintEnd_toStartOf="@+id/cancelOperationFab"
-        app:layout_constraintTop_toTopOf="@+id/cancelOperationFab" />
+        app:layout_constraintBottom_toBottomOf="@+id/cancelEventFab"
+        app:layout_constraintEnd_toStartOf="@+id/cancelEventFab"
+        app:layout_constraintTop_toTopOf="@+id/cancelEventFab"
+        tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/completeOperationFab"
+        android:id="@+id/completeEventFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/cancelOperationFab"
-        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:layout_constraintBottom_toTopOf="@+id/cancelEventFab"
+        app:layout_constraintEnd_toEndOf="@+id/eventControlFab"
         app:srcCompat="@drawable/ic_baseline_check_24dp"
-        app:tint="@color/md_white_1000" />
+        app:tint="@color/md_white_1000"
+        tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/completeOperationTextView"
+        android:id="@+id/completeEventTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -544,26 +549,28 @@
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/completeOperationFab"
-        app:layout_constraintEnd_toStartOf="@+id/completeOperationFab"
-        app:layout_constraintTop_toTopOf="@+id/completeOperationFab" />
+        app:layout_constraintBottom_toBottomOf="@+id/completeEventFab"
+        app:layout_constraintEnd_toStartOf="@+id/completeEventFab"
+        app:layout_constraintTop_toTopOf="@+id/completeEventFab"
+        tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/stopOperationFab"
+        android:id="@+id/stopEventFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary"
         app:fabSize="normal"
-        android:visibility="gone"
-        app:layout_constraintBottom_toTopOf="@+id/completeOperationFab"
-        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:layout_constraintBottom_toTopOf="@+id/completeEventFab"
+        app:layout_constraintEnd_toEndOf="@+id/completeEventFab"
         app:srcCompat="@drawable/ic_timer_off_red_24dp"
-        app:tint="@color/md_white_1000" />
+        app:tint="@color/md_white_1000"
+        tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/stopOperationTextView"
+        android:id="@+id/stopEventTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -571,26 +578,28 @@
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/stopOperationFab"
-        app:layout_constraintEnd_toStartOf="@+id/stopOperationFab"
-        app:layout_constraintTop_toTopOf="@+id/stopOperationFab" />
+        app:layout_constraintBottom_toBottomOf="@+id/stopEventFab"
+        app:layout_constraintEnd_toStartOf="@+id/stopEventFab"
+        app:layout_constraintTop_toTopOf="@+id/stopEventFab"
+        tools:visibility="visible" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/startOperationFab"
+        android:id="@+id/startEventFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
-        app:fabSize="normal"
-        android:visibility="gone"
         android:backgroundTint="@color/colorPrimary"
+        android:visibility="gone"
         app:backgroundTint="@color/colorPrimary"
-        app:layout_constraintBottom_toTopOf="@+id/stopOperationFab"
-        app:layout_constraintEnd_toEndOf="@+id/operationControlFab"
+        app:fabSize="normal"
+        app:layout_constraintBottom_toTopOf="@+id/stopEventFab"
+        app:layout_constraintEnd_toEndOf="@+id/stopEventFab"
         app:srcCompat="@drawable/ic_timer_red_24dp"
-        app:tint="@color/md_white_1000" />
+        app:tint="@color/md_white_1000"
+        tools:visibility="visible" />
 
     <TextView
-        android:id="@+id/startOperationTextView"
+        android:id="@+id/startEventTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -598,8 +607,9 @@
         android:textColor="@color/md_white"
         android:textStyle="bold"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/startOperationFab"
-        app:layout_constraintEnd_toStartOf="@+id/startOperationFab"
-        app:layout_constraintTop_toTopOf="@+id/startOperationFab" />
+        app:layout_constraintBottom_toBottomOf="@+id/startEventFab"
+        app:layout_constraintEnd_toStartOf="@+id/startEventFab"
+        app:layout_constraintTop_toTopOf="@+id/startEventFab"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

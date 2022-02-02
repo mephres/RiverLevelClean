@@ -102,7 +102,7 @@ class EventMonthFragment : Fragment() {
 
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventMonthFragment->onEventClickListener", it)
-            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }
     }
 

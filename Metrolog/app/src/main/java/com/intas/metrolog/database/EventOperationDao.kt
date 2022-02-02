@@ -23,5 +23,8 @@ interface EventOperationDao {
     suspend fun setEventOperationSendedById(id: Long)
 
     @Query("SELECT * FROM eventOperation WHERE opId = :opId")
-    fun getCheckList(opId: Long): LiveData<List<EventOperationItem>>
+    fun getOperationList(opId: Long): LiveData<List<EventOperationItem>>
+
+    @Query("SELECT * FROM eventOperation WHERE opId = :opId AND completed = 0")
+    fun getNotCompletedOperationList(opId: Long): LiveData<List<EventOperationItem>>
 }

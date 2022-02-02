@@ -6,26 +6,44 @@ import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
 import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.EventItem
-import com.intas.metrolog.pojo.event.event_status.EventStatus
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.IN_WORK
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.NEW
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
+import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
+import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.ViewUtil
 
 class OperationActivity : AppCompatActivity() {
     private var eventId: Long = 0
+
+    /**
+     * Признак, нужно ли дополнительное чтение метки для начала выполнения мероприятия
+     * 0 - не нужно (если мероприятие открыто с помощью сканера)
+     * 1 - нужно (если мероприятие открыто из общего списка мероприятий)
+     */
+    private var needVerify: Boolean = true
     private var equipFullInfoVisible = false
     private var currentEventStatus: Int = 0
+    private var currentEvent: EventItem? = null
+    private var currentEquip: EquipItem? = null
 
     private lateinit var operationListAdapter: OperationListAdapter
+    private lateinit var itemTouchHelper: ItemTouchHelper
 
     private val binding by lazy {
         ActivityOperationBinding.inflate(layoutInflater)
@@ -50,6 +68,7 @@ class OperationActivity : AppCompatActivity() {
         setRecyclerView()
         observeViewModel()
         setClickListeners()
+        setSwipeListener()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -75,7 +94,7 @@ class OperationActivity : AppCompatActivity() {
             showFullEquipInfo(it)
         }
 
-        binding.operationControlFab.setOnClickListener {
+        binding.eventControlFab.setOnClickListener {
             viewModel.changeControlButtonVisibleValue()
         }
 
@@ -83,57 +102,73 @@ class OperationActivity : AppCompatActivity() {
             viewModel.changeControlButtonVisibleValue()
         }
 
-        binding.startOperationFab.setOnClickListener {
-            viewModel.startTimer()
-            viewModel.updateEventStatus(EventStatus.IN_WORK)
+        binding.startEventFab.setOnClickListener {
+            beginEvent()
             viewModel.changeControlButtonVisibleValue()
         }
 
-        binding.stopOperationFab.setOnClickListener {
-            viewModel.stopTimer()
-            viewModel.updateEventStatus(EventStatus.PAUSED)
+        binding.stopEventFab.setOnClickListener {
+            pauseEvent()
             viewModel.changeControlButtonVisibleValue()
         }
 
-        binding.cancelOperationFab.setOnClickListener {
-            viewModel.updateEventStatus(EventStatus.CANCELED)
+        binding.cancelEventFab.setOnClickListener {
+            cancelEvent()
             viewModel.changeControlButtonVisibleValue()
-            binding.operationControlFab.visibility = View.GONE
+            binding.eventControlFab.visibility = View.GONE
         }
 
-        binding.completeOperationFab.setOnClickListener {
-            viewModel.stopTimer()
-            viewModel.updateEventStatus(EventStatus.COMPLETED)
+        binding.completeEventFab.setOnClickListener {
+            completeEvent()
             viewModel.changeControlButtonVisibleValue()
-            binding.operationControlFab.visibility = View.GONE
+            binding.eventControlFab.visibility = View.GONE
+        }
+    }
+
+    private fun initTouchHelper() {
+
+        if (currentEvent?.status != IN_WORK) return
+
+        val callback = EventOperationItemTouchHelperCallback(operationListAdapter, true)
+
+        itemTouchHelper = ItemTouchHelper(callback)
+        itemTouchHelper.attachToRecyclerView(binding.operationRecyclerView)
+    }
+
+    private fun setSwipeListener() {
+
+        operationListAdapter.onSwiped = {
+            viewModel.setOperationComplete(it)
+
+            if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
+                val b = 1
+                showToast("Size -null")
+            }
         }
     }
 
     private fun observeViewModel() {
 
-        viewModel.getCheckList().observe(this, { checkList ->
-            if (checkList.isNullOrEmpty()) {
-                binding.operationListTitleTextView.visibility = View.GONE
-            } else {
-                operationListAdapter.submitList(checkList)
-                binding.operationListTitleTextView.visibility = View.VISIBLE
-            }
-        })
-
         viewModel.eventItem.observe(this, { event ->
-            setUi(event)
-            fillEquipTagActual(event.equip)
-            fillOperationStatus(event)
 
+            viewModel.getEquipById(event.equipId ?: 0).observe(this, { equip ->
+                event.equip = equip
+                setUi(event)
+                fillEquipTagActual(equip)
+                fillOperationStatus(event)
+                currentEquip = equip
+                currentEvent?.equip = equip
+            })
+            currentEvent = event
             currentEventStatus = event.status
-        })
-
-        viewModel.controlButtonClicked.observe(this, { click ->
-            configureControlButtonVisibility(click)
+            setTimer(currentEventStatus)
+            loadOperationList()
+            initTouchHelper()
+            controlButtons()
         })
 
         viewModel.timerDuration.observe(this, {
-            if (it > 0) {
+            if (it >= 0) {
                 val strDate = DateTimeUtil.getTimerTimeFromMili(it)
                 runOnUiThread {
                     binding.timerValueTextView.text = strDate
@@ -144,57 +179,108 @@ class OperationActivity : AppCompatActivity() {
         })
     }
 
+    private fun controlButtons() {
+        viewModel.controlButtonClicked.observe(this, { click ->
+            configureControlButtonVisibility(click)
+        })
+    }
+    private fun loadOperationList() {
+
+        viewModel.getOperationList().observe(this, { checkList ->
+            if (checkList.isNullOrEmpty()) {
+                binding.operationListTitleTextView.visibility = View.GONE
+            } else {
+                binding.operationListTitleTextView.visibility = View.VISIBLE
+            }
+            operationListAdapter.submitList(checkList)
+        })
+    }
+
+    private fun setTimer(eventState: Int) {
+        var timerDuration = currentEvent?.durationTimer ?: 0
+        when (eventState) {
+            NEW -> {
+                binding.timerImageView.visibility = View.GONE
+                binding.timerValueTextView.visibility = View.GONE
+                timerDuration = -1
+            }
+            IN_WORK -> {
+                binding.timerImageView.visibility = View.VISIBLE
+                binding.timerValueTextView.visibility = View.VISIBLE
+
+                val dateTime = DateTimeUtil.getUnixDateTimeNow()
+                val duration = currentEvent?.durationTimer ?: 0
+                val delta = dateTime - (currentEvent?.dateTimeStartTimer ?: 0)
+                timerDuration = duration + delta
+                viewModel.startTimer()
+            }
+            PAUSED -> {
+                binding.timerImageView.visibility = View.VISIBLE
+                binding.timerValueTextView.visibility = View.VISIBLE
+            }
+            COMPLETED -> {
+                binding.timerImageView.visibility = View.VISIBLE
+                binding.timerValueTextView.visibility = View.VISIBLE
+            }
+            CANCELED -> {
+                binding.timerImageView.visibility = View.INVISIBLE
+                binding.timerValueTextView.visibility = View.INVISIBLE
+            }
+        }
+        viewModel.setTimerValue(timerDuration)
+    }
+
     private fun configureControlButtonVisibility(clicked: Boolean) {
         if (clicked) {
             when (currentEventStatus) {
-                EventStatus.NEW -> {
-                    binding.startOperationFab.show()
-                    binding.startOperationTextView.visibility = View.VISIBLE
+                NEW -> {
+                    binding.startEventFab.show()
+                    binding.startEventTextView.visibility = View.VISIBLE
 
-                    binding.cancelOperationFab.show()
-                    binding.cancelOperationTextView.visibility = View.VISIBLE
+                    binding.cancelEventFab.show()
+                    binding.cancelEventTextView.visibility = View.VISIBLE
                 }
-                EventStatus.IN_WORK -> {
-                    binding.stopOperationFab.show()
-                    binding.stopOperationTextView.visibility = View.VISIBLE
+                IN_WORK -> {
+                    binding.stopEventFab.show()
+                    binding.stopEventTextView.visibility = View.VISIBLE
 
-                    binding.completeOperationFab.show()
-                    binding.completeOperationTextView.visibility = View.VISIBLE
+                    binding.completeEventFab.show()
+                    binding.completeEventTextView.visibility = View.VISIBLE
 
-                    binding.cancelOperationFab.show()
-                    binding.cancelOperationTextView.visibility = View.VISIBLE
+                    binding.cancelEventFab.show()
+                    binding.cancelEventTextView.visibility = View.VISIBLE
                 }
-                EventStatus.PAUSED -> {
-                    binding.startOperationFab.show()
-                    binding.startOperationTextView.text =
+                PAUSED -> {
+                    binding.stopEventFab.show()
+                    binding.stopEventTextView.text =
                         getString(R.string.operation_activity_pause_event_button_pause_state)
-                    binding.startOperationTextView.visibility = View.VISIBLE
+                    binding.stopEventTextView.visibility = View.VISIBLE
 
-                    binding.cancelOperationFab.show()
-                    binding.cancelOperationTextView.visibility = View.VISIBLE
+                    binding.cancelEventFab.show()
+                    binding.cancelEventTextView.visibility = View.VISIBLE
                 }
             }
 
-            binding.operationControlFab.extend()
+            binding.eventControlFab.extend()
             binding.shadowView.visibility = View.VISIBLE
         } else {
             when (currentEventStatus) {
-                EventStatus.COMPLETED, EventStatus.CANCELED -> {
-                    binding.operationControlFab.visibility = View.GONE
+                COMPLETED, CANCELED -> {
+                    binding.eventControlFab.visibility = View.GONE
                 }
             }
 
-            binding.startOperationFab.hide()
-            binding.stopOperationFab.hide()
-            binding.cancelOperationFab.hide()
-            binding.completeOperationFab.hide()
+            binding.startEventFab.hide()
+            binding.stopEventFab.hide()
+            binding.cancelEventFab.hide()
+            binding.completeEventFab.hide()
 
-            binding.startOperationTextView.visibility = View.GONE
-            binding.stopOperationTextView.visibility = View.GONE
-            binding.cancelOperationTextView.visibility = View.GONE
-            binding.completeOperationTextView.visibility = View.GONE
+            binding.startEventTextView.visibility = View.GONE
+            binding.stopEventTextView.visibility = View.GONE
+            binding.cancelEventTextView.visibility = View.GONE
+            binding.completeEventTextView.visibility = View.GONE
 
-            binding.operationControlFab.shrink()
+            binding.eventControlFab.shrink()
             binding.shadowView.visibility = View.GONE
         }
     }
@@ -231,6 +317,8 @@ class OperationActivity : AppCompatActivity() {
         if (event.unscheduled != 0) {
             binding.typeTextView.text = "Внеплановое"
         }
+
+        fillFactDate(event)
     }
 
     private fun fillEquipTagActual(equip: EquipItem?) {
@@ -282,20 +370,51 @@ class OperationActivity : AppCompatActivity() {
 
     private fun fillOperationStatus(event: EventItem) {
         when (event.status) {
-            EventStatus.NEW -> {
+            NEW -> {
                 binding.statusTextView.text = "Можно выполнить"
             }
-            EventStatus.IN_WORK -> {
+            IN_WORK -> {
                 binding.statusTextView.text = "Выполняется"
             }
-            EventStatus.PAUSED -> {
+            PAUSED -> {
                 binding.statusTextView.text = "Остановлено"
             }
-            EventStatus.COMPLETED -> {
+            COMPLETED -> {
                 binding.statusTextView.text = "Завершено"
             }
-            EventStatus.CANCELED -> {
+            CANCELED -> {
                 binding.statusTextView.text = "Отменено"
+            }
+        }
+    }
+
+    private fun fillFactDate(event: EventItem) {
+        if (event.factDate.isNullOrEmpty()) {
+            binding.factDateTextView.visibility = View.GONE
+            binding.factDateLabelTextView.visibility = View.GONE
+        } else {
+            binding.factDateTextView.visibility = View.VISIBLE
+            binding.factDateLabelTextView.visibility = View.VISIBLE
+
+            val factDate = try {
+                (event.factDate ?: "0").toLong()
+            } catch (e: Exception) {
+                0
+            }
+
+            binding.factDateTextView.text =
+                DateTimeUtil.getDateTimeFromMili(factDate, "dd.MM.yyyy HH:mm")
+
+            when (event.status) {
+                IN_WORK -> binding.factDateLabelTextView.text =
+                    getString(R.string.event_plan_date_label_in_work)
+                PAUSED -> binding.factDateLabelTextView.text =
+                    getString(R.string.event_fact_date_label_pause)
+                COMPLETED -> binding.factDateLabelTextView.text =
+                    getString(R.string.event_fact_date_label_complete)
+                CANCELED -> binding.factDateLabelTextView.text =
+                    getString(R.string.event_fact_date_label_cancel)
+                else -> binding.factDateLabelTextView.setText(getString(R.string.event_plan_date_label))
             }
         }
     }
@@ -373,22 +492,86 @@ class OperationActivity : AppCompatActivity() {
         this.title = "Мероприятие"
     }
 
+    private fun cancelEvent() {
+
+        viewModel.setDateTimeTimer(false)
+        viewModel.stopTimer()
+        setTimer(CANCELED)
+        viewModel.setEventStatus(CANCELED)
+    }
+
+    private fun completeEvent() {
+        viewModel.setDateTimeTimer(false)
+        viewModel.stopTimer()
+        setTimer(COMPLETED)
+        viewModel.setEventStatus(COMPLETED)
+    }
+
+    private fun pauseEvent() {
+        if (currentEventStatus == IN_WORK) {
+            viewModel.setDateTimeTimer(false)
+            viewModel.stopTimer()
+            viewModel.setEventStatus(PAUSED)
+            setTimer(PAUSED)
+            showToast("Мероприятие остановлено")
+            finish()
+        } else if (currentEventStatus == PAUSED) {
+            viewModel.setDateTimeTimer(true)
+            viewModel.startTimer()
+            viewModel.setEventStatus(IN_WORK)
+            setTimer(IN_WORK)
+        }
+    }
+
+    private fun beginEvent() {
+
+        needVerify = false //TODO: УБРАТЬ!!!!
+        if (needVerify) {
+            showToast("Для начала выполнения мероприятия необходимо считать метку оборудования")
+            showScanner()
+        } else {
+            viewModel.setDateTimeTimer(false)
+            viewModel.startTimer()
+            viewModel.setEventStatus(IN_WORK)
+        }
+    }
+
+    private fun showScanner() {
+        val scanner = NfcFragment.newInstanceStartEvent()
+        scanner.show(supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
+        scanner.onRFIDReadListener = {
+            if (currentEvent?.equipRfid.equals(it, true)) {
+                needVerify = false
+                beginEvent()
+            } else {
+                showToast("Считанная метка не принадлежит данному мероприятию. Начать мероприятие невозможно.")
+            }
+        }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+    }
+
     private fun parseIntent() {
-        if (!intent.hasExtra(EVENT_ID)) {
+        if (!intent.hasExtra(EVENT_ID) || (!intent.hasExtra(NEED_VERIFY_FOR_BEGIN))) {
             finish()
             return
         }
 
         eventId = intent.getLongExtra(EVENT_ID, 0)
+        needVerify = intent.getBooleanExtra(NEED_VERIFY_FOR_BEGIN, true)
     }
 
     companion object {
 
         private const val EVENT_ID = "event_item"
+        private const val NEED_VERIFY_FOR_BEGIN = "need_verify_for_begin"
 
-        fun newIntent(context: Context, eventId: Long): Intent {
+        fun newIntent(context: Context, eventId: Long, needVerify: Boolean): Intent {
             val intent = Intent(context, OperationActivity::class.java)
             intent.putExtra(EVENT_ID, eventId)
+            intent.putExtra(NEED_VERIFY_FOR_BEGIN, needVerify)
             return intent
         }
     }

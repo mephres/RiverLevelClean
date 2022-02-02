@@ -209,7 +209,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
             holder.factDateLabelTextView.visibility = View.VISIBLE
 
             val factDate = try {
-                (eventItem.factDate).toLong()
+                (eventItem.factDate ?: "0").toLong()
             } catch (e: Exception) {
                 0
             }

@@ -4,10 +4,16 @@ import android.app.Application
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
-import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_status.EventStatus
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
+import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.Journal
+import com.intas.metrolog.util.Util
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.concurrent.timerTask
 
@@ -21,22 +27,28 @@ class OperationViewModel(
     private val _controlButtonClicked = MutableLiveData<Boolean>()
     val controlButtonClicked: LiveData<Boolean> = _controlButtonClicked
 
-    private val _eventItem = MutableLiveData<EventItem>()
-    val eventItem: LiveData<EventItem> = _eventItem
+    val eventItem = db.eventDao().getEventLD(eventId)
 
     private var _timerDuration = MutableLiveData<Long>()
     val timerDuration: LiveData<Long> = _timerDuration
 
     init {
         initDefaultValues()
-        getEvent()
+    }
+
+    fun getEquipById(equipId: Long): LiveData<EquipItem> {
+        return db.equipDao().getEquipItemByIdLD(equipId)
+    }
+
+    fun setTimerValue(duration: Long) {
+        _timerDuration.value = duration
     }
 
     fun startTimer() {
         timer?.cancel()
         timer?.purge()
         timer = Timer()
-        timer?.schedule(timerTask{
+        timer?.schedule(timerTask {
             timerDuration.value?.let {
                 _timerDuration.postValue(it.plus(1))
             }
@@ -49,9 +61,9 @@ class OperationViewModel(
     }
 
     fun updateEventStatus(newStatus: Int) {
-        _eventItem.value  = eventItem.value?.apply {
+        /*_eventItem.value = eventItem.value?.apply {
             status = newStatus
-        }
+        }*/
     }
 
     fun changeControlButtonVisibleValue() {
@@ -60,26 +72,105 @@ class OperationViewModel(
         }
     }
 
-    fun getCheckList(): LiveData<List<EventOperationItem>> {
-        return db.eventOperationDao().getCheckList(eventId)
+    fun getOperationList(): LiveData<List<EventOperationItem>> {
+        return if (eventItem.value?.status == EventStatus.NEW || eventItem.value?.status == EventStatus.IN_WORK) {
+            return db.eventOperationDao().getNotCompletedOperationList(eventId)
+        } else {
+            db.eventOperationDao().getOperationList(eventId)
+        }
+    }
+
+    fun setOperationComplete(eventOperationItem: EventOperationItem) {
+        viewModelScope.launch {
+            eventOperationItem.completed = 1
+            eventOperationItem.dateEnd = DateTimeUtil.getUnixDateTimeNow()
+            eventOperationItem.completedUserId = (Util.authUser?.userId ?: 0).toLong()
+
+            db.eventOperationDao().updateEventOperation(eventOperationItem)
+        }
     }
 
     private fun getEquip(equipId: Long): EquipItem? {
         return db.equipDao().getEquipItemById(equipId)
     }
 
-    private fun getEvent() {
+    /*private fun getEvent() {
         val item = db.eventDao().getEvent(eventId)
         item?.let {
             it.equip = getEquip(it.equipId ?: 0)
             _eventItem.value = it
         }
-    }
+    }*/
 
     private fun initDefaultValues() {
         _controlButtonClicked.value = false
         _timerDuration.value = 0
         timer = Timer()
+    }
+
+    /**
+     * Установка даты-времени начала выполнения мероприятия. Подсчет продолжительности выполнения мероприятия
+     * @param isStopTimer флаг остановки таймера (true - таймер остановлен, false - таймер запущен)
+     */
+    fun setDateTimeTimer(isStopTimer: Boolean) {
+
+        viewModelScope.launch {
+
+            val dateTime = DateTimeUtil.getUnixDateTimeNow() // получаем текущее время
+            val duration =
+                eventItem.value?.durationTimer ?: 0 // получаем продолжительность выполнения мероприятия
+
+            if (eventItem.value?.dateTimeStartTimer ?: 0 > 0) { // если таймер уже запущен
+                val delta = dateTime - (eventItem.value?.dateTimeStartTimer
+                    ?: 0) // разница между текущим временем и временем начала выполнения мероприятия
+                val currentDuration =
+                    duration.plus(delta) // увеличиваем продолжительность выполнения мероприятия
+                if (!isStopTimer) { // если таймер не остановлен
+                    eventItem.value?.durationTimer =
+                        currentDuration // записываем продолжительность выполнения мероприятия
+                }
+            }
+
+            eventItem.value?.dateTimeStartTimer =  dateTime // записываем дату-время начала работы таймера
+
+            eventItem.value?.let {
+                db.eventDao().updateEvent(it)
+            }
+        }
+    }
+
+    /**
+     * Установка статуса для текущего открытого мероприятия
+     * @param status статус мероприятия (0 - новое мероприятие, 1 - выполняется, 2 - остановлено, 3 - выполнено, 4 - отказ от выполнения)
+     */
+    fun setEventStatus(status: Int) {
+
+        viewModelScope.launch {
+
+            eventItem.value?.status = status
+
+            if (status >= PAUSED) { // мероприятие остановлено, выполнено или отказано
+                eventItem.value?.factDate = eventItem.value?.dateTimeStartTimer.toString() // установка текущей даты-время
+                eventItem.value?.userId =
+                    (Util.authUser?.userId
+                        ?: 0).toString()  // установка идентификатора пользователя
+                eventItem.value?.otv = Util.authUser?.fio // установка фио ответственного
+                eventItem.value?.eventDone = true
+                if (status != PAUSED) {
+                    eventItem.value?.isSended = 0
+                }
+            }
+            Journal.insertJournal("OperationViewModel->setEventStatus->Event", eventItem.value.toString())
+            eventItem.value?.let {
+                db.eventDao().updateEvent(it)
+            }
+        }
+    }
+
+    // Extension. CopyPaste it anywhere in your project
+    fun <T> MutableLiveData<T>.mutation(actions: (MutableLiveData<T>) -> Unit) {
+        actions(this)
+        this.value = this.value
     }
 
     override fun onCleared() {
