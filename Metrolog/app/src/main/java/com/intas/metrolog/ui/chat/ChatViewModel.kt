@@ -7,6 +7,8 @@ import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.util.Util
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -14,8 +16,10 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
     private val messageList =
         db.chatMessageDao().getAllLastMessages(Util.authUser?.userId ?: 0).distinctUntilChanged()
 
-    val chatItemList: LiveData<List<ChatItem>> = Transformations.switchMap(messageList) {
-        createChatItemsLiveData(it)
+    val chatItemList: LiveData<List<ChatItem>> = messageList.switchMap {
+        liveData(viewModelScope.coroutineContext) {
+            emit(createChatItems(it))
+        }
     }
 
     private fun getNotViewedMessagesCount(senderId: Int, companionId: Int): Int {
@@ -26,8 +30,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         return db.userDao().getUserById(companionId)
     }
 
-    private fun createChatItemsLiveData(list: List<MessageItem>): LiveData<List<ChatItem>> {
-        return liveData {
+    private suspend fun createChatItems(list: List<MessageItem>): List<ChatItem> {
+        return withContext(Dispatchers.IO) {
+
             val chatItemList = mutableListOf<ChatItem>()
             list.forEach { message ->
                 message.senderUserId?.let { messageSenderId ->
@@ -49,25 +54,25 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         val chatItem = ChatItem(
                             id = messageId,
                             lastMessage = messageText,
-                            companion = it,
-                            lastMessageDate = messageDateTime
+                            lastMessageDate = messageDateTime,
+                            companion = it
                         )
                         chatItemList.add(chatItem)
                     }
-                }
-                chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
-                chatItemList.sortByDescending {
-                    it.lastMessageDate
-                }
+                    chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
+                    chatItemList.sortByDescending {
+                        it.lastMessageDate
+                    }
 
-                chatItemList.forEach {
-                    it.notViewedMessageCount = getNotViewedMessagesCount(
-                        it.companion.id,
-                        Util.authUser?.userId ?: 0
-                    )
+                    chatItemList.forEach {
+                        it.notViewedMessageCount = getNotViewedMessagesCount(
+                            companion?.id ?: 0,
+                            currentUserId ?: 0
+                        )
+                    }
                 }
             }
-            emit(chatItemList)
+            chatItemList
         }
     }
 }
