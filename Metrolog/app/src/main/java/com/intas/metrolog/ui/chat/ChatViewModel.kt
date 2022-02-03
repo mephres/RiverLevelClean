@@ -1,6 +1,7 @@
 package com.intas.metrolog.ui.chat
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
@@ -8,6 +9,7 @@ import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.util.Util
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
 class ChatViewModel(application: Application) : AndroidViewModel(application) {
@@ -34,12 +36,11 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
         return withContext(Dispatchers.IO) {
 
             val chatItemList = mutableListOf<ChatItem>()
+            val currentUserId = Util.authUser?.userId
             list.forEach { message ->
                 message.senderUserId?.let { messageSenderId ->
-                    val companion: UserItem?
-                    val currentUserId = Util.authUser?.userId
 
-                    companion = if (messageSenderId != currentUserId) {
+                    val companion: UserItem? = if (messageSenderId != currentUserId) {
                         getCompanionById(messageSenderId)
                     } else {
                         val companionId = message.companionUserId ?: 0
@@ -59,19 +60,19 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         )
                         chatItemList.add(chatItem)
                     }
-                    chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
-                    chatItemList.sortByDescending {
-                        it.lastMessageDate
-                    }
-
-                    chatItemList.forEach {
-                        it.notViewedMessageCount = getNotViewedMessagesCount(
-                            companion?.id ?: 0,
-                            currentUserId ?: 0
-                        )
-                    }
                 }
             }
+            chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
+            chatItemList.sortByDescending {
+                it.lastMessageDate
+            }
+            chatItemList.forEach {
+                it.notViewedMessageCount = getNotViewedMessagesCount(
+                    it.companion.id,
+                    currentUserId ?: 0
+                )
+            }
+            delay(100)
             chatItemList
         }
     }

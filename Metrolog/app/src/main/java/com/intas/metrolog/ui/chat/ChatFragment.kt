@@ -49,10 +49,13 @@ class ChatFragment : Fragment() {
         setupSearchViewListener()
 
         chatViewModel.chatItemList.observe(viewLifecycleOwner) {
-            chatItemList = it.toMutableList()
-            chatListAdapter.submitList(it) {
-                binding.chatListRecyclerView.scrollToTop()
+            if (it.isNotEmpty()) {
+                chatItemList = it.toMutableList()
+                chatListAdapter.submitList(it) {
+                    binding.chatListRecyclerView.scrollToTop()
+                }
             }
+            binding.equipProgressIndicator.visibility = View.GONE
         }
 
         binding.chatListSelectUserFab.setOnClickListener {
