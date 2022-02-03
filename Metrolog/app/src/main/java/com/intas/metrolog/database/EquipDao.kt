@@ -2,7 +2,6 @@ package com.intas.metrolog.database
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
-import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import io.reactivex.Single
 

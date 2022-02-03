@@ -9,9 +9,9 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.intas.metrolog.R
@@ -30,9 +30,7 @@ class ChatFragment : Fragment() {
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
 
-    private val chatViewModel by lazy {
-        ViewModelProvider(this)[ChatViewModel::class.java]
-    }
+    private val chatViewModel: ChatViewModel by viewModels()
 
     private val _chatItemList = MutableLiveData<List<ChatItem>>()
     private val chatItemList: LiveData<List<ChatItem>>
