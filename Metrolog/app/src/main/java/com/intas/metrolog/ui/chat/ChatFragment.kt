@@ -77,6 +77,7 @@ class ChatFragment : Fragment() {
     private fun setupRecyclerView() {
         chatListAdapter = ChatListAdapter()
         with(binding.chatListRecyclerView) {
+            itemAnimator = null
             adapter = chatListAdapter
             recycledViewPool.setMaxRecycledViews(0, ChatListAdapter.MAX_POOL_SIZE)
         }
