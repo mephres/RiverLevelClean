@@ -85,6 +85,7 @@ class OperationViewModel(
             eventOperationItem.completed = 1
             eventOperationItem.dateEnd = DateTimeUtil.getUnixDateTimeNow()
             eventOperationItem.completedUserId = (Util.authUser?.userId ?: 0).toLong()
+            eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
         }

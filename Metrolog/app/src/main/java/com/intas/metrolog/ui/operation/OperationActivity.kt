@@ -125,7 +125,7 @@ class OperationActivity : AppCompatActivity() {
             operationListAdapter.currentList.let {
                 it.forEach {
                     if (it.completed == 0) {
-                        showToast("Для выполнения мероприятия необходимо выполнить все операции!")
+                        showToast("Для выполнения мероприятия необходимо выполнить все операции")
                         viewModel.changeControlButtonVisibleValue()
                         return@setOnClickListener
                     }

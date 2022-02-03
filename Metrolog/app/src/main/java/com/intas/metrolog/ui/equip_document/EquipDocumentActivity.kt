@@ -406,7 +406,6 @@ class EquipDocumentActivity : AppCompatActivity() {
                     }
                 }
             }
-
         }
     }
 

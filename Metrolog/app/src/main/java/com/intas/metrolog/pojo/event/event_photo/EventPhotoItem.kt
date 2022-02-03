@@ -18,9 +18,9 @@ data class EventPhotoItem(
      */
     val opId: Long? = null,
     /**
-     * изображение в кодировке base64
+     * uri изображения
      */
-    val photoUrl: String? = null,
+    val photoUri: String? = null,
     /**
      * дата-время изображения в unix формате
      */
@@ -33,6 +33,6 @@ data class EventPhotoItem(
      * 0 - не отправлено на сервер
      * 1 - отправлено на сервер
      */
-    val isSended: Int = 1
+    val isSended: Int = 0
 )
 

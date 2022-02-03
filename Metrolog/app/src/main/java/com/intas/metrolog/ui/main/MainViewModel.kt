@@ -863,6 +863,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
 
+            Journal.insertJournal("MainViewModel->insertEventList->list", list = eventList)
             val list = eventList.filter {
                 val event = db.eventDao().getEvent(it.opId)
                 (event?.isSended == 0 || event?.status ?: 0 > 0) == false
@@ -876,7 +877,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 it.equipName = it.equip?.equipName
                 it
             }
-
+            Journal.insertJournal("MainViewModel->insertEventList->list_for_insert", list = list)
             db.eventDao().insertEventList(list)
 
             list.forEach { event ->
@@ -1313,7 +1314,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         val screen = ImageUtil.getBase64ScreenFromUri(
             getApplication<Application>().applicationContext,
-            eventPhoto.photoUrl
+            eventPhoto.photoUri
         )
 
         val map = mutableMapOf<String, String>()

@@ -107,7 +107,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/eventCommentShowCameraFAB"
+                android:id="@+id/eventCommentPhotoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
@@ -115,13 +115,13 @@
                 android:visibility="invisible"
                 app:backgroundTint="@color/colorPrimary"
                 app:fabSize="mini"
-                app:layout_constraintEnd_toStartOf="@id/eventCommentShowGalleryFAB"
-                app:layout_constraintTop_toTopOf="@+id/eventCommentShowGalleryFAB"
+                app:layout_constraintEnd_toStartOf="@id/eventCommentChoosePhotoButton"
+                app:layout_constraintTop_toTopOf="@+id/eventCommentChoosePhotoButton"
                 app:srcCompat="@drawable/ic_baseline_photo_camera_24"
                 app:tint="@color/md_white" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/eventCommentShowGalleryFAB"
+                android:id="@+id/eventCommentChoosePhotoButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
