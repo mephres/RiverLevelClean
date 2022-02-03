@@ -518,14 +518,9 @@ class PinCodeActivity : AppCompatActivity() {
         }, 2000)
     }
 
-    // удаляем всю информацию о пользователе из храилища
+    // удаляем всю информацию о пользователе из хранилища
     private fun eraseInfoUser() {
-
-        AppPreferences.pinCodeIsSave = false
-        AppPreferences.savedPinCode = null
-        AppPreferences.biometricSupport = false
-        AppPreferences.fingerPrintIsSave = false
-        AppPreferences.authUser = null
+        AppPreferences.clear()
     }
 
     private fun showToast(text: String) {

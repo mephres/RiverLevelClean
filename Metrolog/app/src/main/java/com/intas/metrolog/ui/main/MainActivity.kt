@@ -78,12 +78,12 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEquipObserver() {
         viewModel.notSendedEquipList.observe(this, {
             for (equip in it) {
-                if (equip.isSendRFID == 0) {
-                    viewModel.sendEquipRFID(equip)
-                }
-                if (equip.isSendGeo == 0) {
-                    viewModel.sendEquipLocation(equip)
-                }
+                    if (equip.isSendRFID == 0 && !Util.equipRfidQueue.contains(equip.equipId)) {
+                        viewModel.sendEquipRFID(equip)
+                    }
+                    if (equip.isSendGeo == 0 && !Util.equipLocationQueue.contains(equip.equipId)) {
+                        viewModel.sendEquipLocation(equip)
+                    }
             }
         })
     }
@@ -162,17 +162,22 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEventOperationControlObserver() {
         viewModel.getNotSendedEventOperationControlList.observe(this, {
             for (eventOperationControl in it) {
-                viewModel.sendEventOperationControl(eventOperationControl)
+                if (!Util.eventOperationControlQueue.contains(eventOperationControl.id)) {
+                    viewModel.sendEventOperationControl(eventOperationControl)
+                }
             }
         })
     }
+
     /**
      * Получение и отправка на сервер неотправленного операционного контроля
      */
     private fun initNotSendedEventPhotoObserver() {
         viewModel.getNotSendedEventPhotoList.observe(this, {
             for (eventPhoto in it) {
-                viewModel.sendEventPhoto(eventPhoto)
+                if (!Util.eventPhotoQueue.contains(eventPhoto.id)) {
+                    viewModel.sendEventPhoto(eventPhoto)
+                }
             }
         })
     }

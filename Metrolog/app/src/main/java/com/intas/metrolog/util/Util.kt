@@ -12,8 +12,14 @@ object Util {
 
     var eventLoggingEnabled = false
 
+    var userLocationQueue: LinkedList<Long> = LinkedList()
+    var equipLocationQueue: LinkedList<Long> = LinkedList()
+    var equipRfidQueue: LinkedList<Long> = LinkedList()
     var eventQueue: LinkedList<Long> = LinkedList()
     var eventOperationQueue: LinkedList<Long> = LinkedList()
+    var eventOperationControlQueue: LinkedList<Int> = LinkedList()
+    var eventPhotoQueue: LinkedList<Long> = LinkedList()
+
     var requestQueue: LinkedList<Long> = LinkedList()
     var equipInfoQueue: LinkedList<Int> = LinkedList()
     var requestPhoto: LinkedList<Long> = LinkedList()

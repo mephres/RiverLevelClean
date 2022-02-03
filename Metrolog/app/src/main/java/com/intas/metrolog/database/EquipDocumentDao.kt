@@ -13,7 +13,7 @@ interface EquipDocumentDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEquipDocument(equipDocument: EquipDocument)
 
-    @Query("SELECT * FROM equipDocument WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
+    @Query("SELECT * FROM equipDocument WHERE isSended = 0 ORDER BY id")
     fun getNotSendedEquipDocumentList(): LiveData<List<EquipDocument>>
 
     @Query("UPDATE equipDocument SET isSended = 1 WHERE id = :id")

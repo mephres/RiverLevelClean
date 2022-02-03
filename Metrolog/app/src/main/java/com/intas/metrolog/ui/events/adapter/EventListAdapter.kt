@@ -73,6 +73,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
         fillFactDate(eventItem, holder)
         fillTagActual(equipItem, holder)
         fillStatus(eventItem, holder)
+        fillEventSyncStatus(eventItem, holder)
 
         holder.itemView.setOnClickListener {
             onEventClickListener?.invoke(eventItem)
@@ -94,10 +95,13 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
             holder.equipRFIDTextView.text = context.getString(R.string.no_data)
             holder.equipLabelImageView.visibility = View.GONE
         }
+
+        holder.equipLabelImageView.visibility = View.GONE
     }
 
-    private fun fillStatus(eventItem: EventItem,
-                           holder: EventItemViewHolder
+    private fun fillStatus(
+        eventItem: EventItem,
+        holder: EventItemViewHolder
     ) {
         holder.eventStatusImageView.visibility = View.VISIBLE
         when (eventItem.status) {
@@ -142,6 +146,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
             }
         }
     }
+
     private fun fillTagActual(
         equipItem: EquipItem,
         holder: EventItemViewHolder
@@ -189,6 +194,14 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
                     ), PorterDuff.Mode.MULTIPLY
                 )
             }
+        }
+    }
+
+    private fun fillEventSyncStatus(eventItem: EventItem,
+    holder: EventItemViewHolder) {
+        holder.eventSyncStatusImageView.visibility = View.GONE
+        if (eventItem.isSended == 0) {
+            holder.eventSyncStatusImageView.visibility = View.VISIBLE
         }
     }
 
