@@ -65,7 +65,7 @@ class MessageFragment : Fragment() {
         viewModel.getMessageList().observe(viewLifecycleOwner) {
             messageListAdapter.submitList(it)
             binding.messageRecyclerView.scrollToBottom()
-            viewModel.setChatMessageViewed(companion.id)
+            viewModel.setChatMessageViewed()
         }
 
         binding.chatMessageTextView.doOnTextChanged { _, _, _, count ->

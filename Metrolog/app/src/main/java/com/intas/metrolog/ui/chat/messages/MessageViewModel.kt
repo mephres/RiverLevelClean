@@ -21,9 +21,9 @@ class MessageViewModel(
         return db.chatMessageDao().getMessageListBy(Util.authUser?.userId ?: 0, companion.id)
     }
 
-    fun setChatMessageViewed(senderId: Int) {
+    fun setChatMessageViewed() {
         viewModelScope.launch {
-            db.chatMessageDao().setMessageViewedBy(senderId)
+            db.chatMessageDao().setMessageViewedBy(companion.id)
         }
     }
 
