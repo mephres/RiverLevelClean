@@ -62,10 +62,6 @@ class SelectUserFragment : BottomSheetDialogFragment() {
         setupRecyclerView()
         setupSearchViewListener()
         observeUsers()
-
-        binding.selectUserToolbar.setNavigationOnClickListener {
-            closeFragment()
-        }
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -76,9 +72,7 @@ class SelectUserFragment : BottomSheetDialogFragment() {
     }
 
     private fun observeUsers() {
-        viewModel.chatUserList.observe(
-            viewLifecycleOwner
-        ) {
+        viewModel.chatUserList.observe(viewLifecycleOwner) {
 
             chatUserList = it.filter {
                 it.id != Util.authUser?.userId
@@ -99,8 +93,6 @@ class SelectUserFragment : BottomSheetDialogFragment() {
 
     private fun setUI() {
         binding.selectUserToolbar.title = "Выбрать"
-        binding.selectUserToolbar.navigationIcon =
-            ContextCompat.getDrawable(requireContext(), R.drawable.ic_baseline_arrow_back_24dp)
         binding.selectUserToolbar.setTitleTextAppearance(
             requireContext(),
             R.style.Toolbar_TitleText

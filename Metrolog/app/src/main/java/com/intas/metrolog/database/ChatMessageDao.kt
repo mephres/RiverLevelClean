@@ -28,9 +28,6 @@ interface ChatMessageDao {
     @Query("SELECT id FROM chat_message WHERE isSent = 1 order by id desc limit 1")
     fun getChatMessageLastId(): LiveData<Int>
 
-    @Query("SELECT id FROM chat_message WHERE isSent = 1 order by id desc limit 1")
-    fun getChatMessageLastIdFlow(): Flowable<Int>
-
     @Query("SELECT count(*) FROM chat_message WHERE isViewed = 0 and (senderUserId = :senderId AND companionUserId =:companionId)")
     fun getNotViewedCount(senderId: Int, companionId: Int): Int
 
