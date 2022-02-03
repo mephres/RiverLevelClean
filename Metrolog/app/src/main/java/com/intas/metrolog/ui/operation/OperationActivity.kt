@@ -9,9 +9,14 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.RelativeCornerSize
+import com.google.android.material.shape.RoundedCornerTreatment
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
@@ -387,41 +392,54 @@ class OperationActivity : AppCompatActivity() {
                     ), PorterDuff.Mode.MULTIPLY
                 )
             }
-            else -> {
-                binding.equipTagActualImageView.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        this,
-                        R.drawable.ic_warning_red_24dp
-                    )
-                )
-                binding.equipTagActualImageView.setColorFilter(
-                    ContextCompat.getColor(
-                        this,
-                        R.color.md_deep_orange_A200
-                    ), PorterDuff.Mode.MULTIPLY
-                )
-            }
         }
     }
 
     private fun fillOperationStatus(event: EventItem) {
+
+        val shapeAppearanceModel = ShapeAppearanceModel()
+            .toBuilder()
+            .setAllCorners(RoundedCornerTreatment())
+            .setAllCornerSizes(RelativeCornerSize(0.5f))
+            .build()
+
+        val shapeDrawable = MaterialShapeDrawable(shapeAppearanceModel)
+        shapeDrawable.fillColor = ContextCompat.getColorStateList(this,R.color.md_white)
+        binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_white))
+
         when (event.status) {
             NEW -> {
                 binding.statusTextView.text = "Можно выполнить"
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.md_grey_600))
+                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_grey_600))
+                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.md_white))
             }
             IN_WORK -> {
                 binding.statusTextView.text = "Выполняется"
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.md_blue_500))
+                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_blue_500))
+                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.md_blue_500))
             }
             PAUSED -> {
                 binding.statusTextView.text = "Остановлено"
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.colorAccent))
+                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
+                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
             }
             COMPLETED -> {
                 binding.statusTextView.text = "Завершено"
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.colorPrimary))
+                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
+                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
             }
             CANCELED -> {
                 binding.statusTextView.text = "Отменено"
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.md_red_600))
+                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_red_600))
+                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.md_red_600))
             }
         }
+        ViewCompat.setBackground(binding.statusTextView, shapeDrawable)
     }
 
     private fun fillFactDate(event: EventItem) {
@@ -468,7 +486,7 @@ class OperationActivity : AppCompatActivity() {
             binding.operationInfoImageView.setImageDrawable(
                 ContextCompat.getDrawable(
                     this,
-                    R.drawable.ic_chevron_up
+                    R.drawable.ic_baseline_keyboard_arrow_up_24dp
                 )
             )
 
@@ -489,7 +507,7 @@ class OperationActivity : AppCompatActivity() {
             binding.operationInfoImageView.setImageDrawable(
                 ContextCompat.getDrawable(
                     this,
-                    R.drawable.ic_chevron_down
+                    R.drawable.ic_baseline_keyboard_arrow_down_24dp
                 )
             )
 

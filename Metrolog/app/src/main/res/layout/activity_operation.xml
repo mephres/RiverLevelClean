@@ -59,8 +59,31 @@
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="4dp"
-                        android:paddingBottom="4dp">
+                        android:paddingTop="4dp"
+                        android:paddingEnd="4dp"
+                        android:paddingRight="4dp">
+
+                        <View
+                            android:id="@+id/eventColorStatusView"
+                            android:layout_width="0dp"
+                            android:layout_height="4dp"
+                            android:layout_marginTop="4dp"
+                            android:background="@color/md_white"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/factDateLabelTextView" />
+
+                        <ImageView
+                            android:id="@+id/operationInfoImageView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="8dp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/equipNameTextView"
+                            app:srcCompat="@drawable/ic_baseline_keyboard_arrow_down_24dp"
+                            app:tint="@color/md_grey_600" />
 
                         <TextView
                             android:id="@+id/equipNameTextView"
@@ -92,9 +115,9 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
+                            android:layout_marginEnd="4dp"
                             android:textStyle="bold"
-                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/operationInfoImageView"
                             app:layout_constraintStart_toEndOf="@+id/equipZavNumLabelTextView"
                             app:layout_constraintTop_toTopOf="@+id/equipZavNumLabelTextView"
                             tools:text="TextView" />
@@ -383,11 +406,15 @@
                             tools:text="02.11.2019 00:11:22"
                             tools:visibility="visible" />
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/statusTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
+                            android:paddingStart="12dp"
+                            android:paddingTop="2dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="2dp"
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
                             android:textColor="@color/colorPrimary"
                             android:textSize="16sp"
@@ -416,28 +443,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="8dp"
-                            tools:text="000:00:00"
                             android:textColor="@android:color/black"
                             android:textSize="14sp"
                             android:textStyle="bold"
                             android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="@+id/timerImageView"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/timerImageView" />
-
-                        <ImageView
-                            android:id="@+id/operationInfoImageView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:clickable="true"
-                            android:focusable="true"
-                            android:paddingStart="16dp"
-                            android:paddingEnd="16dp"
-                            android:src="@drawable/ic_chevron_down"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/factDateTextView" />
+                            app:layout_constraintTop_toTopOf="@+id/timerImageView"
+                            tools:text="000:00:00" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
