@@ -1,5 +1,6 @@
 package com.intas.metrolog.util
 
+import android.text.format.DateUtils
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,15 +23,14 @@ class DateTimeUtil {
          */
         fun getChatMessageDateTime(timeInMili: Long, chatType: Int): String {
             var result = ""
-            val timeNow = getUnixDateTimeNow()
-            if (timeNow - timeInMili <= 86400) {
+            if (DateUtils.isToday(timeInMili.times(1000))) {
                 when (chatType) {
                     0 -> result = getShortTimeFromMili(timeInMili)
                     1 -> result = "Сегодня"
                 }
-            } else if (timeNow - timeInMili > 86400 && timeNow - timeInMili <= 172800) {
+            } else if (DateUtils.isToday(timeInMili.times(1000) + DateUtils.DAY_IN_MILLIS)) {
                 result = "Вчера"
-            } else if (timeNow - timeInMili > 172800) {
+            } else {
                 result = getShortDataFromMili(timeInMili)
             }
             return result

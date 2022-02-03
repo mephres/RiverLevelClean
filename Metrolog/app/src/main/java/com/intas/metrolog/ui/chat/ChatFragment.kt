@@ -7,34 +7,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentChatBinding
-import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.ui.chat.adapter.ChatListAdapter
 import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.SelectUserFragment
-import com.intas.metrolog.util.Util
 
 class ChatFragment : Fragment() {
     private var searchView: SearchView? = null
     private lateinit var chatListAdapter: ChatListAdapter
 
+    var chatItemList = mutableListOf<ChatItem>()
+
     private var _binding: FragmentChatBinding? = null
     private val binding get() = _binding!!
 
     private val chatViewModel: ChatViewModel by viewModels()
-
-    private val _chatItemList = MutableLiveData<List<ChatItem>>()
-    private val chatItemList: LiveData<List<ChatItem>>
-        get() = _chatItemList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,7 +46,6 @@ class ChatFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUI()
         setupRecyclerView()
-        createChatItems()
         setupSearchViewListener()
 
         binding.chatListSelectUserFab.setOnClickListener {
@@ -63,64 +55,16 @@ class ChatFragment : Fragment() {
                 SelectUserFragment.SELECT_USER_FRAGMENT_TAG
             )
         }
-    }
 
-    private fun createChatItems() {
-        chatViewModel.messageList.observe(viewLifecycleOwner) { messages ->
-            binding.chatProgressIndicator.isVisible = messages.isEmpty()
-
-            val chatItemList = mutableListOf<ChatItem>()
-
-            messages.forEach { message ->
-
-                message.senderUserId?.let { messageSenderId ->
-                    val companion: UserItem?
-                    val currentUserId = Util.authUser?.userId
-
-                    companion = if (messageSenderId != currentUserId) {
-                        chatViewModel.getCompanionById(messageSenderId)
-                    } else {
-                        val companionId = message.companionUserId ?: 0
-                        chatViewModel.getCompanionById(companionId)
-                    }
-
-                    companion?.let {
-                        val messageText = message.message ?: ""
-                        val messageId = message.id ?: 0
-                        val messageDateTime = message.dateTime ?: 0
-
-                        val chatItem = ChatItem(
-                            id = messageId,
-                            lastMessage = messageText,
-                            companion = it,
-                            lastMessageDate = messageDateTime
-                        )
-                        chatItemList.add(chatItem)
-                    }
-                }
-                chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
-                chatItemList.sortByDescending {
-                    it.lastMessageDate
-                }
-
-                chatItemList.forEach {
-                    it.notViewedMessageCount = chatViewModel.getNotViewedMessagesCount(
-                        it.companion.id,
-                        Util.authUser?.userId ?: 0
-                    )
-                }
+        chatViewModel.chatItemList.observe(viewLifecycleOwner) {
+            chatItemList = it.toMutableList()
+            chatListAdapter.submitList(it) {
+                binding.chatListRecyclerView.scrollToTop()
             }
-            this._chatItemList.value = chatItemList
-        }
-
-        this.chatItemList.observe(viewLifecycleOwner) {
-            chatListAdapter.submitList(it)
-            binding.chatListRecyclerView.scrollToTop()
         }
     }
 
     private fun setUI() {
-        binding.chatProgressIndicator.visibility = View.VISIBLE
         binding.includeToolbar.toolbar.title = getString(R.string.bottom_menu_events_chat)
 
         val menu = binding.includeToolbar.toolbar.menu
@@ -154,7 +98,7 @@ class ChatFragment : Fragment() {
         postDelayed({
             val position = 0
             scrollToPosition(position)
-        }, 100)
+        }, 200)
     }
 
     private fun setupScrollListener() {
@@ -187,7 +131,7 @@ class ChatFragment : Fragment() {
         val handler = Handler(Looper.getMainLooper())
         handler.removeCallbacksAndMessages(null)
         handler.postDelayed({
-            chatListAdapter.submitList(_chatItemList.value?.filter {
+            chatListAdapter.submitList(chatItemList.filter {
                 it.companion.fio?.contains(other = text, ignoreCase = true) ?: false ||
                         it.companion.position?.contains(text, true) ?: false
             })

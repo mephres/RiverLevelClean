@@ -63,8 +63,9 @@ class MessageFragment : Fragment() {
         setClickListeners()
 
         viewModel.getMessageList().observe(viewLifecycleOwner) {
-            messageListAdapter.submitList(it)
-            binding.messageRecyclerView.scrollToBottom()
+            messageListAdapter.submitList(it) {
+                binding.messageRecyclerView.scrollToBottom()
+            }
             viewModel.setChatMessageViewed()
         }
 
