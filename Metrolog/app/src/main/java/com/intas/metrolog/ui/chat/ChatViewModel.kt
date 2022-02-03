@@ -1,10 +1,7 @@
 package com.intas.metrolog.ui.chat
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.liveData
+import androidx.lifecycle.*
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.ChatItem
@@ -15,7 +12,7 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
     private val messageList =
-        db.chatMessageDao().getAllLastMessages(Util.authUser?.userId ?: 0)
+        db.chatMessageDao().getAllLastMessages(Util.authUser?.userId ?: 0).distinctUntilChanged()
 
     val chatItemList: LiveData<List<ChatItem>> = Transformations.switchMap(messageList) {
         createChatItemsLiveData(it)
