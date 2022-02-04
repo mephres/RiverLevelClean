@@ -13,6 +13,7 @@ import com.intas.metrolog.util.DateTimeUtil
 class EventsViewModel(application: Application) : AndroidViewModel(application)  {
 
     private val db = AppDatabase.getInstance(application)
+    val eventList = db.eventDao().getEventList()
 
     private val _scroll = MutableLiveData<Int>()
     val scroll: LiveData<Int> get() = _scroll

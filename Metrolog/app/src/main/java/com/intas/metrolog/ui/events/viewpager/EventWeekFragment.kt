@@ -45,7 +45,6 @@ class EventWeekFragment : Fragment() {
         setupRecyclerView()
 
         eventViewModel.getEventListWeek().observe(viewLifecycleOwner, {
-            binding.eventProgressIndicator.visibility = View.GONE
             eventListAdapter.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventWeekFragment->eventList", list = eventList)
@@ -56,13 +55,22 @@ class EventWeekFragment : Fragment() {
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
             mainViewModel.getEvent()
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal("EventWeekFragment->fragmentEventSwipeRefreshLayout", "isRefreshing")
+            Journal.insertJournal(
+                "EventWeekFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
         }
 
 
         eventViewModel.searchText.observe(viewLifecycleOwner, {
             setFilter(it)
         })
+
+        eventViewModel.eventList.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                binding.eventProgressIndicator.visibility = View.GONE
+            }
+        }
     }
 
     private fun setFilter(text: String) {
@@ -75,7 +83,8 @@ class EventWeekFragment : Fragment() {
         }
 
         eventListAdapter.submitList(eventList.filter {
-            it.name?.contains(text, true) == true || it.equipName?.trim()?.contains(text, true) == true
+            it.name?.contains(text, true) == true || it.equipName?.trim()
+                ?.contains(text, true) == true
         })
     }
 
