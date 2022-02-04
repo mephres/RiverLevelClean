@@ -42,6 +42,7 @@ class EventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val eventStatusImageView: ImageView = view.findViewById(R.id.eventStatusImageView)
     val equipLabelImageView: ImageView = view.findViewById(R.id.equipLabelImageView)
     val eventSyncStatusImageView: ImageView = view.findViewById(R.id.eventSyncStatusImageView)
+    val eventColorStatusView: View = view.findViewById(R.id.eventColorStatusView)
 
     var isFullInfo = false
 }
