@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
         initNotSendedRequestObserver()
         initNotSendedEquipInfoObserver()
         initNotSendedRequestPhotoObserver()
+        initLoadMessageObserver()
+        initNewChatMessageCountObserver()
+        initNotSentChatMessageObserver()
     }
 
     /**
@@ -78,12 +82,12 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEquipObserver() {
         viewModel.notSendedEquipList.observe(this, {
             for (equip in it) {
-                if (equip.isSendRFID == 0) {
-                    viewModel.sendEquipRFID(equip)
-                }
-                if (equip.isSendGeo == 0) {
-                    viewModel.sendEquipLocation(equip)
-                }
+                    if (equip.isSendRFID == 0 && !Util.equipRfidQueue.contains(equip.equipId)) {
+                        viewModel.sendEquipRFID(equip)
+                    }
+                    if (equip.isSendGeo == 0 && !Util.equipLocationQueue.contains(equip.equipId)) {
+                        viewModel.sendEquipLocation(equip)
+                    }
             }
         })
     }
@@ -162,17 +166,22 @@ class MainActivity : AppCompatActivity() {
     private fun initNotSendedEventOperationControlObserver() {
         viewModel.getNotSendedEventOperationControlList.observe(this, {
             for (eventOperationControl in it) {
-                viewModel.sendEventOperationControl(eventOperationControl)
+                if (!Util.eventOperationControlQueue.contains(eventOperationControl.id)) {
+                    viewModel.sendEventOperationControl(eventOperationControl)
+                }
             }
         })
     }
+
     /**
      * Получение и отправка на сервер неотправленного операционного контроля
      */
     private fun initNotSendedEventPhotoObserver() {
         viewModel.getNotSendedEventPhotoList.observe(this, {
             for (eventPhoto in it) {
-                viewModel.sendEventPhoto(eventPhoto)
+                if (!Util.eventPhotoQueue.contains(eventPhoto.id)) {
+                    viewModel.sendEventPhoto(eventPhoto)
+                }
             }
         })
     }
@@ -214,6 +223,41 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    /**
+     * Получение идентификатора последнего сообщения в БД
+     */
+    private fun initLoadMessageObserver() {
+        viewModel.chatMessageLastId.observe(this) {
+            var messageLastId = 0
+            if (it != null) {
+                messageLastId = it
+            }
+            viewModel.loadMessageList(messageLastId)
+        }
+    }
+
+    private fun initNewChatMessageCountObserver() {
+        viewModel.newChatMessageCount.observe(this) {
+            val count = it
+            val badge = binding.bottomNavigationView.getOrCreateBadge(R.id.navigation_chat)
+            badge.isVisible = count >= 1
+            badge.number = count
+        }
+    }
+
+    /**
+     * Получение и отправка на сервер неотправленных записей переписки
+     */
+    private fun initNotSentChatMessageObserver() {
+        viewModel.notSendedChatMessageList.observe(this) {
+            it.forEach {
+                if (!Util.chatMessageQueue.contains(it.id)) {
+                    viewModel.sendChatMessage(it)
+                }
+            }
+        }
     }
 
     private fun showToast(text: String) {

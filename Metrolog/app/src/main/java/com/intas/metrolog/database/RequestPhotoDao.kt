@@ -16,7 +16,7 @@ interface RequestPhotoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRequestPhoto(requestPhoto: RequestPhoto): Long
 
-    @Query("SELECT * FROM requestPhoto WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
+    @Query("SELECT * FROM requestPhoto WHERE isSended = 0 ORDER BY id")
     fun getNotSendedRequestPhotoList(): LiveData<List<RequestPhoto>>
 
     @Query("UPDATE requestPhoto SET isSended = 1, id = :serverId WHERE id = :id")

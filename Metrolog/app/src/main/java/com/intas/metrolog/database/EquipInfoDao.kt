@@ -16,7 +16,7 @@ interface EquipInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEquipInfo(equipInfo: EquipInfo): Long
 
-    @Query("SELECT * FROM equipInfo WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
+    @Query("SELECT * FROM equipInfo WHERE isSended = 0 ORDER BY id")
     fun getNotSendedEquipInfoList(): LiveData<List<EquipInfo>>
 
     @Query("UPDATE equipInfo SET isSended = 1 AND id = :serverId WHERE id = :id")

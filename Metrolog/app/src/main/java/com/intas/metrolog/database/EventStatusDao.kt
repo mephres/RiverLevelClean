@@ -12,6 +12,9 @@ interface EventStatusDao {
     @Query("SELECT * FROM event_status")
     fun getAllEventStatus(): LiveData<List<EventStatus>>
 
+    @Query("SELECT * FROM event_status WHERE id = :id")
+    fun getEventStatusById(id: Int): LiveData<EventStatus>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertEventStatusList(eventStatusList: List<EventStatus>)
 }

@@ -2,19 +2,16 @@ package com.intas.metrolog.ui.events.select_event
 
 import android.app.Dialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.intas.metrolog.databinding.FragmentBottomSelectEventBinding
 import com.intas.metrolog.pojo.equip.EquipItem
-import com.intas.metrolog.ui.equip.adapter.EquipListAdapter
 import com.intas.metrolog.ui.events.select_event.adapter.SelectEventListAdapter
 import com.intas.metrolog.ui.operation.OperationActivity
 
@@ -84,7 +81,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
     private fun setClickListener() {
         selectEventListAdapter.onItemClickListener = {
-            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId, false))
         }
     }
 

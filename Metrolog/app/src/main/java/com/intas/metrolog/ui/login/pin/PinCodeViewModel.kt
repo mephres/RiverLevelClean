@@ -65,6 +65,7 @@ class PinCodeViewModel(application: Application) : AndroidViewModel(application)
             Journal.insertJournal("PinCodeViewModel->authUser", journalText = authUser)
             onSuccess?.invoke(authUser)
             AppPreferences.userLoginDateTime = DateTimeUtil.getUnixDateTimeNow()
+            Util.authUser = authUser
             return
         }
 

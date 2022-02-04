@@ -101,7 +101,7 @@ class EventWeekFragment : Fragment() {
 
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventWeekFragment->onEventClickListener", it)
-            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }
     }
 

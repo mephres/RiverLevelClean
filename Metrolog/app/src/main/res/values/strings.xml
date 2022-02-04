@@ -4,6 +4,7 @@
     <string name="login_activity_app_title">Мобильный метролог</string>
     <string name="no_data">Нет данных</string>
     <string name="save_title">Сохранить</string>
+    <string name="search_title">Поиск</string>
 
     <string name="exit_message">Нажмите еще раз для выхода</string>
 
@@ -155,5 +156,13 @@
     <string name="operation_activity_operations_label">Список операций</string>
     <string name="operation_activity_empty_operations_list">Список операций пуст</string>
     <string name="operation_activity_operations_list_title">Список операций</string>
+
+    <string name="chat_item_menu_forward_title">Переслать</string>
+    <string name="chat_item_menu_delete_title">Удалить</string>
+    
+    <string name="event_comment_title">Комментарий к мероприятию</string>
+    <string name="event_comment_comment_hint">Текст комментария</string>
+    <string name="event_comment_add_comment_error_message">Комментарий не должен быть пустым</string>
+    <string name="event_comment_add_comment_empty_image_list_error_message">Для данного мероприятия фотофиксация обязательна. Сделайте фото или добавьте изображение из галереи"</string>
 
 </resources>

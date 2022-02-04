@@ -99,7 +99,7 @@ class EventCompletedFragment : Fragment() {
 
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventCompletedFragment->onEventClickListener", it)
-            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }
     }
 

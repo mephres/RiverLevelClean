@@ -25,7 +25,7 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/eventStatusTextView"
@@ -39,12 +39,12 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:visibility="visible"
-            tools:text="Можно выполнить"
-            android:textStyle="bold"
             android:textColor="@color/colorPrimary"
+            android:textStyle="bold"
+            android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Можно выполнить" />
 
         <TextView
             android:id="@+id/planDateLabelTextView"
@@ -62,7 +62,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             app:layout_constraintStart_toEndOf="@+id/eventTypeLabelTextView"
             app:layout_constraintTop_toTopOf="@+id/planDateLabelTextView"
             tools:text="22.02.2022" />
@@ -85,7 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             app:layout_constraintStart_toEndOf="@+id/eventTypeLabelTextView"
             app:layout_constraintTop_toTopOf="@+id/eventTypeLabelTextView"
             tools:text="eventTypeTextView" />

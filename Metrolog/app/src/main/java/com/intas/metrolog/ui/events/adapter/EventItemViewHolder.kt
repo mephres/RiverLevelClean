@@ -3,12 +3,12 @@ package com.intas.metrolog.ui.events.adapter
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.card.MaterialCardView
 import com.intas.metrolog.R
 
 class EventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-    val eventCardView: CardView = view.findViewById(R.id.eventCardView)
+    val eventCardView: MaterialCardView = view.findViewById(R.id.eventCardView)
     val equipNameTextView: TextView = view.findViewById(R.id.equipNameTextView)
     val equipZavNumLabelTextView: TextView = view.findViewById(R.id.equipZavNumLabelTextView)
     val equipZavNumTextView: TextView = view.findViewById(R.id.equipZavNumTextView)
@@ -41,6 +41,8 @@ class EventItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val equipFullInfoImageView: ImageView = view.findViewById(R.id.equipFullInfoImageView)
     val eventStatusImageView: ImageView = view.findViewById(R.id.eventStatusImageView)
     val equipLabelImageView: ImageView = view.findViewById(R.id.equipLabelImageView)
+    val eventSyncStatusImageView: ImageView = view.findViewById(R.id.eventSyncStatusImageView)
+    val eventColorStatusView: View = view.findViewById(R.id.eventColorStatusView)
 
     var isFullInfo = false
 }

@@ -7,7 +7,7 @@ import com.intas.metrolog.pojo.event.event_operation.operation_control.OperContr
 @Dao
 interface OperControlDao {
 
-    @Query("SELECT * FROM oper_control WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
+    @Query("SELECT * FROM oper_control WHERE isSended = 0")
     fun getNotSendedEventOperationControlList(): LiveData<List<OperControlItem>>
 
     @Query("SELECT * FROM oper_control WHERE id = :id")

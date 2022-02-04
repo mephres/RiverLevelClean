@@ -99,7 +99,7 @@ class EventTodayFragment : Fragment() {
 
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventTodayFragment->onEventClickListener", it)
-            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }
     }
 

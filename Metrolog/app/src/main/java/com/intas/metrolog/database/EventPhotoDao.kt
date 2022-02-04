@@ -6,7 +6,7 @@ import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
 
 @Dao
 interface EventPhotoDao {
-    @Query("SELECT * FROM event_photo WHERE isSended = 0 ORDER BY id ASC LIMIT 1")
+    @Query("SELECT * FROM event_photo WHERE isSended = 0 ORDER BY id")
     fun getNotSendedEventPhotoList(): LiveData<List<EventPhotoItem>>
 
     @Update(onConflict = OnConflictStrategy.REPLACE)

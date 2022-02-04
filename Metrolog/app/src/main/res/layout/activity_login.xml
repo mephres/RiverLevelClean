@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/login_activity_app_title"
-            android:textColor="@color/md_white_1000"
+            android:textColor="@color/md_white"
             android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -105,7 +105,7 @@
             android:checked="@={loginViewModel.rememberCheckBoxValue}"
             android:minHeight="48dp"
             android:text="Запомнить меня     "
-            android:textColor="@color/md_white_1000"
+            android:textColor="@color/md_white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/passwordTextInput" />
 
@@ -120,7 +120,7 @@
             android:onClick="@{loginViewModel::onLoginClickButton}"
             android:text="@string/login_activity_sign_in_title"
             android:textAllCaps="false"
-            android:textColor="@color/md_white_1000"
+            android:textColor="@color/md_white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rememberMeSwitch" />
@@ -134,7 +134,7 @@
             android:backgroundTint="@color/colorAccent"
             android:text="@string/login_activity_settings_title"
             android:textAllCaps="false"
-            android:textColor="@color/md_white_1000"
+            android:textColor="@color/md_white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/signInButton" />
@@ -145,7 +145,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
             android:text="@={loginViewModel.appVersion}"
-            android:textColor="@color/md_white_1000"
+            android:textColor="@color/md_white"
             android:textSize="12sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

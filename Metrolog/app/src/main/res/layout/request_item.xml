@@ -79,7 +79,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="TextView"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             android:textStyle="bold"
             app:layout_constraintEnd_toStartOf="@+id/requestIsNotSendImageView"
             app:layout_constraintStart_toStartOf="parent"
@@ -119,7 +119,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             android:text="TextView"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             app:layout_constraintEnd_toStartOf="@+id/requestTypeImageView"
             app:layout_constraintStart_toEndOf="@+id/requestFromLabelTextView"
             app:layout_constraintTop_toBottomOf="@+id/requestTitleTextView" />
@@ -142,7 +142,7 @@
             android:layout_marginTop="4dp"
             android:layout_marginEnd="8dp"
             android:text="TextView"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/requestExecutorLabelTextView"
             app:layout_constraintTop_toBottomOf="@+id/requestFromTextView" />
@@ -157,7 +157,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="TextView"
-            android:textColor="@color/md_black_1000"
+            android:textColor="@color/md_black"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/requestExecutorTextView" />

@@ -29,9 +29,9 @@ import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.equip_document.adapter.DocumentTypeAdapter
 import com.intas.metrolog.ui.equip_document.adapter.ImageSliderViewAdapter
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.Util.Companion.CAMERA_CAPTURE
-import com.intas.metrolog.util.Util.Companion.GALLERY_REQUEST
-import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
+import com.intas.metrolog.util.Util.CAMERA_CAPTURE
+import com.intas.metrolog.util.Util.GALLERY_REQUEST
+import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import com.intas.metrolog.util.ViewUtil
 import com.yalantis.ucrop.UCrop
 import java.io.File
@@ -406,7 +406,6 @@ class EquipDocumentActivity : AppCompatActivity() {
                     }
                 }
             }
-
         }
     }
 

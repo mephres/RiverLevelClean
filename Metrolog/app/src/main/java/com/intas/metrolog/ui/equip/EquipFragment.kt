@@ -135,7 +135,7 @@ class EquipFragment : Fragment() {
         }
         val messageView = snackbar.view.findViewById(R.id.snackbar_text) as TextView
         messageView.maxLines = 20
-        snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.md_white_1000))
+        snackbar.setActionTextColor(ContextCompat.getColor(requireContext(), R.color.md_white))
         snackbar.show()
     }
 

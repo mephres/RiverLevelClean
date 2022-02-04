@@ -25,7 +25,7 @@ data class EquipInfo(
      */
     @SerializedName("equipId")
     @Expose
-    val equipId: Long = 0,
+    var equipId: Long = 0,
     /**
      * текст информации по оборудованию
      */

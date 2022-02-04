@@ -53,43 +53,43 @@ data class EventItem(
      */
     @SerializedName("factDate")
     @Expose
-    val factDate: String? = null,
+    var factDate: String? = null,
     /**
      * фио ответственного, заполнено, если мероприятие выполнено
      */
     @SerializedName("otv")
     @Expose
-    val otv: String? = null,
+    var otv: String? = null,
     /**
      * идентификатор пользователя, выполневшего мероприятие
      */
     @SerializedName("userId")
     @Expose
-    val userId: String? = null,
+    var userId: String? = null,
     /**
      * признак - мероприятие выполнено (true - мероприятие выполнено, false - не выполнено)
      */
     @SerializedName("eventDone")
     @Expose
-    val eventDone: Boolean = false,
+    var eventDone: Boolean = false,
     /**
      * текст комментария к мероприятию
      */
     @SerializedName("comment")
     @Expose
-    val comment: String? = null,
+    var comment: String? = null,
     /**
      * дата-время начала выполнения мероприятия в UNIX формате
      */
     @SerializedName("dateTimeStartTimer")
     @Expose
-    val dateTimeStartTimer: Long? = 0,
+    var dateTimeStartTimer: Long? = 0,
     /**
      * продолжительность выполнения мероприятия в милисекундах
      */
     @SerializedName("durationTimer")
     @Expose
-    val durationTimer: Long? = 0,
+    var durationTimer: Long? = 0,
     /**
      * статус мероприятия (0 - новое, 1 - в работе, 2 - остановлено, 3 - выполнено, 4 - отказ)
      */
@@ -108,7 +108,7 @@ data class EventItem(
      * 0 - не отправлено на сервер
      * 1 - отправлено на сервер
      */
-    val isSended: Int = 1,
+    var isSended: Int = 1,
     /**
      * количество операций мероприятия
      */

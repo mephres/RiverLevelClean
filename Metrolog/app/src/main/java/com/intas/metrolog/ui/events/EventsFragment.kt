@@ -45,7 +45,7 @@ class EventsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUI()
 
-        viewPagerAdapter = parentFragmentManager.let { ViewPagerAdapter(it) }
+        viewPagerAdapter = childFragmentManager.let { ViewPagerAdapter(it) }
 
         val fragmentList: List<Fragment> = parentFragmentManager.getFragments() as List<Fragment>
 

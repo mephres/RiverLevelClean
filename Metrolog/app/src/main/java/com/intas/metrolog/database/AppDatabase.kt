@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import com.intas.metrolog.pojo.JournalItem
 import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.authuser.AuthUser
+import com.intas.metrolog.pojo.chat.MessageItem
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
@@ -34,8 +35,8 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
         EventOperationTypeItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
         EventComment::class, EquipDocument::class, RequestItem::class, EventOperationItem::class,
         OperControlItem::class, FieldItem::class, FieldDictData::class, EventPhotoItem::class,
-        RequestPhoto::class, EventStatus::class],
-    version = 22, exportSchema = false
+        RequestPhoto::class, EventStatus::class, MessageItem::class],
+    version = 23, exportSchema = false
 )
 
 abstract class AppDatabase : RoomDatabase() {
@@ -86,5 +87,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun equipInfoDao(): EquipInfoDao
     abstract fun eventPhotoDao(): EventPhotoDao
     abstract fun eventStatusDao(): EventStatusDao
+    abstract fun chatMessageDao(): ChatMessageDao
 
 }

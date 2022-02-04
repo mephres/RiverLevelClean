@@ -24,10 +24,24 @@
         android:id="@+id/navigation_chat"
         android:name="com.intas.metrolog.ui.chat.ChatFragment"
         android:label="ChatFragment"
-        tools:layout="@layout/fragment_chat"/>
+        tools:layout="@layout/fragment_chat">
+        <action
+            android:id="@+id/action_navigation_chat_to_messageFragment"
+            app:destination="@id/messageFragment" />
+    </fragment>
     <fragment
         android:id="@+id/navigation_more"
         android:name="com.intas.metrolog.ui.more.MoreFragment"
         android:label="MoreFragment"
         tools:layout="@layout/fragment_more"/>
+
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.intas.metrolog.ui.chat.messages.MessageFragment"
+        android:label="fragment_message"
+        tools:layout="@layout/fragment_message">
+        <action
+            android:id="@+id/action_messageFragment_to_navigation_chat"
+            app:destination="@id/navigation_chat" />
+    </fragment>
 </navigation>
