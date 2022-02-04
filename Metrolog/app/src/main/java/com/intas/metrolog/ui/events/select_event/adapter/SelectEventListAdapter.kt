@@ -2,7 +2,6 @@ package com.intas.metrolog.ui.events.select_event.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.ListAdapter
@@ -46,7 +45,7 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
 
         when(eventItem.priority) {
             EventPriority.PLANED.ordinal -> {
-                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white_1000)
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white)
             }
             EventPriority.SERIOUS.ordinal -> {
                 holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_orange_300)
@@ -55,7 +54,7 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
                 holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_red_500)
             }
             EventPriority.UNKNOWN.ordinal -> {
-                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white_1000)
+                holder.eventCardView.strokeColor = ContextCompat.getColor(context, R.color.md_white)
             }
         }
 

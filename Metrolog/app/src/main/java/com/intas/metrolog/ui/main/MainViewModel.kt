@@ -61,6 +61,8 @@ import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dic
 import com.intas.metrolog.pojo.event.event_operation_type.EventOperationTypeItem
 import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
 import com.intas.metrolog.pojo.event.event_status.EventStatus
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.NEW
 import com.intas.metrolog.pojo.event_comment.EventComment
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.request.RequestPhoto
@@ -87,21 +89,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val db = AppDatabase.getInstance(application)
     private val compositeDisposable = CompositeDisposable()
 
-    private var sendUserLocationDisposable: Disposable? = null
-    private var sendEquipLocationDisposable: Disposable? = null
-    private var sendEquipRFIDDisposable: Disposable? = null
     private var getEquipDisposable: Disposable? = null
     private var getRequestDisposable: Disposable? = null
     private var getEventDisposable: Disposable? = null
-    private var sendEquipDocumentDisposable: Disposable? = null
-    private var sendEventDisposable: Disposable? = null
-    private var sendEventOperationDisposable: Disposable? = null
-    private var sendComplexEventOperationDisposable: Disposable? = null
-    private var sendOperControlDisposable: Disposable? = null
-    private var sendEventPhotoDisposable: Disposable? = null
-    private var sendRequestDisposable: Disposable? = null
-    private var sendRequestPhotoDisposable: Disposable? = null
-    private var sendEquipInfoDisposable: Disposable? = null
     private var loadMessageDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
@@ -115,10 +105,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedRequestList = db.requestDao().getNotSendedRequestList()
     val getNotSendedEquipInfoList = db.equipInfoDao().getNotSendedEquipInfoList()
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
-    val _eventList = db.eventDao().getEventList()
     val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
     val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
+
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -288,7 +278,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             for (equip in equipList) {
                 equip.equipInfoList?.let { eil ->
                     if (eil.isNotEmpty()) {
-                        insertEquipInfoList(eil)
+                        insertEquipInfoList(eil.map {
+                            it.equipId = equip.equipId
+                            it
+                        })
                     }
                 }
             }
@@ -567,9 +560,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param equip оборудование, экземпляр класса [EquipItem]
      */
     fun sendEquipLocation(equip: EquipItem) {
-        sendEquipLocationDisposable?.let {
-            compositeDisposable.remove(it)
-        }
+
+        Util.equipLocationQueue.addLast(equip.equipId)
 
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
@@ -577,7 +569,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_LATITUDE] = equip.latitude.toString()
         map[QUERY_PARAM_LONGITUDE] = equip.longitude.toString()
 
-        sendEquipLocationDisposable = ApiFactory.apiService.updateEquipGeo(map)
+        val sendEquipLocationDisposable = ApiFactory.apiService.updateEquipGeo(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -597,9 +589,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }, {
                 Log.d("MM_SEND_EQUIP_LOCATION", it.message.toString())
             })
-        sendEquipLocationDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendEquipLocationDisposable)
     }
 
     /**
@@ -609,6 +599,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun setEquipLocationSendedById(id: Long) {
 
         Log.d("MM_EQUIP_LOCATION_SEND", id.toString())
+
+        if (Util.equipRfidQueue.size > 50) {
+            Util.equipRfidQueue.removeFirst()
+        }
 
         viewModelScope.launch {
             db.equipDao().setEquipLocationSendedById(id)
@@ -621,16 +615,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param equip оборудование, экземпляр класса [EquipItem]
      */
     fun sendEquipRFID(equip: EquipItem) {
-        sendEquipRFIDDisposable?.let {
-            compositeDisposable.remove(it)
-        }
+
+        Util.equipRfidQueue.addLast(equip.equipId)
 
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_EQUIP_ID] = equip.equipId.toString()
         map[QUERY_PARAM_EQUIP_RFID] = equip.equipRFID.toString()
 
-        sendEquipRFIDDisposable = ApiFactory.apiService.updateEquipRFID(map)
+        val sendEquipRFIDDisposable = ApiFactory.apiService.updateEquipRFID(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -650,9 +643,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }, {
                 Log.d("MM_SEND_EQUIP_RFID", it.message.toString())
             })
-        sendEquipRFIDDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendEquipRFIDDisposable)
     }
 
     /**
@@ -662,6 +653,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun setEquipRFIDSendedById(id: Long) {
 
         Log.d("MM_SEND_EQUIP_RFID", id.toString())
+
+        if (Util.equipRfidQueue.size > 50) {
+            Util.equipRfidQueue.removeFirst()
+        }
 
         viewModelScope.launch {
             db.equipDao().setEquipRFIDSendedById(id)
@@ -687,9 +682,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendUserLocation(userLocation: UserLocation) {
 
-        sendUserLocationDisposable?.let {
-            compositeDisposable.remove(it)
+        if (Util.userLocationQueue.contains(userLocation.id)) {
+            return
         }
+        Util.userLocationQueue.addLast(userLocation.id)
 
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_ID] = userLocation.id.toString()
@@ -704,7 +700,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_SPEED] = userLocation.speed.toString()
         map[QUERY_PARAM_TIME] = userLocation.time.toString()
 
-        sendUserLocationDisposable = ApiFactory.apiService.addLocation(map)
+        val sendUserLocationDisposable = ApiFactory.apiService.addLocation(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -728,9 +724,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_USER_LOCATION", it.message.toString())
                 })
-        sendUserLocationDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendUserLocationDisposable)
     }
 
     /**
@@ -740,6 +734,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun setUserLocationSendedById(id: Long) {
 
         Log.d("MM_SET_LOCATION_SEND", id.toString())
+
+        if (Util.userLocationQueue.size > 500) {
+            Util.userLocationQueue.removeFirst()
+        }
 
         viewModelScope.launch {
             db.userLocationDao().setUserLocationSendedById(id)
@@ -751,10 +749,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param equipDocument - документ оборудования
      */
     fun sendEquipDocument(equipDocument: EquipDocument) {
-
-        sendEquipDocumentDisposable?.let {
-            compositeDisposable.remove(it)
-        }
 
         var multipartFile: MultipartBody.Part? = null
 
@@ -774,7 +768,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             equipDocument.documentTypeId.toString().toRequestBody(MultipartBody.FORM)
         val multipartDoc = equipDocument.filename.toString().toRequestBody(MultipartBody.FORM)
 
-        sendEquipDocumentDisposable = ApiFactory.apiService.addEquipDocument(
+        val sendEquipDocumentDisposable = ApiFactory.apiService.addEquipDocument(
             file = multipartFile,
             id = multipartId,
             userId = multipartUserId,
@@ -805,9 +799,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_EQUIP_DOCUMENT", it.message.toString())
                 })
-        sendEquipDocumentDisposable?.let {
-            compositeDisposable.add(it)
-        }
+
+        compositeDisposable.add(sendEquipDocumentDisposable)
     }
 
     /**
@@ -865,9 +858,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
 
+            Journal.insertJournal("MainViewModel->insertEventList->list", list = eventList)
             val list = eventList.filter {
                 val event = db.eventDao().getEvent(it.opId)
-                (event?.isSended == 0 || event?.status ?: 0 > 0) == false
+                (event?.isSended == 0 || (event?.status ?: 0 > NEW && event?.status ?: 0 != CANCELED)) == false
             }.map {
                 it.operationListSize = it.operation?.size ?: 0
                 it.needPhotoFix = it.operation?.any {
@@ -878,7 +872,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 it.equipName = it.equip?.equipName
                 it
             }
-
+            Journal.insertJournal("MainViewModel->insertEventList->list_for_insert", list = list)
             db.eventDao().insertEventList(list)
 
             list.forEach { event ->
@@ -961,13 +955,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEvent(event: EventItem) {
 
-        sendEventDisposable?.let {
-            compositeDisposable.remove(it)
-        }
-
-        event?.let {
-            Util.eventQueue.addLast(event.opId)
-        }
+        Util.eventQueue.addLast(event.opId)
 
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
@@ -978,7 +966,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DATE_TIME_START_TIMER] = event.dateTimeStartTimer.toString()
         map[QUERY_PARAM_COMMENT] = event.comment.toString()
 
-        sendEventDisposable = ApiFactory.apiService.updateEvent(map)
+        val sendEventDisposable = ApiFactory.apiService.updateEvent(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1002,9 +990,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_EVENT", it.message.toString())
                 })
-        sendEventDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendEventDisposable)
     }
 
     private fun setEventSendedById(id: Long) {
@@ -1026,13 +1012,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     @SuppressLint("LongLogTag")
     fun sendComplexEventOperation(eventOperation: EventOperationItem) {
 
-        sendComplexEventOperationDisposable?.let {
-            compositeDisposable.remove(it)
-        }
-
-        eventOperation?.let {
-            Util.eventOperationQueue.addLast(eventOperation.subId)
-        }
+        Util.eventOperationQueue.addLast(eventOperation.subId)
 
         val opId = eventOperation.subId
 
@@ -1056,7 +1036,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DATE_TIME_START_TIMER] = dateTimeStartTimer.toString()
         map[QUERY_PARAM_COMMENT] = comment
 
-        sendComplexEventOperationDisposable = ApiFactory.apiService.updateEvent(map)
+        val sendComplexEventOperationDisposable = ApiFactory.apiService.updateEvent(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1080,9 +1060,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_COMPLEX_EVENT_OPERATION", it.message.toString())
                 })
-        sendComplexEventOperationDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendComplexEventOperationDisposable)
     }
 
     /**
@@ -1091,13 +1069,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEventOperation(eventOperation: EventOperationItem) {
 
-        sendEventOperationDisposable?.let {
-            compositeDisposable.remove(it)
-        }
-
-        eventOperation?.let {
-            Util.eventOperationQueue.addLast(eventOperation.subId)
-        }
+        Util.eventOperationQueue.addLast(eventOperation.subId)
 
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
@@ -1109,7 +1081,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_COMPLETED] = eventOperation.completed.toString()
         map[QUERY_PARAM_COMPLETED_USER_ID] = eventOperation.completedUserId.toString()
 
-        sendEventOperationDisposable = ApiFactory.apiService.addOperation(map)
+        val sendEventOperationDisposable = ApiFactory.apiService.addOperation(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1133,9 +1105,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_EVENT_OPERATION", it.message.toString())
                 })
-        sendEventOperationDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendEventOperationDisposable)
     }
 
     @SuppressLint("LongLogTag")
@@ -1157,9 +1127,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEventOperationControl(operControl: OperControlItem) {
 
-        sendOperControlDisposable?.let {
-            compositeDisposable.remove(it)
-        }
+        Util.eventOperationControlQueue.addLast(operControl.id)
 
         val jsonObject =
             getOperControlJSON(operControl.eventId, operControl.opId, operControl.equipId)
@@ -1171,7 +1139,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map.put(QUERY_PARAM_OP_ID, jsonObject["opId"].toString())
 
         // отправка полей операционного контроля на сервер ЦНО
-        sendOperControlDisposable = ApiFactory.apiService.addOperControlFact(map)
+        val sendOperControlDisposable = ApiFactory.apiService.addOperControlFact(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1195,9 +1163,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_OPER_CONTROL", it.message.toString())
                 })
-        sendOperControlDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendOperControlDisposable)
     }
 
     @SuppressLint("LongLogTag")
@@ -1309,13 +1275,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEventPhoto(eventPhoto: EventPhotoItem) {
 
-        sendEventPhotoDisposable?.let {
-            compositeDisposable.remove(it)
+        eventPhoto.id?.let {
+            Util.eventPhotoQueue.addLast(it)
         }
 
         val screen = ImageUtil.getBase64ScreenFromUri(
             getApplication<Application>().applicationContext,
-            eventPhoto.photoUrl
+            eventPhoto.photoUri
         )
 
         val map = mutableMapOf<String, String>()
@@ -1328,7 +1294,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DATETIME] = eventPhoto.datetime.toString()
         map[QUERY_PARAM_USER_ID] = eventPhoto.userId.toString()
 
-        sendEventPhotoDisposable = ApiFactory.apiService.addEventPhoto(map)
+        val sendEventPhotoDisposable = ApiFactory.apiService.addEventPhoto(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1352,13 +1318,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     FirebaseCrashlytics.getInstance().recordException(it)
                     Log.d("MM_SEND_EVENT_PHOTO", it.message.toString())
                 })
-        sendEventPhotoDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendEventPhotoDisposable)
     }
 
     @SuppressLint("LongLogTag")
     private fun setEventPhotoSendedById(id: Long) {
+
+        if (Util.eventPhotoQueue.count() > 100) {
+            Util.eventPhotoQueue.removeFirst()
+        }
+
         Log.d("MM_SET_EVENT_PHOTO_SEND", id.toString())
 
         viewModelScope.launch {
@@ -1377,10 +1346,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Util.requestQueue.addLast(it)
         }
 
-        sendRequestDisposable?.let {
-            compositeDisposable.remove(it)
-        }
-
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_ID] = request.id.toString()
@@ -1393,7 +1358,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DISCIPLINE_ID] = request.discipline.toString()
         map[QUERY_PARAM_OPERATION_TYPE] = request.operationType.toString()
 
-        sendRequestDisposable = ApiFactory.apiService.addRequest(map)
+        val sendRequestDisposable = ApiFactory.apiService.addRequest(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1413,9 +1378,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }, {
                 Log.d("MM_SEND_REQUEST", it.message.toString())
             })
-        sendRequestDisposable?.let {
-            compositeDisposable.add(it)
-        }
+
+        compositeDisposable.add(sendRequestDisposable)
     }
 
     /**
@@ -1451,10 +1415,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Util.requestPhoto.addLast(it)
         }
 
-        sendRequestPhotoDisposable?.let {
-            compositeDisposable.remove(it)
-        }
-
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_ID] = requestPhoto.id.toString()
@@ -1462,7 +1422,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_REQUEST_PHOTO] = requestPhoto.photo.toString()
         map[QUERY_PARAM_DATETIME] = requestPhoto.dateTime.toString()
 
-        sendRequestPhotoDisposable = ApiFactory.apiService.addRequestPhoto(map)
+        val sendRequestPhotoDisposable = ApiFactory.apiService.addRequestPhoto(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1482,9 +1442,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }, {
                 Log.d("MM_SEND_REQUEST_PHOTO", it.message.toString())
             })
-        sendRequestPhotoDisposable?.let {
-            compositeDisposable.add(it)
-        }
+        compositeDisposable.add(sendRequestPhotoDisposable)
     }
 
     /**
@@ -1515,10 +1473,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Util.equipInfoQueue.addLast(it)
         }
 
-        sendEquipInfoDisposable?.let {
-            compositeDisposable.remove(it)
-        }
-
         val map = mutableMapOf<String, String>()
         map[QUERY_PARAM_USER_ID] = (Util.authUser?.userId).toString()
         map[QUERY_PARAM_ID] = equipInfo.id.toString()
@@ -1527,7 +1481,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_PRIORITY] = equipInfo.priority.toString()
         map[QUERY_PARAM_DATETIME] = equipInfo.dateTime.toString()
 
-        sendEquipInfoDisposable = ApiFactory.apiService.addEquipInfo(map)
+        val sendEquipInfoDisposable = ApiFactory.apiService.addEquipInfo(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
             }
@@ -1550,9 +1504,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }, {
                 Log.d("MM_SEND_EQUIP_INFO", it.message.toString())
             })
-        sendEquipInfoDisposable?.let {
-            compositeDisposable.add(it)
-        }
+
+        compositeDisposable.add(sendEquipInfoDisposable)
     }
 
     /**

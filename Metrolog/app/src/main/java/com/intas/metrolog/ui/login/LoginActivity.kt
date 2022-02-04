@@ -35,11 +35,9 @@ import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.ChangeLogXmlParser
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.Util.Companion.PERMISSION_REQUEST_CODE
+import com.intas.metrolog.util.Util.PERMISSION_REQUEST_CODE
 import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -219,7 +217,7 @@ class LoginActivity : AppCompatActivity() {
             whatsNew.titleText = "Что нового в ${BuildConfig.VERSION_NAME}?"
             whatsNew.buttonText = "Понятно"
             whatsNew.buttonBackground = ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            whatsNew.buttonTextColor = ContextCompat.getColor(this, R.color.md_white_1000)
+            whatsNew.buttonTextColor = ContextCompat.getColor(this, R.color.md_white)
             whatsNew.itemTitleColor = ContextCompat.getColor(this, R.color.colorAccent)
             whatsNew.itemContentColor = Color.parseColor("#808080")
 

@@ -5,7 +5,9 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
 import android.graphics.Color
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
@@ -262,7 +264,7 @@ class SettingsActivity : AppCompatActivity() {
                     whatsNew.buttonBackground =
                         ContextCompat.getColor(requireActivity(), R.color.colorPrimaryDark)
                     whatsNew.buttonTextColor =
-                        ContextCompat.getColor(requireActivity(), R.color.md_white_1000)
+                        ContextCompat.getColor(requireActivity(), R.color.md_white)
                     whatsNew.itemTitleColor =
                         ContextCompat.getColor(requireActivity(), R.color.colorAccent)
                     whatsNew.itemContentColor = Color.parseColor("#808080")

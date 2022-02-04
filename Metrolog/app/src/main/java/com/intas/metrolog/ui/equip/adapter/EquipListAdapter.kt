@@ -46,7 +46,7 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
             holder.equipTagTextView.text = equipItem.equipTag
             holder.equipTagTextView.setBackgroundResource(R.drawable.rounded_corner_area_white)
             holder.equipTagTextView.background
-                .setTint(ContextCompat.getColor(context, R.color.md_white_1000))
+                .setTint(ContextCompat.getColor(context, R.color.md_white))
             holder.equipTagTextView.setTextColor(
                 ContextCompat.getColor(
                     context,

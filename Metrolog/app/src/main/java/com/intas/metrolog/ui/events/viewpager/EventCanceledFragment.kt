@@ -98,7 +98,7 @@ class EventCanceledFragment : Fragment() {
 
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventCanceledFragment->onEventClickListener", it)
-            startActivity(OperationActivity.newIntent(requireContext(), it.opId))
+            startActivity(OperationActivity.newIntent(requireContext(), it.opId, false))
         }
     }
 

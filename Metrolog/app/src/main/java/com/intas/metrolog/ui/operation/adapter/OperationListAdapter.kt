@@ -18,6 +18,7 @@ class OperationListAdapter : ListAdapter<EventOperationItem, OperationItemViewHo
     lateinit var db: AppDatabase
     lateinit var context: Context
     var onItemClickListener: ((EventOperationItem) -> Unit)? = null
+    var onSwiped: ((EventOperationItem) -> Unit)? = null
 
     companion object {
         const val MAX_POOL_SIZE = 15
@@ -50,30 +51,6 @@ class OperationListAdapter : ListAdapter<EventOperationItem, OperationItemViewHo
             holder.completedDateTimeTextView.visibility = View.VISIBLE
             holder.completedDateTimeLabelTextView.visibility = View.VISIBLE
             holder.completedUserLabelTextView.visibility = View.VISIBLE
-            holder.completedUserLabelTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_white_1000
-                )
-            )
-            holder.completedUserTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_grey_300
-                )
-            )
-            holder.completedDateTimeLabelTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_white_1000
-                )
-            )
-            holder.completedDateTimeTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_grey_300
-                )
-            )
 
             val completedUser = db.userDao().getUserById(operationItem.completedUserId.toInt())
 
@@ -82,34 +59,10 @@ class OperationListAdapter : ListAdapter<EventOperationItem, OperationItemViewHo
                 operationItem.dateEnd
             )
 
-            holder.checkListNameTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_white_1000
-                )
-            )
-            holder.equipInfoTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_grey_300
-                )
-            )
-            holder.manHourNormLabelTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_white_1000
-                )
-            )
-            holder.manHourNormTextView.setTextColor(
-                ContextCompat.getColor(
-                    context,
-                    R.color.md_grey_300
-                )
-            )
         } else {
             holder.checkListCardView.strokeColor = ContextCompat.getColor(
                 context,
-                R.color.md_white_1000
+                R.color.md_white
             )
         }
 
@@ -126,6 +79,13 @@ class OperationListAdapter : ListAdapter<EventOperationItem, OperationItemViewHo
         holder.itemView.setOnClickListener {
             onItemClickListener?.invoke(operationItem)
         }
+    }
+
+    fun onItemDismiss(position: Int) {
+
+        val eventIOperationItem = getItem(position)
+        onSwiped?.invoke(eventIOperationItem)
+        notifyItemRemoved(position)
     }
 
     override fun onViewRecycled(holder: OperationItemViewHolder) {

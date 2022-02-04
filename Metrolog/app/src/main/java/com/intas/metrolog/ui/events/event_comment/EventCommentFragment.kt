@@ -1,8 +1,8 @@
-package com.intas.metrolog.ui.equip_document
+package com.intas.metrolog.ui.events.event_comment
 
 import android.Manifest
+import android.app.Dialog
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,28 +10,26 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.MenuItem
+import android.view.LayoutInflater
 import android.view.View
-import android.widget.AutoCompleteTextView
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.BuildConfig
 import com.intas.metrolog.R
-import com.intas.metrolog.databinding.ActivityEquipDocumentBinding
-import com.intas.metrolog.pojo.document_type.DocumentType
-import com.intas.metrolog.pojo.equip.EquipDocument
-import com.intas.metrolog.pojo.equip.EquipItem
+import com.intas.metrolog.databinding.FragmentEventCommentBinding
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
+import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
 import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
-import com.intas.metrolog.ui.equip_document.adapter.DocumentTypeAdapter
 import com.intas.metrolog.ui.equip_document.adapter.ImageSliderViewAdapter
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.Util.CAMERA_CAPTURE
-import com.intas.metrolog.util.Util.GALLERY_REQUEST
-import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import com.intas.metrolog.util.ViewUtil
 import com.yalantis.ucrop.UCrop
 import java.io.File
@@ -39,22 +37,19 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
-class EquipDocumentActivity : AppCompatActivity() {
+class EventCommentFragment : BottomSheetDialogFragment() {
 
-    private val binding by lazy {
-        ActivityEquipDocumentBinding.inflate(layoutInflater)
-    }
-
-    private val viewModel by lazy {
-        ViewModelProvider(this)[EquipDocumentViewModel::class.java]
-    }
+    var onSaveCommentListener: ((String, Int) -> Unit)? = null
 
     private lateinit var imageSliderAdapter: ImageSliderViewAdapter
 
-    private lateinit var documentTypeAdapter: DocumentTypeAdapter
-
-    private lateinit var equipItem: EquipItem
-    private var selectDocumentType: DocumentType? = null
+    private var eventCommentMode: String = MODE_UNKNOWN
+    private var eventId: Long = 0
+    private var eventStatus: Int = 0
+    private val modesArray = arrayOf(
+        MODE_COMMENT_WITH_IMAGE,
+        MODE_COMMENT_WITHOUT_IMAGE
+    )
     private var photoURI: Uri? = null
     private var photoPath: String? = null
     private var uriList: List<Uri>? = null
@@ -62,57 +57,56 @@ class EquipDocumentActivity : AppCompatActivity() {
 
     private var cropImagePosition = 0
 
+    private val binding by lazy {
+        FragmentEventCommentBinding.inflate(layoutInflater)
+    }
+
+    private val viewModel by lazy {
+        ViewModelProvider(this)[EventCommentViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(binding.root)
+        parseArgs()
+    }
 
-        this.title = "Документ оборудования"
-        val intent = intent
-        if (intent != null) {
-            equipItem = intent.getParcelableExtra<EquipItem>(EXTRA_EQUIP_ITEM) as EquipItem
-        }
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        return binding.root
+    }
 
-        setSupportActionBar(binding.equipDocumentToolbar)
-        binding.equipDocumentToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.md_black))
-        binding.equipDocumentToolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.md_white))
-        supportActionBar?.let {
-            it.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24dp)
-            it.setDisplayHomeAsUpEnabled(true)
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        viewModel.documentTypeList.observe(this, {
-            //Journal.insertJournal("AddTaskFragment->fieldList", list = it)
-            documentTypeAdapter =
-                DocumentTypeAdapter(this, R.layout.drop_down_list_item, it)
-            (binding.equipDocumentTypeSpinner.editText as? AutoCompleteTextView)?.setAdapter(
-                documentTypeAdapter
-            )
-        })
+        checkMode()
+        fillComment()
 
-        configureDocumentTypeSpinner()
-
-        binding.addEquipDocumentImageFab.setOnClickListener {
+        binding.eventCommentImageFab.setOnClickListener {
             showAttachImageFab()
         }
 
-        binding.equipDocumentPhotoButton.setOnClickListener {
+        binding.eventCommentPhotoButton.setOnClickListener {
             createPhoto()
             showAttachImageFab()
         }
 
-        binding.equipDocumentChoosePhotoButton.setOnClickListener {
+        binding.eventCommentChoosePhotoButton.setOnClickListener {
             selectImage()
             showAttachImageFab()
         }
 
-        binding.equipDocumentSavePdfButton.setOnClickListener {
-            generatePDF()
+        binding.saveEventCommentButton.setOnClickListener {
+            saveComment()
         }
 
         viewModel.uriList.observe(this) {
+            binding.attachImageView.isVisible = it.isEmpty()
             uriList = it
             imageSliderAdapter = ImageSliderViewAdapter(it)
-            binding.equipDocumentImageSliderView.setSliderAdapter(imageSliderAdapter)
+            binding.eventCommentImageSliderView.setSliderAdapter(imageSliderAdapter)
 
             imageSliderAdapter.onCropImageListener = {
                 editImage()
@@ -124,110 +118,140 @@ class EquipDocumentActivity : AppCompatActivity() {
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-
-            android.R.id.home -> {
-                onBackPressed()
-            }
-        }
-        return super.onOptionsItemSelected(item)
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = BottomSheetDialog(requireContext(), theme)
+        dialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        return dialog
     }
 
-    private fun generatePDF() {
+    private fun saveComment() {
 
-        if (selectDocumentType == null) {
-            Toast.makeText(this, "Необходимо выбрать тип документа", Toast.LENGTH_LONG).show()
+        val comment = binding.eventCommentTextInputLayout.editText?.text.toString()
+        if (comment.isEmpty()) {
+            showToast(getString(R.string.event_comment_add_comment_error_message))
+            return
         }
 
-        Util.safeLet(uriList, selectDocumentType) { uriList, selectDocumentType ->
-            viewModel.generatePDF(uriList, equipItem.equipId, selectDocumentType)
+        if (eventCommentMode.equals(MODE_COMMENT_WITH_IMAGE) && uriList.isNullOrEmpty()) {
+            showToast(getString(R.string.event_comment_add_comment_empty_image_list_error_message))
+            return
+        }
+        uriList?.let {
+            viewModel.saveEventPhoto(it, eventId)
+        }
+        onSaveCommentListener?.invoke(comment, eventStatus)
+        closeFragment()
+    }
+
+    private fun fillComment() {
+        var textStatus = ""
+        when(eventStatus) {
+            COMPLETED ->  textStatus = "Выполнено"
+            CANCELED -> textStatus = "Отменено"
+            else -> textStatus = ""
+        }
+        binding.eventCommentTextInputLayout.editText?.setText(textStatus)
+    }
+
+    private fun parseArgs() {
+        val args = requireArguments()
+        if (!args.containsKey(EVENT_COMMENT_MODE)) {
+            return
         }
 
-        viewModel.onSavePDFCompleted = {
-            showPDFViewDialog(it)
+        val mode = args.getString(EVENT_COMMENT_MODE)
+        if (!modesArray.contains(mode)) {
+            return
+        }
+        mode?.let { eventCommentMode = it }
+
+        if (eventCommentMode.equals(MODE_COMMENT_WITHOUT_IMAGE) || eventCommentMode.equals(MODE_COMMENT_WITH_IMAGE)) {
+            if (!args.containsKey(EVENT_ID) || !args.containsKey(EVENT_STATUS)) {
+                return
+            }
+            eventId = args.getLong(EVENT_ID)
+            eventStatus = args.getInt(EVENT_STATUS)
         }
     }
 
-    private fun showPDFViewDialog(equipDocument: EquipDocument) {
+    private fun checkMode() {
+        when (eventCommentMode) {
+            MODE_COMMENT_WITH_IMAGE -> {
+                binding.imageListCardView.visibility = View.VISIBLE
+            }
 
-        val dialogSheet = BottomDialogSheet.newInstance(
-            getString(R.string.equip_document_activity_pdf_view_dialog_title),
-            String.format(
-                getString(R.string.equip_document_activity_pdf_view_dialog_text),
-                selectDocumentType?.name,
-                equipItem.equipName
-            ),
-            getString(R.string.equip_document_activity_pdf_view_dialog_positive_button),
-            getString(R.string.pequip_document_activity_pdf_view_dialog_negative_button)
-        )
-        dialogSheet.isCancelable = false
-        dialogSheet.show(supportFragmentManager, Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG)
-        dialogSheet.onPositiveClickListener = {
-            try {
-
-                equipDocument.filePath?.let { path ->
-                    viewPDF(path)
-                }
-
-                clearAll()
-            } catch (e: Exception) {
-                showToast("При открытии файла произошла ошибка. " + e.message)
-                FirebaseCrashlytics.getInstance().recordException(e)
+            MODE_COMMENT_WITHOUT_IMAGE -> {
+                binding.imageListCardView.visibility = View.GONE
             }
         }
+    }
 
-        dialogSheet.onNegativeClickListener = {
-            clearAll()
+    private fun closeFragment() {
+        val fragment =
+            parentFragmentManager.findFragmentByTag(EVENT_COMMENT_FRAGMENT_TAG)
+        fragment?.let {
+            parentFragmentManager.beginTransaction().remove(it).commit()
+        }
+    }
+
+    private fun showAttachImageFab() {
+        imageFabVisible = !imageFabVisible
+
+        binding.eventCommentPhotoButton.visibility = View.INVISIBLE
+        binding.eventCommentChoosePhotoButton.visibility = View.INVISIBLE
+
+        if (imageFabVisible) {
+            binding.eventCommentPhotoButton.visibility = View.VISIBLE
+            binding.eventCommentChoosePhotoButton.visibility = View.VISIBLE
         }
     }
 
     private fun editImage() {
 
-        ViewUtil.hideKeyboard(this)
+        ViewUtil.hideKeyboard(requireActivity())
 
         try {
-            val timeStamp = SimpleDateFormat(YYYYMMDD_HHMMSS, Locale.getDefault()).format(Date())
+            val timeStamp = SimpleDateFormat(Util.YYYYMMDD_HHMMSS, Locale.getDefault()).format(Date())
             val imageFileName = "JPEG_" + timeStamp + "_"
-            val storageDir = applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             val image = File.createTempFile(imageFileName, ".jpg", storageDir)
 
             //Сохраняем позицию редактируемого файла для передачи ее в активити
-            cropImagePosition = binding.equipDocumentImageSliderView.getCurrentPagePosition()
+            cropImagePosition = binding.eventCommentImageSliderView.getCurrentPagePosition()
 
             val options = UCrop.Options()
             options.setToolbarTitle("Редактирование")
             options.setLogoColor(
                 ContextCompat.getColor(
-                    this,
+                    requireContext(),
                     R.color.design_default_color_background
                 )
             )
-            options.setCropFrameColor(ContextCompat.getColor(this, R.color.colorPrimary))
-            options.setActiveControlsWidgetColor(ContextCompat.getColor(this, R.color.colorPrimary))
-            options.setStatusBarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark))
+            options.setCropFrameColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+            options.setActiveControlsWidgetColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
+            options.setStatusBarColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
             options.setToolbarColor(
                 ContextCompat.getColor(
-                    this,
+                    requireContext(),
                     R.color.design_default_color_background
                 )
             )
             options.setRootViewBackgroundColor(
                 ContextCompat.getColor(
-                    this,
+                    requireContext(),
                     R.color.design_default_color_background
                 )
             )
             options.setCropFrameColor(
                 ContextCompat.getColor(
-                    this,
+                    requireContext(),
                     R.color.design_default_color_background
                 )
             )
             uriList?.let {
                 UCrop.of(it[cropImagePosition], Uri.fromFile(image))
                     .withOptions(options)
-                    .start(this)
+                    .start(requireActivity(), this)
             }
 
         } catch (e: java.lang.Exception) {
@@ -238,7 +262,7 @@ class EquipDocumentActivity : AppCompatActivity() {
 
     private fun deleteImage() {
 
-        binding.equipDocumentImageSliderView.sliderAdapter?.let {
+        binding.eventCommentImageSliderView.sliderAdapter?.let {
 
             if (it.count == 0) {
                 return
@@ -250,9 +274,9 @@ class EquipDocumentActivity : AppCompatActivity() {
                 getString(R.string.equip_document_activity_delete_image_dialog_positive_button),
                 getString(R.string.pequip_document_activity_delete_image_dialog_negative_button)
             )
-            dialogSheet.show(supportFragmentManager, Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG)
+            dialogSheet.show(requireActivity().supportFragmentManager, Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG)
             dialogSheet.onPositiveClickListener = {
-                val index = binding.equipDocumentImageSliderView.getCurrentPagePosition()
+                val index = binding.eventCommentImageSliderView.getCurrentPagePosition()
                 viewModel.deleteImage(index)
             }
         }
@@ -268,7 +292,7 @@ class EquipDocumentActivity : AppCompatActivity() {
         intent.flags =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         intent.type = "image/*"
-        startActivityForResult(intent, GALLERY_REQUEST)
+        startActivityForResult(intent, Util.GALLERY_REQUEST)
     }
 
     /**
@@ -277,7 +301,7 @@ class EquipDocumentActivity : AppCompatActivity() {
     private fun createPhoto() {
         try {
             if (ContextCompat.checkSelfPermission(
-                    this,
+                    requireContext(),
                     Manifest.permission.CAMERA
                 ) == PackageManager.PERMISSION_DENIED
             ) {
@@ -285,11 +309,11 @@ class EquipDocumentActivity : AppCompatActivity() {
                 return
             }
             if (ContextCompat.checkSelfPermission(
-                    this,
+                    requireContext(),
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_DENIED ||
                 ContextCompat.checkSelfPermission(
-                    this,
+                    requireContext(),
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_DENIED
             ) {
@@ -309,7 +333,7 @@ class EquipDocumentActivity : AppCompatActivity() {
 
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         // Убедитесь, что есть активность камеры для обработки намерения
-        if (intent.resolveActivity(this.packageManager) != null) {
+        if (intent.resolveActivity(requireContext().packageManager) != null) {
             // Создайте файл, в котором должно быть фото
             var photoFile: File? = null
             try {
@@ -321,12 +345,12 @@ class EquipDocumentActivity : AppCompatActivity() {
             // Продолжить, только если файл был успешно создан
             if (photoFile != null) {
                 photoURI = FileProvider.getUriForFile(
-                    this,
+                    requireContext(),
                     "${BuildConfig.APPLICATION_ID}.provider",
                     photoFile
                 )
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                startActivityForResult(intent, CAMERA_CAPTURE)
+                startActivityForResult(intent, Util.CAMERA_CAPTURE)
             }
         }
     }
@@ -339,28 +363,14 @@ class EquipDocumentActivity : AppCompatActivity() {
     @Throws(IOException::class)
     private fun createImageFile(): File {
 
-        val timeStamp = SimpleDateFormat(YYYYMMDD_HHMMSS, Locale.getDefault()).format(Date())
+        val timeStamp = SimpleDateFormat(Util.YYYYMMDD_HHMMSS, Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_" + timeStamp + "_"
-        val storageDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        val storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         val image = File.createTempFile(imageFileName, ".jpg", storageDir)
 
         // Сохранить файл: путь для использования с намерениями ACTION_VIEW
         photoPath = image.absolutePath
         return image
-    }
-
-    private fun showToast(text: String) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun configureDocumentTypeSpinner() {
-        binding.equipDocumentTypeList.setOnItemClickListener { parent, view, position, id ->
-            selectDocumentType = documentTypeAdapter?.getItem(position)
-            selectDocumentType?.let {
-                binding.equipDocumentTypeList.setText(it.name)
-            }
-            ViewUtil.hideKeyboard(this)
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -374,7 +384,7 @@ class EquipDocumentActivity : AppCompatActivity() {
                     data?.let { intentData ->
                         val imageUri = UCrop.getOutput(intentData)
                         try {
-                            imageBitmap = MediaStore.Images.Media.getBitmap(this.contentResolver, imageUri)
+                            imageBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
                         } catch (e: IOException) {
                             FirebaseCrashlytics.getInstance().recordException(e)
                         }
@@ -389,17 +399,17 @@ class EquipDocumentActivity : AppCompatActivity() {
                         showToast("Ошибка при редактировании изображения - " + cropError?.message)
                     }
                 }
-                CAMERA_CAPTURE -> {
+                Util.CAMERA_CAPTURE -> {
                     try {
                         imageBitmap =
-                            MediaStore.Images.Media.getBitmap(contentResolver, photoURI)
+                            MediaStore.Images.Media.getBitmap(requireContext().contentResolver, photoURI)
                         photoURI?.let { viewModel.addImage(it) }
 
                     } catch (e: IOException) {
                         //FirebaseCrashlytics.getInstance().recordException(e);
                     }
                 }
-                GALLERY_REQUEST -> {
+                Util.GALLERY_REQUEST -> {
                     data?.let {
                         photoURI = data.data
                         photoURI?.let { viewModel.addImage(it) }
@@ -409,44 +419,36 @@ class EquipDocumentActivity : AppCompatActivity() {
         }
     }
 
-    private fun viewPDF(filepath: String) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        val file = File(filepath)
-        val localUri =
-            FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.provider", file)
-        intent.setDataAndType(localUri, "application/pdf")
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        startActivity(intent)
-    }
-
-    private fun clearAll() {
-        uriList = emptyList()
-        imageSliderAdapter = ImageSliderViewAdapter(emptyList())
-        binding.equipDocumentImageSliderView.setSliderAdapter(imageSliderAdapter)
-        binding.equipDocumentTypeList.text.clear()
-        selectDocumentType = null
-    }
-
-    private fun showAttachImageFab() {
-        imageFabVisible = !imageFabVisible
-
-        binding.equipDocumentPhotoButton.visibility = View.INVISIBLE
-        binding.equipDocumentChoosePhotoButton.visibility = View.INVISIBLE
-
-        if (imageFabVisible) {
-            binding.equipDocumentPhotoButton.visibility = View.VISIBLE
-            binding.equipDocumentChoosePhotoButton.visibility = View.VISIBLE
-        }
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
     companion object {
+        const val EVENT_COMMENT_FRAGMENT_TAG = "event_comment_fragment_tag"
 
-        private const val EXTRA_EQUIP_ITEM = "equip_item"
+        private const val MODE_UNKNOWN = "unknown_mode"
+        private const val EVENT_COMMENT_MODE = "event_comment_mode"
+        private const val MODE_COMMENT_WITH_IMAGE = "mode_comment_with_image"
+        private const val MODE_COMMENT_WITHOUT_IMAGE = "mode_comment_without_image"
 
-        fun newIntent(context: Context, equipItem: EquipItem): Intent {
-            val intent = Intent(context, EquipDocumentActivity::class.java)
-            intent.putExtra(EXTRA_EQUIP_ITEM, equipItem)
-            return intent
+        private const val EVENT_ID = "event_id"
+        private const val EVENT_STATUS = "event_status"
+
+        fun newInstanceWithImage(eventId: Long, eventStatus: Int) = EventCommentFragment().apply {
+            arguments = Bundle().apply {
+                putString(EVENT_COMMENT_MODE, MODE_COMMENT_WITH_IMAGE)
+                putLong(EVENT_ID, eventId)
+                putInt(EVENT_STATUS, eventStatus)
+            }
         }
+
+        fun newInstanceWithoutImage(eventId: Long, eventStatus: Int) =
+            EventCommentFragment().apply {
+                arguments = Bundle().apply {
+                    putString(EVENT_COMMENT_MODE, MODE_COMMENT_WITHOUT_IMAGE)
+                    putLong(EVENT_ID, eventId)
+                    putInt(EVENT_STATUS, eventStatus)
+                }
+            }
     }
 }

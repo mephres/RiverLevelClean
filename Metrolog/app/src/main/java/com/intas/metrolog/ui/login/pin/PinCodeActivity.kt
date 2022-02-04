@@ -27,9 +27,9 @@ import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.login.LoginActivity
 import com.intas.metrolog.ui.main.MainActivity
 import com.intas.metrolog.util.*
-import com.intas.metrolog.util.Util.Companion.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
-import com.intas.metrolog.util.Util.Companion.PIN_COUNT_OF_ATTEMPTS
-import com.intas.metrolog.util.Util.Companion.PIN_COUNT_OF_DIGITS
+import com.intas.metrolog.util.Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
+import com.intas.metrolog.util.Util.PIN_COUNT_OF_ATTEMPTS
+import com.intas.metrolog.util.Util.PIN_COUNT_OF_DIGITS
 import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
 
@@ -181,7 +181,7 @@ class PinCodeActivity : AppCompatActivity() {
             whatsNew.titleText = "Что нового в ${BuildConfig.VERSION_NAME}?"
             whatsNew.buttonText = "Понятно"
             whatsNew.buttonBackground = ContextCompat.getColor(this, R.color.colorPrimaryDark)
-            whatsNew.buttonTextColor = ContextCompat.getColor(this, R.color.md_white_1000)
+            whatsNew.buttonTextColor = ContextCompat.getColor(this, R.color.md_white)
             whatsNew.itemTitleColor = ContextCompat.getColor(this, R.color.colorAccent)
             whatsNew.itemContentColor = Color.parseColor("#808080")
 
@@ -518,14 +518,9 @@ class PinCodeActivity : AppCompatActivity() {
         }, 2000)
     }
 
-    // удаляем всю информацию о пользователе из храилища
+    // удаляем всю информацию о пользователе из хранилища
     private fun eraseInfoUser() {
-
-        AppPreferences.pinCodeIsSave = false
-        AppPreferences.savedPinCode = null
-        AppPreferences.biometricSupport = false
-        AppPreferences.fingerPrintIsSave = false
-        AppPreferences.authUser = null
+        AppPreferences.clear()
     }
 
     private fun showToast(text: String) {

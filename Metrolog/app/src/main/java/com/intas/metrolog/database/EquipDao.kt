@@ -32,12 +32,15 @@ interface EquipDao {
     @Query("SELECT * FROM equip WHERE equipId = :id")
     fun getEquipItemById(id: Long): EquipItem?
 
+    @Query("SELECT * FROM equip WHERE equipId = :id")
+    fun getEquipItemByIdLD(id: Long): LiveData<EquipItem>
+
     @Query("SELECT * FROM equip WHERE equipRFID = :equipRFID")
     fun getEquipItemByRFID(equipRFID: String): Single<EquipItem>
 
     @Query("SELECT * FROM equip WHERE equipRFID = :equipRFID")
     fun getEquipByRFID(equipRFID: String): Single<List<EquipItem>>
 
-    @Query("SELECT * FROM equip WHERE isSendRFID = 0 OR isSendGeo = 0 ORDER BY equipId ASC LIMIT 1")
+    @Query("SELECT * FROM equip WHERE isSendRFID = 0 OR isSendGeo = 0 ORDER BY equipId")
     fun getEquipNotSended(): LiveData<List<EquipItem>>
 }

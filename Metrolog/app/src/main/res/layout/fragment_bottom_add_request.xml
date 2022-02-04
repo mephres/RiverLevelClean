@@ -257,7 +257,7 @@
                             app:layout_constraintEnd_toStartOf="@id/add_request_show_gallery_fab"
                             app:layout_constraintTop_toTopOf="@+id/add_request_show_gallery_fab"
                             app:srcCompat="@drawable/ic_baseline_photo_camera_24"
-                            app:tint="@color/md_white_1000" />
+                            app:tint="@color/md_white" />
 
                         <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/add_request_show_gallery_fab"
@@ -271,7 +271,7 @@
                             app:layout_constraintEnd_toStartOf="@id/addRequestImageFab"
                             app:layout_constraintTop_toTopOf="@+id/addRequestImageFab"
                             app:srcCompat="@drawable/ic_baseline_image_24"
-                            app:tint="@color/md_white_1000" />
+                            app:tint="@color/md_white" />
 
                         <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/addRequestImageFab"
@@ -284,7 +284,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:srcCompat="@drawable/ic_baseline_attach_file_24"
-                            app:tint="@color/md_white_1000" />
+                            app:tint="@color/md_white" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

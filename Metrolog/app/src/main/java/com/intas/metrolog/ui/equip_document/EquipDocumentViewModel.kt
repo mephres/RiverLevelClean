@@ -18,7 +18,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
-import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
+import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import java.io.File
@@ -89,7 +89,7 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
                     val canvas = page.canvas
 
                     val paint = Paint()
-                    paint.color = ContextCompat.getColor(context, R.color.md_white_1000)
+                    paint.color = ContextCompat.getColor(context, R.color.md_white)
                     canvas.drawPaint(paint)
 
                     val bitmap = Bitmap.createScaledBitmap(imageBitmap, tempWidth, tempHeight, true)

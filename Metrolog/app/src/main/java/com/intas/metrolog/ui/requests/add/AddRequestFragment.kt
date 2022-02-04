@@ -17,7 +17,6 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.isVisible
-import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -41,9 +40,8 @@ import com.intas.metrolog.ui.requests.add.adapter.OperationTypeSpinnerAdapter
 import com.intas.metrolog.ui.requests.add.adapter.PrioritySpinnerAdapter
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.Util.Companion.YYYYMMDD_HHMMSS
+import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import com.intas.metrolog.util.ViewUtil
-import com.intas.metrolog.util.loadImage
 import com.yalantis.ucrop.UCrop
 import java.io.File
 import java.io.IOException
@@ -150,7 +148,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
                         val imageUri = UCrop.getOutput(intentData)
                         try {
-                            imageUri?.let{
+                            imageUri?.let {
                                 viewModel.replaceImage(cropImagePosition, imageUri)
                             }
                         } catch (e: IOException) {
@@ -231,9 +229,24 @@ class AddRequestFragment : BottomSheetDialogFragment() {
                     R.color.design_default_color_background
                 )
             )
-            options.setCropFrameColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-            options.setActiveControlsWidgetColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary))
-            options.setStatusBarColor(ContextCompat.getColor(requireContext(), R.color.colorPrimaryDark))
+            options.setCropFrameColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorPrimary
+                )
+            )
+            options.setActiveControlsWidgetColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorPrimary
+                )
+            )
+            options.setStatusBarColor(
+                ContextCompat.getColor(
+                    requireContext(),
+                    R.color.colorPrimaryDark
+                )
+            )
             options.setToolbarColor(
                 ContextCompat.getColor(
                     requireContext(),
@@ -278,7 +291,10 @@ class AddRequestFragment : BottomSheetDialogFragment() {
                 getString(R.string.equip_document_activity_delete_image_dialog_positive_button),
                 getString(R.string.pequip_document_activity_delete_image_dialog_negative_button)
             )
-            dialogSheet.show(requireActivity().supportFragmentManager, Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG)
+            dialogSheet.show(
+                requireActivity().supportFragmentManager,
+                Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG
+            )
             dialogSheet.onPositiveClickListener = {
                 val index = binding.addRequestImageSliderView.currentPagePosition
                 viewModel.deleteImage(index)
@@ -396,7 +412,9 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             return
         }
 
-        if (!isRequest && binding.addRequestCommentTextInputLayout.editText?.text?.trim().isNullOrEmpty()) {
+        if (!isRequest && binding.addRequestCommentTextInputLayout.editText?.text?.trim()
+                .isNullOrEmpty()
+        ) {
             showToast(getString(R.string.add_equip_info_need_comment_title))
             return
         }
@@ -483,7 +501,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         })
 
         viewModel.category.observe(viewLifecycleOwner, {
-            val categoryList = it.filter { requestTypeArray.contains(it.type)}.toMutableList()
+            val categoryList = it.filter { requestTypeArray.contains(it.type) }.toMutableList()
             categorySpinnerAdapter = if (equip != null) {
                 CategorySpinnerAdapter(
                     requireContext(),
@@ -588,7 +606,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     }
 
     private fun switchIsChecked(): Int {
-        return if(binding.requestTypeSwitch.isChecked) {
+        return if (binding.requestTypeSwitch.isChecked) {
             1
         } else 0
     }
@@ -618,14 +636,14 @@ class AddRequestFragment : BottomSheetDialogFragment() {
     }
 
     private fun checkMode() {
-        when(addRequestMode) {
+        when (addRequestMode) {
             MODE_ADD_REQUEST_WITH_SCAN -> {
                 binding.equipInfoTextView.visibility = View.VISIBLE
                 binding.equipInfoTextView.text = equip?.equipName
             }
 
             MODE_ADD_REQUEST_WITHOUT_SCAN -> {
-                Toast.makeText(requireContext(), getString(R.string.add_request_no_equip_message_title), Toast.LENGTH_SHORT).show()
+                showToast(getString(R.string.add_request_no_equip_message_title))
             }
         }
     }

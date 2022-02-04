@@ -36,6 +36,9 @@ interface EventDao {
         @Query("SELECT * FROM event WHERE opId = :id LIMIT 1")
         fun getEvent(id: Long): EventItem?
 
+        @Query("SELECT * FROM event WHERE opId = :id LIMIT 1")
+        fun getEventLD(id: Long): LiveData<EventItem>
+
         @Query("UPDATE event SET equipRfid = :rfid WHERE equipId = :equipId")
         fun updateEventByRfid(equipId: Long, rfid: String): Int
 }

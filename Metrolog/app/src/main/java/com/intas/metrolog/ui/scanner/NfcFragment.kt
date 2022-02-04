@@ -31,6 +31,8 @@ import com.journeyapps.barcodescanner.camera.CameraSettings
 
 class NfcFragment : BottomSheetDialogFragment() {
 
+    var onRFIDReadListener: ((String) -> Unit)? = null
+
     private var nfcAdapter: NfcAdapter? = null
     private var scannerMode: String = MODE_UNKNOWN
     private var equipSerialNumber: String? = null
@@ -168,7 +170,7 @@ class NfcFragment : BottomSheetDialogFragment() {
      */
     private fun setUI() {
         val colorFrom = ContextCompat.getColor(requireContext(), R.color.colorAccent)
-        val colorTo = ContextCompat.getColor(requireContext(), R.color.md_white_1000)
+        val colorTo = ContextCompat.getColor(requireContext(), R.color.md_white)
         val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom)
         colorAnimation.duration = 3000 // milliseconds
         colorAnimation.repeatCount = 100
@@ -282,7 +284,9 @@ class NfcFragment : BottomSheetDialogFragment() {
                 }
             }
             MODE_SCAN_START_EVENT -> {
-
+                equipSerialNumber?.let {
+                    beginEvent(it)
+                }
             }
             MODE_ADD_TAG_FOR_EQUIP -> {
                 Util.safeLet(equipItem, equipSerialNumber) { equipItem, equipNumber ->
@@ -295,6 +299,11 @@ class NfcFragment : BottomSheetDialogFragment() {
                 }
             }
         }
+    }
+
+    private fun beginEvent(equipNumber: String) {
+        onRFIDReadListener?.invoke(equipNumber)
+        closeFragment()
     }
 
     /**
@@ -377,7 +386,7 @@ class NfcFragment : BottomSheetDialogFragment() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                startActivity(OperationActivity.newIntent(requireContext(), eventList.last().opId))
+                startActivity(OperationActivity.newIntent(requireContext(), eventList.last().opId, false))
             }
             closeFragment()
         }

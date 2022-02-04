@@ -55,6 +55,7 @@ object AppPreferences {
         savedPinCode = null
         biometricSupport = false
         fingerPrintIsSave = false
+        authUser = null
     }
 
     /**
