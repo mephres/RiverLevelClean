@@ -61,16 +61,16 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                         chatItemList.add(chatItem)
                     }
                 }
-            }
-            chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
-            chatItemList.sortByDescending {
-                it.lastMessageDate
-            }
-            chatItemList.forEach {
-                it.notViewedMessageCount = getNotViewedMessagesCount(
-                    it.companion.id,
-                    currentUserId ?: 0
-                )
+                chatItemList.removeAll { chatItem -> chatItemList.any { chatItem.companion == it.companion && it.id > chatItem.id } }
+                chatItemList.sortByDescending {
+                    it.lastMessageDate
+                }
+                chatItemList.forEach {
+                    it.notViewedMessageCount = getNotViewedMessagesCount(
+                        it.companion.id,
+                        currentUserId ?: 0
+                    )
+                }
             }
             delay(100)
             chatItemList
