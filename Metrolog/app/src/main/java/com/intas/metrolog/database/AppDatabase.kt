@@ -34,7 +34,7 @@ import com.intas.metrolog.pojo.userlocation.UserLocation
         EventOperationTypeItem::class, DocumentType::class, EquipInfoPriority::class, EventItem::class,
         EventComment::class, EquipDocument::class, RequestItem::class, EventOperationItem::class,
         OperControlItem::class, FieldItem::class, FieldDictData::class, EventPhotoItem::class,
-        RequestPhoto::class, EventStatus::class],
+        RequestPhoto::class, EventStatus::class, MessageItem::class],
     version = 23, exportSchema = false
 )
 
