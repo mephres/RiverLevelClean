@@ -16,7 +16,7 @@
         android:paddingTop="2dp"
         android:paddingEnd="16dp"
         android:paddingBottom="2dp"
-        android:textColor="@color/md_black_1000"
+        android:textColor="@color/md_black"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -70,7 +70,7 @@
                     android:layout_marginTop="2dp"
                     android:gravity="end"
                     android:padding="0dp"
-                    android:textColor="@color/md_black_1000"
+                    android:textColor="@color/md_black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/forwardedTextMessageImageView"
                     tools:text="hshgfffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" />

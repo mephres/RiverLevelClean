@@ -42,5 +42,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@drawable/ic_baseline_chat_black_24dp"
-        app:tint="@color/md_white_1000" />
+        app:tint="@color/md_white" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,12 +5,12 @@
         android:id="@+id/message_item_action_forward_message"
         android:icon="@drawable/ic_arrow_right_top_black_24dp"
         android:title="@string/chat_item_menu_forward_title"
-        android:iconTint="@color/md_black_1000"
+        android:iconTint="@color/md_black"
         app:showAsAction="always" />
     <item
         android:id="@+id/message_item_action_delete_message"
         android:icon="@drawable/ic_baseline_delete_24"
         android:title="@string/chat_item_menu_delete_title"
-        android:iconTint="@color/md_black_1000"
+        android:iconTint="@color/md_black"
         app:showAsAction="always" />
 </menu>
