@@ -60,12 +60,6 @@ class OperationViewModel(
         timer?.purge()
     }
 
-    fun updateEventStatus(newStatus: Int) {
-        /*_eventItem.value = eventItem.value?.apply {
-            status = newStatus
-        }*/
-    }
-
     fun changeControlButtonVisibleValue() {
         controlButtonClicked.value?.let {
             _controlButtonClicked.value = !it
@@ -90,18 +84,6 @@ class OperationViewModel(
             db.eventOperationDao().updateEventOperation(eventOperationItem)
         }
     }
-
-    private fun getEquip(equipId: Long): EquipItem? {
-        return db.equipDao().getEquipItemById(equipId)
-    }
-
-    /*private fun getEvent() {
-        val item = db.eventDao().getEvent(eventId)
-        item?.let {
-            it.equip = getEquip(it.equipId ?: 0)
-            _eventItem.value = it
-        }
-    }*/
 
     private fun initDefaultValues() {
         _controlButtonClicked.value = false

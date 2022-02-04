@@ -82,8 +82,29 @@ class EventCommentFragment : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         checkMode()
+        initClickListeners()
+        initObservers()
         fillComment()
+    }
 
+    private fun initObservers() {
+        viewModel.uriList.observe(this) {
+            binding.attachImageView.isVisible = it.isEmpty()
+            uriList = it
+            imageSliderAdapter = ImageSliderViewAdapter(it)
+            binding.eventCommentImageSliderView.setSliderAdapter(imageSliderAdapter)
+
+            imageSliderAdapter.onCropImageListener = {
+                editImage()
+            }
+
+            imageSliderAdapter.onDeleteImageListener = {
+                deleteImage()
+            }
+        }
+    }
+
+    private fun initClickListeners() {
         binding.eventCommentImageFab.setOnClickListener {
             showAttachImageFab()
         }
@@ -100,21 +121,6 @@ class EventCommentFragment : BottomSheetDialogFragment() {
 
         binding.saveEventCommentButton.setOnClickListener {
             saveComment()
-        }
-
-        viewModel.uriList.observe(this) {
-            binding.attachImageView.isVisible = it.isEmpty()
-            uriList = it
-            imageSliderAdapter = ImageSliderViewAdapter(it)
-            binding.eventCommentImageSliderView.setSliderAdapter(imageSliderAdapter)
-
-            imageSliderAdapter.onCropImageListener = {
-                editImage()
-            }
-
-            imageSliderAdapter.onDeleteImageListener = {
-                deleteImage()
-            }
         }
     }
 

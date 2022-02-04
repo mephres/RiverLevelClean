@@ -108,45 +108,25 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
             IN_WORK -> {
                 Glide.with(context).load(R.drawable.ic_baseline_play_circle_outline_24dp).into(holder.eventStatusImageView)
                 holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.md_blue_500))
-                /*holder.eventCardView.strokeColor = ContextCompat.getColor(
-                    context,
-                    R.color.md_blue_500
-                )*/
                 holder.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_blue_500))
             }
             PAUSED -> {
                 Glide.with(context).load(R.drawable.ic_baseline_pause_circle_outline_24dp).into(holder.eventStatusImageView)
                 holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorAccent))
-                /*holder.eventCardView.strokeColor = ContextCompat.getColor(
-                    context,
-                    R.color.colorAccent
-                )*/
                 holder.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorAccent))
             }
             COMPLETED -> {
                 Glide.with(context).load(R.drawable.ic_baseline_check_circle_outline_24dp).into(holder.eventStatusImageView)
                 holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.colorPrimary))
-                /*holder.eventCardView.strokeColor = ContextCompat.getColor(
-                    context,
-                    R.color.colorPrimary
-                )*/
                 holder.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimary))
             }
             CANCELED -> {
                 Glide.with(context).load(R.drawable.ic_baseline_block_24dp).into(holder.eventStatusImageView)
                 holder.eventStatusImageView.setColorFilter(ContextCompat.getColor(context, R.color.md_red_600))
-                /*holder.eventCardView.strokeColor = ContextCompat.getColor(
-                    context,
-                    R.color.md_red_600
-                )*/
                 holder.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_red_600))
             }
             else -> {
                 holder.eventStatusImageView.visibility = View.GONE
-                /*holder.eventCardView.strokeColor = ContextCompat.getColor(
-                    context,
-                    R.color.md_white
-                )*/
                 holder.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(context, R.color.md_white))
             }
         }

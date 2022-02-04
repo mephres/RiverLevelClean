@@ -280,6 +280,8 @@ class OperationActivity : AppCompatActivity() {
                 }
                 IN_WORK -> {
                     binding.stopEventFab.show()
+                    binding.stopEventTextView.text =
+                        getString(R.string.operation_activity_pause_event_button_work_state)
                     binding.stopEventTextView.visibility = View.VISIBLE
 
                     binding.completeEventFab.show()

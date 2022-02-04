@@ -250,28 +250,30 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="16dp"
-                            android:backgroundTint="@color/colorPrimary"
+                            android:backgroundTint="@color/md_red_A400"
                             android:visibility="invisible"
-                            app:backgroundTint="@color/colorPrimary"
+                            app:backgroundTint="@color/md_red_A400"
                             app:fabSize="mini"
                             app:layout_constraintEnd_toStartOf="@id/add_request_show_gallery_fab"
                             app:layout_constraintTop_toTopOf="@+id/add_request_show_gallery_fab"
                             app:srcCompat="@drawable/ic_baseline_photo_camera_24"
-                            app:tint="@color/md_white" />
+                            app:tint="@color/md_white"
+                            tools:visibility="visible" />
 
                         <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/add_request_show_gallery_fab"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="16dp"
-                            android:backgroundTint="@color/colorPrimary"
+                            android:backgroundTint="@color/md_purple_300"
                             android:visibility="invisible"
-                            app:backgroundTint="@color/colorPrimary"
+                            app:backgroundTint="@color/md_purple_300"
                             app:fabSize="mini"
                             app:layout_constraintEnd_toStartOf="@id/addRequestImageFab"
                             app:layout_constraintTop_toTopOf="@+id/addRequestImageFab"
                             app:srcCompat="@drawable/ic_baseline_image_24"
-                            app:tint="@color/md_white" />
+                            app:tint="@color/md_white"
+                            tools:visibility="visible" />
 
                         <com.google.android.material.floatingactionbutton.FloatingActionButton
                             android:id="@+id/addRequestImageFab"
