@@ -45,12 +45,14 @@ class EventTodayFragment : Fragment() {
         setupRecyclerView()
 
         eventViewModel.getEventListToday().observe(viewLifecycleOwner, {
+            binding.eventProgressIndicator.visibility = View.GONE
             eventListAdapter.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventTodayFragment->eventList", list = eventList)
         })
 
         binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
             mainViewModel.getEvent()
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
