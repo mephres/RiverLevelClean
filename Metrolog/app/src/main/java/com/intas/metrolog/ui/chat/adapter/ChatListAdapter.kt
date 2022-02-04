@@ -15,6 +15,7 @@ class ChatListAdapter : ListAdapter<ChatItem, ChatItemViewHolder>(ChatItemDiffCa
 
     lateinit var context: Context
     var onChatItemClickListener: ((ChatItem) -> Unit)? = null
+    var onCurrentListChangedListener: ((ChatItem) -> Unit)? = null
 
     companion object {
         const val MAX_POOL_SIZE = 15
@@ -57,5 +58,14 @@ class ChatListAdapter : ListAdapter<ChatItem, ChatItemViewHolder>(ChatItemDiffCa
 
     override fun getItemViewType(position: Int): Int {
         return 0
+    }
+
+    override fun onCurrentListChanged(
+        previousList: MutableList<ChatItem>,
+        currentList: MutableList<ChatItem>
+    ) {
+        if (previousList.isNotEmpty()) {
+            onCurrentListChangedListener?.invoke(currentList[0])
+        }
     }
 }
