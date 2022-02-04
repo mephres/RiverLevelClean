@@ -218,7 +218,6 @@ class MessageFragment : Fragment() {
         messageListAdapter = MessageListAdapter()
 
         with(binding.messageRecyclerView) {
-            itemAnimator = null
             adapter = messageListAdapter
             recycledViewPool.setMaxRecycledViews(0, MessageListAdapter.MAX_POOL_SIZE)
         }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AnimationUtils
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.ListAdapter
@@ -47,6 +48,7 @@ class MessageListAdapter :
     }
 
     override fun onBindViewHolder(holder: MessageItemViewHolder, position: Int) {
+        holder.view.animation = AnimationUtils.loadAnimation(context, R.anim.message_anim)
 
         val messageItem = getItem(position)
 

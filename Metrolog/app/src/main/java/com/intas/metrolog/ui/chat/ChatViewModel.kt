@@ -65,6 +65,9 @@ class ChatViewModel(application: Application) : AndroidViewModel(application) {
                 chatItemList.sortByDescending {
                     it.lastMessageDate
                 }
+                chatItemList.sortByDescending {
+                    it.notViewedMessageCount > 0
+                }
                 chatItemList.forEach {
                     it.notViewedMessageCount = getNotViewedMessagesCount(
                         it.companion.id,

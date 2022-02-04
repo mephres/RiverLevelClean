@@ -51,9 +51,7 @@ class ChatFragment : Fragment() {
         chatViewModel.chatItemList.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 chatItemList = it.toMutableList()
-                chatListAdapter.submitList(it) {
-                    binding.chatListRecyclerView.scrollToTop()
-                }
+                chatListAdapter.submitList(it)
             }
             binding.equipProgressIndicator.visibility = View.GONE
         }
@@ -64,6 +62,10 @@ class ChatFragment : Fragment() {
                 requireActivity().supportFragmentManager,
                 SelectUserFragment.SELECT_USER_FRAGMENT_TAG
             )
+        }
+
+        chatListAdapter.onCurrentListChangedListener = {
+            binding.chatListRecyclerView.scrollToTop()
         }
     }
 
@@ -80,7 +82,6 @@ class ChatFragment : Fragment() {
     private fun setupRecyclerView() {
         chatListAdapter = ChatListAdapter()
         with(binding.chatListRecyclerView) {
-            itemAnimator = null
             adapter = chatListAdapter
             recycledViewPool.setMaxRecycledViews(0, ChatListAdapter.MAX_POOL_SIZE)
         }
