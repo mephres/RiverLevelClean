@@ -45,20 +45,30 @@ class EventTodayFragment : Fragment() {
         setupRecyclerView()
 
         eventViewModel.getEventListToday().observe(viewLifecycleOwner, {
+            binding.eventProgressIndicator.visibility = View.GONE
             eventListAdapter.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventTodayFragment->eventList", list = eventList)
         })
 
         binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
             mainViewModel.getEvent()
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal("EventTodayFragment->fragmentEventSwipeRefreshLayout", "isRefreshing")
+            Journal.insertJournal(
+                "EventTodayFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
         }
         eventViewModel.searchText.observe(viewLifecycleOwner, {
             setFilter(it)
         })
+        eventViewModel.eventList.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                binding.eventProgressIndicator.visibility = View.GONE
+            }
+        }
     }
 
     private fun setFilter(text: String) {
@@ -71,7 +81,8 @@ class EventTodayFragment : Fragment() {
         }
 
         eventListAdapter.submitList(eventList.filter {
-            it.name?.contains(text, true) == true || it.equipName?.trim()?.contains(text, true) == true
+            it.name?.contains(text, true) == true || it.equipName?.trim()
+                ?.contains(text, true) == true
         })
     }
 

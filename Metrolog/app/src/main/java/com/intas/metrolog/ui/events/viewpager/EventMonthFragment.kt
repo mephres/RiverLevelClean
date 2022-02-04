@@ -44,12 +44,14 @@ class EventMonthFragment : Fragment() {
         setupRecyclerView()
 
         eventViewModel.getEventListMonth().observe(viewLifecycleOwner, {
+            binding.eventProgressIndicator.visibility = View.GONE
             eventListAdapter.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventMonthFragment->eventList", list = eventList)
         })
 
         binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
             mainViewModel.getEvent()
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
@@ -62,6 +64,12 @@ class EventMonthFragment : Fragment() {
         eventViewModel.searchText.observe(viewLifecycleOwner, {
             setFilter(it)
         })
+
+        eventViewModel.eventList.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                binding.eventProgressIndicator.visibility = View.GONE
+            }
+        }
     }
 
     private fun setFilter(text: String) {
@@ -74,7 +82,8 @@ class EventMonthFragment : Fragment() {
         }
 
         eventListAdapter.submitList(eventList.filter {
-            it.name?.contains(text, true) == true || it.equipName?.trim()?.contains(text, true) == true
+            it.name?.contains(text, true) == true || it.equipName?.trim()
+                ?.contains(text, true) == true
         })
     }
 

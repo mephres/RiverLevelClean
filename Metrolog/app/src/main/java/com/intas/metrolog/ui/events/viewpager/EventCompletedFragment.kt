@@ -41,6 +41,7 @@ class EventCompletedFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        binding.eventProgressIndicator.visibility = View.GONE
 
         eventViewModel.getEventListCompleted().observe(viewLifecycleOwner, {
             eventListAdapter.submitList(it)

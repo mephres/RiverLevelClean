@@ -66,9 +66,9 @@ class EventsFragment : Fragment() {
 
         eventsViewModel.scroll.observe(viewLifecycleOwner, {
             if (it > 0) {
-                binding.searchEventFab.visibility = View.INVISIBLE
+                binding.searchEventFab.hide()
             } else {
-                binding.searchEventFab.visibility = View.VISIBLE
+                binding.searchEventFab.show()
             }
         })
     }

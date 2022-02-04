@@ -40,6 +40,7 @@ class EventCanceledFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        binding.eventProgressIndicator.visibility = View.GONE
 
         eventViewModel.getEventListCanceled().observe(viewLifecycleOwner, {
             eventListAdapter.submitList(it)
