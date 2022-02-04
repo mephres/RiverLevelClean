@@ -128,9 +128,9 @@ class OperationActivity : AppCompatActivity() {
 
         binding.completeEventFab.setOnClickListener {
             operationListAdapter.currentList.let {
-                it.forEach {
-                    if (it.completed == 0) {
-                        showToast("Для выполнения мероприятия необходимо выполнить все операции")
+                it.forEach { eoi ->
+                    if (eoi.completed == 0) {
+                        showToast(getString(R.string.operation_activity_complete_event_error))
                         viewModel.changeControlButtonVisibleValue()
                         return@setOnClickListener
                     }
@@ -198,18 +198,15 @@ class OperationActivity : AppCompatActivity() {
     private fun showEventComment(status: Int) {
 
         currentEvent?.let {
-            val eventCommentFragment: EventCommentFragment
-            if (currentEvent?.needPhotoFix == true) {
-                eventCommentFragment = EventCommentFragment.newInstanceWithImage(it.opId, status)
+            val eventCommentFragment = if (currentEvent?.needPhotoFix == true) {
+                EventCommentFragment.newInstanceWithImage(it.opId, status)
             } else {
-                eventCommentFragment = EventCommentFragment.newInstanceWithoutImage(it.opId, status)
+                EventCommentFragment.newInstanceWithoutImage(it.opId, status)
             }
             eventCommentFragment.show(supportFragmentManager, EVENT_COMMENT_FRAGMENT_TAG)
             eventCommentFragment.onSaveCommentListener = { comment, eventStatus ->
                 when (eventStatus) {
                     COMPLETED, CANCELED -> finishEvent(eventStatus, comment)
-                    /*COMPLETED -> completeEvent()
-                    CANCELED -> cancelEvent()*/
                 }
             }
         }
@@ -404,39 +401,89 @@ class OperationActivity : AppCompatActivity() {
             .build()
 
         val shapeDrawable = MaterialShapeDrawable(shapeAppearanceModel)
-        shapeDrawable.fillColor = ContextCompat.getColorStateList(this,R.color.md_white)
+        shapeDrawable.fillColor = ContextCompat.getColorStateList(this, R.color.md_white)
         binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_white))
 
         when (event.status) {
             NEW -> {
                 binding.statusTextView.text = "Можно выполнить"
-                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.md_grey_600))
-                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_grey_600))
-                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.md_white))
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this, R.color.md_grey_600))
+                binding.statusTextView.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.md_grey_600
+                    )
+                )
+                binding.eventColorStatusView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.md_white
+                    )
+                )
             }
             IN_WORK -> {
                 binding.statusTextView.text = "Выполняется"
-                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.md_blue_500))
-                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_blue_500))
-                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.md_blue_500))
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this, R.color.md_blue_500))
+                binding.statusTextView.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.md_blue_500
+                    )
+                )
+                binding.eventColorStatusView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.md_blue_500
+                    )
+                )
             }
             PAUSED -> {
                 binding.statusTextView.text = "Остановлено"
-                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.colorAccent))
-                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.colorAccent))
-                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorAccent))
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this, R.color.colorAccent))
+                binding.statusTextView.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.colorAccent
+                    )
+                )
+                binding.eventColorStatusView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.colorAccent
+                    )
+                )
             }
             COMPLETED -> {
                 binding.statusTextView.text = "Завершено"
-                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.colorPrimary))
-                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.colorPrimary))
-                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimary))
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this, R.color.colorPrimary))
+                binding.statusTextView.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.colorPrimary
+                    )
+                )
+                binding.eventColorStatusView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.colorPrimary
+                    )
+                )
             }
             CANCELED -> {
                 binding.statusTextView.text = "Отменено"
-                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this,R.color.md_red_600))
-                binding.statusTextView.setTextColor(ContextCompat.getColor(this, R.color.md_red_600))
-                binding.eventColorStatusView.setBackgroundColor(ContextCompat.getColor(this, R.color.md_red_600))
+                shapeDrawable.setStroke(2.0f, ContextCompat.getColor(this, R.color.md_red_600))
+                binding.statusTextView.setTextColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.md_red_600
+                    )
+                )
+                binding.eventColorStatusView.setBackgroundColor(
+                    ContextCompat.getColor(
+                        this,
+                        R.color.md_red_600
+                    )
+                )
             }
         }
         ViewCompat.setBackground(binding.statusTextView, shapeDrawable)
@@ -468,7 +515,8 @@ class OperationActivity : AppCompatActivity() {
                     getString(R.string.event_fact_date_label_complete)
                 CANCELED -> binding.factDateLabelTextView.text =
                     getString(R.string.event_fact_date_label_cancel)
-                else -> binding.factDateLabelTextView.setText(getString(R.string.event_plan_date_label))
+                else -> binding.factDateLabelTextView.text =
+                    getString(R.string.event_plan_date_label)
             }
         }
     }
@@ -543,7 +591,7 @@ class OperationActivity : AppCompatActivity() {
             it.setHomeAsUpIndicator(R.drawable.ic_baseline_arrow_back_24dp)
             it.setDisplayHomeAsUpEnabled(true)
         }
-        this.title = "Мероприятие"
+        this.title = getString(R.string.operation_activity_title)
     }
 
     private fun finishEvent(status: Int, comment: String? = null) {
@@ -553,28 +601,13 @@ class OperationActivity : AppCompatActivity() {
         viewModel.setEventStatus(status, comment)
     }
 
-    private fun cancelEvent(comment: String? = null) {
-
-        viewModel.setDateTimeTimer(false)
-        viewModel.stopTimer()
-        setTimer(CANCELED)
-        viewModel.setEventStatus(CANCELED, comment)
-    }
-
-    private fun completeEvent(comment: String? = null) {
-        viewModel.setDateTimeTimer(false)
-        viewModel.stopTimer()
-        setTimer(COMPLETED)
-        viewModel.setEventStatus(COMPLETED, comment)
-    }
-
     private fun pauseEvent() {
         if (currentEventStatus == IN_WORK) {
             viewModel.setDateTimeTimer(false)
             viewModel.stopTimer()
             viewModel.setEventStatus(PAUSED)
             setTimer(PAUSED)
-            showToast("Мероприятие остановлено")
+            showToast(getString(R.string.operation_activity_stop_event_message))
             finish()
         } else if (currentEventStatus == PAUSED) {
             viewModel.setDateTimeTimer(true)
@@ -596,7 +629,7 @@ class OperationActivity : AppCompatActivity() {
         }
 
         if (needVerify) {
-            showToast("Для начала выполнения мероприятия необходимо считать метку оборудования")
+            showToast(getString(R.string.operation_activity_start_event_error))
             showScanner()
         } else {
             viewModel.setDateTimeTimer(false)
@@ -613,7 +646,7 @@ class OperationActivity : AppCompatActivity() {
                 needVerify = false
                 beginEvent()
             } else {
-                showToast("Считанная метка не принадлежит данному мероприятию. Начать мероприятие невозможно.")
+                showToast(getString(R.string.operation_activity_start_event_equip_error))
             }
         }
     }
