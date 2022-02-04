@@ -75,7 +75,7 @@ class MessageFragment : Fragment() {
 
         binding.userName.text = companion.fio
         binding.userPosition.text = companion.position
-        Glide.with(requireContext()).load(R.drawable.ic_worker).circleCrop()
+        Glide.with(requireContext()).load(R.drawable.chat_avatar).circleCrop()
             .into(binding.userPhoto)
     }
 

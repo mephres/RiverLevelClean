@@ -34,7 +34,7 @@ class UserListAdapter :
         holder.chatUserItemFullNameTextView.text = userItem.fio
         holder.chatUserItemPositionTextView.text = userItem.position
 
-        Glide.with(context).load(R.drawable.ic_worker).circleCrop()
+        Glide.with(context).load(R.drawable.chat_avatar).circleCrop()
             .into(holder.chatUserPhotoImageView)
 
         holder.itemView.setOnClickListener {

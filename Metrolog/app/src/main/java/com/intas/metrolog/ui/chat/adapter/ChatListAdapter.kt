@@ -36,7 +36,7 @@ class ChatListAdapter : ListAdapter<ChatItem, ChatItemViewHolder>(ChatItemDiffCa
         holder.chatItemMessageDateTimeTextView.text = DateTimeUtil.getShortDataFromMili(chatItem.lastMessageDate)
         holder.chatUserPositionTextView.text = chatItem.companion.position
 
-        Glide.with(context).load(R.drawable.ic_worker).circleCrop()
+        Glide.with(context).load(R.drawable.chat_avatar).circleCrop()
             .into(holder.chatUserPhotoImageView)
 
         if (chatItem.notViewedMessageCount > 0) {
