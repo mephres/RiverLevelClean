@@ -13,6 +13,7 @@ import com.intas.metrolog.ui.events.EventsViewModel
 import com.intas.metrolog.ui.events.adapter.EventListAdapter
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.Journal
+import okhttp3.internal.notify
 
 class EventCanceledFragment : Fragment() {
     private lateinit var eventListAdapter: EventListAdapter
@@ -42,11 +43,11 @@ class EventCanceledFragment : Fragment() {
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
 
-        eventViewModel.getEventListCanceled().observe(viewLifecycleOwner, {
+        eventViewModel.getEventListCanceled().observe(viewLifecycleOwner) {
             eventListAdapter.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventCanceledFragment->eventList", list = eventList)
-        })
+        }
 
         binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
@@ -54,7 +55,6 @@ class EventCanceledFragment : Fragment() {
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
             Journal.insertJournal("EventCanceledFragment->fragmentEventSwipeRefreshLayout", "isRefreshing")
         }
-
 
         eventViewModel.searchText.observe(viewLifecycleOwner, {
             setFilter(it)

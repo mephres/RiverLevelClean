@@ -1,6 +1,7 @@
 package com.intas.metrolog.database
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
 import androidx.room.*
 import com.intas.metrolog.pojo.event.EventItem
 

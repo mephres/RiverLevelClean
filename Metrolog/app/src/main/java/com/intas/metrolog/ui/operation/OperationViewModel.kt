@@ -82,6 +82,14 @@ class OperationViewModel(
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
+            updateCheckListSize()
+        }
+    }
+
+    private suspend fun updateCheckListSize() {
+        eventItem.value?.apply {
+            operationListSize = db.eventOperationDao().getNotCompletedOperationListSize(opId)
+            db.eventDao().updateEvent(this)
         }
     }
 
@@ -132,7 +140,7 @@ class OperationViewModel(
 
         viewModelScope.launch {
             eventItem.value?.let {
-                comment?.let { comment->
+                comment?.let { comment ->
                     it.comment = comment
                 }
                 it.status = status

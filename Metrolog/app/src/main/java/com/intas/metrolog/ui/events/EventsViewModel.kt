@@ -36,7 +36,8 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
 
         Log.d("MO_GET_EVENT_TODAY", "startDate: $startDate, endDate: $endDate")
 
-        return db.eventDao().getEventList(startDate, endDate)
+       // return db.eventDao().getEventList(startDate, endDate)
+        return db.eventDao().getEventList()
     }
 
     fun getEventListWeek(): LiveData<List<EventItem>> {
