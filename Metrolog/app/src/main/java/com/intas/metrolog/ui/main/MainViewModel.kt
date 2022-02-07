@@ -107,8 +107,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
     val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
-    val notSendedChatMessageList =
-        db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
+    val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
 
 
     val onErrorMessage = SingleLiveEvent<String>()
