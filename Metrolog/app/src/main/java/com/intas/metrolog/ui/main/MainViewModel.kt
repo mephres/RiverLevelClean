@@ -107,7 +107,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
     val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
-    val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
+    val notSendedChatMessageList =
+        db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
 
 
     val onErrorMessage = SingleLiveEvent<String>()
@@ -911,19 +912,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
 
-            updateEventCheckListSize()
+            updateEventCheckListSize(eventId)
         }
     }
 
-    private fun updateEventCheckListSize() {
+    private fun updateEventCheckListSize(eventId: Long) {
         viewModelScope.launch {
-           val list = db.eventDao().getEvents()
-            list.forEach {
-                it.apply {
-                    operationListSize =
-                        db.eventOperationDao().getNotCompletedOperationListSize(opId)
-                }
-                db.eventDao().updateEvent(it)
+            val event = db.eventDao().getEvent(eventId)
+
+            event?.apply {
+                operationListSize =
+                    db.eventOperationDao().getNotCompletedOperationListSize(opId)
+                db.eventDao().updateEvent(this)
             }
         }
     }
@@ -1560,7 +1560,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         loadMessageDisposable =
-            ApiFactory.apiService.getChatMessage(userId = Util.authUser?.userId ?: 0, id = messageLastId)
+            ApiFactory.apiService.getChatMessage(
+                userId = Util.authUser?.userId ?: 0,
+                id = messageLastId
+            )
                 .subscribeOn(Schedulers.io())
                 .repeatWhen {
                     it.delay(60, TimeUnit.SECONDS)
