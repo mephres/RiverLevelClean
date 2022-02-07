@@ -42,4 +42,7 @@ interface EventDao {
 
         @Query("UPDATE event SET equipRfid = :rfid WHERE equipId = :equipId")
         fun updateEventByRfid(equipId: Long, rfid: String): Int
+
+        @Query("SELECT * FROM event order by opId asc")
+        fun getEvents(): List<EventItem>
 }

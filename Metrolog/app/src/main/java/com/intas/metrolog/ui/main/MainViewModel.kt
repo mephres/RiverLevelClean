@@ -828,7 +828,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val year =
                 DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "YYYY").toInt()
 
-            getEventDisposable = ApiFactory.apiService.getEventList(it, 1, 2022)
+            getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
                 .subscribeOn(Schedulers.io())
                 .repeatWhen { completed ->
                     completed.delay(5, TimeUnit.MINUTES)
@@ -863,7 +863,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val event = db.eventDao().getEvent(it.opId)
                 (event?.isSended == 0 || (event?.status ?: 0 > NEW && event?.status ?: 0 != CANCELED)) == false
             }.map {
-                //it.operationListSize = it.operation?.size ?: 0
                 it.needPhotoFix = it.operation?.any {
                     it.needPhotoFix == 1
                 } == true
@@ -873,22 +872,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 it
             }
             Journal.insertJournal("MainViewModel->insertEventList->list_for_insert", list = list)
+            db.eventDao().insertEventList(list)
 
             list.forEach { event ->
 
                 Util.safeLet(event.operation, event.equipId) { eol, equipId ->
                     insertEventOperationList(eol, event.opId, equipId)
                 }
-            }
-
-            db.eventDao().insertEventList(fillOperationListSize(list))
-        }
-    }
-
-    private fun fillOperationListSize(eventList: List<EventItem>) : List<EventItem> {
-        return eventList.map {
-            it.apply {
-                operationListSize = db.eventOperationDao().getNotCompletedOperationListSize(opId)
             }
         }
     }
@@ -919,6 +909,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     it.equipId = equipId
                     insertOperControl(it)
                 }
+            }
+
+            updateEventCheckListSize()
+        }
+    }
+
+    private fun updateEventCheckListSize() {
+        viewModelScope.launch {
+           val list = db.eventDao().getEvents()
+            list.forEach {
+                it.apply {
+                    operationListSize =
+                        db.eventOperationDao().getNotCompletedOperationListSize(opId)
+                }
+                db.eventDao().updateEvent(it)
             }
         }
     }
