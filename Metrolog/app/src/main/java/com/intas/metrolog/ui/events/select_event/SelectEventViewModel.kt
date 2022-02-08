@@ -2,7 +2,6 @@ package com.intas.metrolog.ui.events.select_event
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.event.EventItem
 
@@ -15,5 +14,9 @@ class SelectEventViewModel(application: Application) : AndroidViewModel(applicat
 
     fun getHighPriorityEventList(): List<EventItem> {
         return db.eventDao().getHighPriorityEventList()
+    }
+
+    fun getLaunchedHighPriorityEvent(): List<EventItem> {
+        return db.eventDao().getLaunchedHighPriorityEvent()
     }
 }

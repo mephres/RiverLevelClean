@@ -45,6 +45,14 @@ class OperationViewModel(
         return db.eventDao().isAccidentPriorityEventsExists(EventPriority.ACCIDENT.ordinal)
     }
 
+    fun isSeriousPriorityEventsLaunched(): Boolean {
+        return db.eventDao().isSeriousPriorityEventsLaunched(EventPriority.SERIOUS.ordinal)
+    }
+
+    fun isAccidentPriorityEventsLaunched(): Boolean {
+        return db.eventDao().isAccidentPriorityEventsLaunched(EventPriority.ACCIDENT.ordinal)
+    }
+
     fun getEquipById(equipId: Long): LiveData<EquipItem> {
         return db.equipDao().getEquipItemByIdLD(equipId)
     }

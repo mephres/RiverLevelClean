@@ -113,18 +113,28 @@ class OperationActivity : AppCompatActivity() {
         }
 
         binding.startEventFab.setOnClickListener {
-            val currentEventPriority = currentEvent?.priority ?: 0
+            val currentPriority = currentEvent?.priority ?: 0
             val isAccidentExists = viewModel.isAccidentPriorityEventsExists()
             val isSeriousExists = viewModel.isSeriousPriorityEventsExists()
+            val isSeriousLaunched = viewModel.isSeriousPriorityEventsLaunched()
+            val isAccidentLaunched = viewModel.isAccidentPriorityEventsLaunched()
 
-            if ((currentEventPriority == EventPriority.PLANED.ordinal && (isAccidentExists || isSeriousExists)) ||
-                    (currentEventPriority == EventPriority.SERIOUS.ordinal && isAccidentExists)) {
+            if (isSeriousLaunched || isAccidentLaunched) {
+
+                SelectEventFragment.newInstanceGetLaunchedHighPriorityEvent().show(
+                    supportFragmentManager,
+                    SelectEventFragment.SELECT_EVENT_FRAGMENT
+                )
+            } else if ((currentPriority == EventPriority.PLANED.ordinal && (isAccidentExists || isSeriousExists)) ||
+                (currentPriority == EventPriority.SERIOUS.ordinal && isAccidentExists)) {
 
                 SelectEventFragment.newInstanceGetHighPriorityEvents().show(
                     supportFragmentManager,
-                    SelectEventFragment.SELECT_EVENT_FRAGMENT)
-
+                    SelectEventFragment.SELECT_EVENT_FRAGMENT
+                )
+                showToast(getString(R.string.operation_activity_priority_check_message))
             } else {
+
                 beginEvent()
                 viewModel.changeControlButtonVisibleValue()
             }
@@ -246,7 +256,7 @@ class OperationActivity : AppCompatActivity() {
     }
 
     private fun loadEquipPriorityInfo() {
-        showToast("Сделать вывод приоритетной информации об оборудовании!!!")
+       // showToast("Сделать вывод приоритетной информации об оборудовании!!!")
     }
 
     private fun setTimer(eventState: Int) {

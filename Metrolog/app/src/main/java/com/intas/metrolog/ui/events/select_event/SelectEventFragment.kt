@@ -30,7 +30,8 @@ class SelectEventFragment : BottomSheetDialogFragment() {
         ViewModelProvider(this)[SelectEventViewModel::class.java]
     }
 
-    private val modes = arrayOf(MODE_GET_EVENTS_BY_EQUIP, MODE_GET_HIGH_PRIORITY_EVENTS)
+    private val modes = arrayOf(MODE_GET_EVENTS_BY_EQUIP, MODE_GET_HIGH_PRIORITY_EVENTS,
+        MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,10 +98,20 @@ class SelectEventFragment : BottomSheetDialogFragment() {
             }
             MODE_GET_HIGH_PRIORITY_EVENTS -> {
 
-                binding.equipInfoTextView.visibility = View.GONE
                 needVerify = true
 
                 val eventList = viewModel.getHighPriorityEventList()
+                if (eventList.isNotEmpty()) {
+                    selectEventListAdapter.submitList(eventList)
+                }
+            }
+            MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT -> {
+
+                binding.selectEventTitleTextView.visibility = View.GONE
+                binding.eventNotCompletedView.visibility = View.VISIBLE
+                needVerify = true
+
+                val eventList = viewModel.getLaunchedHighPriorityEvent()
                 if (eventList.isNotEmpty()) {
                     selectEventListAdapter.submitList(eventList)
                 }
@@ -145,7 +156,8 @@ class SelectEventFragment : BottomSheetDialogFragment() {
         private const val SCANNER_MODE = "scanner_mode"
         private const val MODE_UNKNOWN = "unknown_mode"
         private const val MODE_GET_EVENTS_BY_EQUIP = "mode_get_events_by_equip"
-        private const val MODE_GET_HIGH_PRIORITY_EVENTS = "mode_high_priority_events"
+        private const val MODE_GET_HIGH_PRIORITY_EVENTS = "mode_get_high_priority_events"
+        private const val MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT = "mode_get_launched_high_priority_event"
         private const val EQUIP_ITEM = "equip_item"
 
         fun newInstance(equip: EquipItem) =
@@ -160,6 +172,13 @@ class SelectEventFragment : BottomSheetDialogFragment() {
             SelectEventFragment().apply {
                 arguments = Bundle().apply {
                     putString(SCANNER_MODE, MODE_GET_HIGH_PRIORITY_EVENTS)
+                }
+            }
+
+        fun newInstanceGetLaunchedHighPriorityEvent() =
+            SelectEventFragment().apply {
+                arguments = Bundle().apply {
+                    putString(SCANNER_MODE, MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT)
                 }
             }
     }

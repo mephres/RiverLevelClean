@@ -134,6 +134,7 @@
     <string name="select_event_type_title">Тип мероприятия:</string>
     <string name="select_event_type_planned_title">Плановое</string>
     <string name="select_event_type_unscheduled_title">Внеплановое</string>
+    <string name="select_event_high_priority_title">Завершите начатое мероприятие с высоким приоритетом.</string>
 
     <string name="operation_activity_title">Мероприятие</string>
     <string name="operation_activity_begin_event_button">Начать мероприятие</string>
@@ -159,6 +160,7 @@
     <string name="operation_activity_start_event_error">Для начала выполнения мероприятия необходимо считать метку оборудования</string>
     <string name="operation_activity_start_event_equip_error">Считанная метка не принадлежит данному мероприятию. Начать мероприятие невозможно</string>
     <string name="operation_activity_stop_event_message">Мероприятие остановлено</string>
+    <string name="operation_activity_priority_check_message">Выполнение текущего мероприятия возможно только после выполнения мероприятий с более высоким приоритетом</string>
 
     <string name="chat_item_menu_forward_title">Переслать</string>
     <string name="chat_item_menu_delete_title">Удалить</string>
