@@ -22,6 +22,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.IN_WORK
@@ -113,19 +114,16 @@ class OperationActivity : AppCompatActivity() {
 
         binding.startEventFab.setOnClickListener {
             val currentEventPriority = currentEvent?.priority ?: 0
+            val isAccidentExists = viewModel.isAccidentPriorityEventsExists()
+            val isSeriousExists = viewModel.isSeriousPriorityEventsExists()
 
-                // если  открытое мероприятие УЖЕ имеет высший приоритет
-            if (currentEventPriority > 1) {
-                beginEvent()
-                viewModel.changeControlButtonVisibleValue()
+            if ((currentEventPriority == EventPriority.PLANED.ordinal && (isAccidentExists || isSeriousExists)) ||
+                    (currentEventPriority == EventPriority.SERIOUS.ordinal && isAccidentExists)) {
 
-                // если текущее мероприятие не имеет высший приоритет и в базе найдены мероприятия с более высоким приоритетом
-            } else if (viewModel.isHighPriorityEventsExists()) {
                 SelectEventFragment.newInstanceGetHighPriorityEvents().show(
                     supportFragmentManager,
                     SelectEventFragment.SELECT_EVENT_FRAGMENT)
 
-                // если текущее мероприятие не имеет высший приоритет и в базе НЕ найдены мероприятия с более высоким приоритетом
             } else {
                 beginEvent()
                 viewModel.changeControlButtonVisibleValue()

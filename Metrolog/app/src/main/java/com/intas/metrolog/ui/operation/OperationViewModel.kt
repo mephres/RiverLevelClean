@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.util.DateTimeUtil
@@ -36,8 +37,12 @@ class OperationViewModel(
         initDefaultValues()
     }
 
-    fun isHighPriorityEventsExists(): Boolean {
-        return db.eventDao().isHighPriorityEventsExists()
+    fun isSeriousPriorityEventsExists(): Boolean {
+        return db.eventDao().isSeriousPriorityEventsExists(EventPriority.SERIOUS.ordinal)
+    }
+
+    fun isAccidentPriorityEventsExists(): Boolean {
+        return db.eventDao().isAccidentPriorityEventsExists(EventPriority.ACCIDENT.ordinal)
     }
 
     fun getEquipById(equipId: Long): LiveData<EquipItem> {

@@ -45,6 +45,9 @@ interface EventDao {
         @Query("SELECT * FROM event WHERE priority > 1 AND eventDone = 0 AND status = 0 ORDER BY priority DESC")
         fun getHighPriorityEventList(): List<EventItem>
 
-        @Query("SELECT EXISTS(SELECT * FROM event WHERE priority > 1 AND eventDone = 0 AND status = 0)")
-        fun isHighPriorityEventsExists(): Boolean
+        @Query("SELECT EXISTS(SELECT * FROM event WHERE priority = :serious AND eventDone = 0 AND status = 0)")
+        fun isSeriousPriorityEventsExists(serious: Int): Boolean
+
+        @Query("SELECT EXISTS(SELECT * FROM event WHERE priority = :accident AND eventDone = 0 AND status = 0)")
+        fun isAccidentPriorityEventsExists(accident: Int): Boolean
 }
