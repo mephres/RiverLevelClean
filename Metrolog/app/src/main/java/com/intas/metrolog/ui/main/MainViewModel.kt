@@ -863,7 +863,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val event = db.eventDao().getEvent(it.opId)
                 (event?.isSended == 0 || (event?.status ?: 0 > NEW && event?.status ?: 0 != CANCELED)) == false
             }.map {
-                it.operationListSize = it.operation?.size ?: 0
                 it.needPhotoFix = it.operation?.any {
                     it.needPhotoFix == 1
                 } == true
@@ -910,6 +909,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     it.equipId = equipId
                     insertOperControl(it)
                 }
+            }
+
+            updateEventCheckListSize(eventId)
+        }
+    }
+
+    private fun updateEventCheckListSize(eventId: Long) {
+        viewModelScope.launch {
+            val event = db.eventDao().getEvent(eventId)
+
+            event?.apply {
+                operationListSize =
+                    db.eventOperationDao().getOperationListSize(opId)
+                db.eventDao().updateEvent(this)
             }
         }
     }
@@ -1546,7 +1559,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         loadMessageDisposable =
-            ApiFactory.apiService.getChatMessage(userId = Util.authUser?.userId ?: 0, id = messageLastId)
+            ApiFactory.apiService.getChatMessage(
+                userId = Util.authUser?.userId ?: 0,
+                id = messageLastId
+            )
                 .subscribeOn(Schedulers.io())
                 .repeatWhen {
                     it.delay(60, TimeUnit.SECONDS)

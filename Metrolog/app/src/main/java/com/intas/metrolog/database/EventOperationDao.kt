@@ -27,4 +27,7 @@ interface EventOperationDao {
 
     @Query("SELECT * FROM eventOperation WHERE opId = :opId AND completed = 0")
     fun getNotCompletedOperationList(opId: Long): LiveData<List<EventOperationItem>>
+
+    @Query("SELECT COUNT(*) FROM eventOperation WHERE opId = :opId")
+    fun getOperationListSize(opId: Long): Int
 }
