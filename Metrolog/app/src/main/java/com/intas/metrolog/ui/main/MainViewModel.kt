@@ -921,7 +921,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             event?.apply {
                 operationListSize =
-                    db.eventOperationDao().getNotCompletedOperationListSize(opId)
+                    db.eventOperationDao().getOperationListSize(opId)
                 db.eventDao().updateEvent(this)
             }
         }
