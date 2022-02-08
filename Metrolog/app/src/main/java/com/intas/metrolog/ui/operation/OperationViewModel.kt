@@ -82,14 +82,6 @@ class OperationViewModel(
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
-            updateEventCheckListSize()
-        }
-    }
-
-    private suspend fun updateEventCheckListSize() {
-        eventItem.value?.apply {
-            operationListSize = db.eventOperationDao().getNotCompletedOperationListSize(opId)
-            db.eventDao().updateEvent(this)
         }
     }
 
