@@ -83,6 +83,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -828,7 +829,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val year =
                 DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "YYYY").toInt()
 
-            getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
+            getEventDisposable = ApiFactory.apiService.getEventList(it, 1, 2022)
                 .subscribeOn(Schedulers.io())
                 .repeatWhen { completed ->
                     completed.delay(5, TimeUnit.MINUTES)
@@ -863,6 +864,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val event = db.eventDao().getEvent(it.opId)
                 (event?.isSended == 0 || (event?.status ?: 0 > NEW && event?.status ?: 0 != CANCELED)) == false
             }.map {
+                it.priority = Random.nextInt(1,4)
                 it.needPhotoFix = it.operation?.any {
                     it.needPhotoFix == 1
                 } == true

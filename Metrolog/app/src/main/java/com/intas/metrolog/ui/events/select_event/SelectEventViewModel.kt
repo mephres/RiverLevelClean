@@ -13,4 +13,7 @@ class SelectEventViewModel(application: Application) : AndroidViewModel(applicat
         return db.eventDao().getEventListByRfid(rfid)
     }
 
+    fun getHighPriorityEventList(): List<EventItem> {
+        return db.eventDao().getHighPriorityEventList()
+    }
 }

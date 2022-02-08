@@ -29,6 +29,7 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.NEW
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment.Companion.EVENT_COMMENT_FRAGMENT_TAG
+import com.intas.metrolog.ui.events.select_event.SelectEventFragment
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
 import com.intas.metrolog.ui.scanner.NfcFragment
@@ -111,8 +112,24 @@ class OperationActivity : AppCompatActivity() {
         }
 
         binding.startEventFab.setOnClickListener {
-            beginEvent()
-            viewModel.changeControlButtonVisibleValue()
+            val currentEventPriority = currentEvent?.priority ?: 0
+
+                // если  открытое мероприятие УЖЕ имеет высший приоритет
+            if (currentEventPriority > 1) {
+                beginEvent()
+                viewModel.changeControlButtonVisibleValue()
+
+                // если текущее мероприятие не имеет высший приоритет и в базе найдены мероприятия с более высоким приоритетом
+            } else if (viewModel.isHighPriorityEventsExists()) {
+                SelectEventFragment.newInstanceGetHighPriorityEvents().show(
+                    supportFragmentManager,
+                    SelectEventFragment.SELECT_EVENT_FRAGMENT)
+
+                // если текущее мероприятие не имеет высший приоритет и в базе НЕ найдены мероприятия с более высоким приоритетом
+            } else {
+                beginEvent()
+                viewModel.changeControlButtonVisibleValue()
+            }
         }
 
         binding.stopEventFab.setOnClickListener {

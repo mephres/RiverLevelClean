@@ -36,6 +36,10 @@ class OperationViewModel(
         initDefaultValues()
     }
 
+    fun isHighPriorityEventsExists(): Boolean {
+        return db.eventDao().isHighPriorityEventsExists()
+    }
+
     fun getEquipById(equipId: Long): LiveData<EquipItem> {
         return db.equipDao().getEquipItemByIdLD(equipId)
     }
