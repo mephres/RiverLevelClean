@@ -52,17 +52,17 @@ data class FieldItem(
     /**
      * значение после измерения
      */
-    val value: String? = null,
+    var value: String? = null,
 
     /**
      * идентификатор пользователя, проводившего измерения
      */
-    val userId: Long = 0,
+    var userId: Int? = null,
 
     /**
      * дата-время измерения в UNIX формате
      */
-    val dateTime: Long = 0,
+    var dateTime: Long? = null,
 
     /**
      * код

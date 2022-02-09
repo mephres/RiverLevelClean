@@ -31,6 +31,8 @@ import com.intas.metrolog.ui.events.event_comment.EventCommentFragment
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment.Companion.EVENT_COMMENT_FRAGMENT_TAG
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
+import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment
+import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment.Companion.OPERATION_CONTROL_FRAGMENT_TAG
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
@@ -153,11 +155,35 @@ class OperationActivity : AppCompatActivity() {
 
     private fun setSwipeListener() {
 
-        operationListAdapter.onSwiped = {
-            viewModel.setOperationComplete(it)
+        operationListAdapter.onSwiped = {eventOperation->
+            // если у данной операции есть операционный контроль
+            if (eventOperation.hasOperationControl) {
+                // запуск фрагмента с операционным контролем
+                val operationControlFragment = OperationControlInputValueFragment.newInstance(eventOperation.subId)
+                operationControlFragment.show(supportFragmentManager, OPERATION_CONTROL_FRAGMENT_TAG)
 
-            if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
-                showEventComment(COMPLETED)
+                // слушатель на нажатие кнопки Сохранить
+                operationControlFragment.onSaveValueListener = {
+                    if (it) {
+                        // делаем операцию выполненной
+                        viewModel.setOperationComplete(eventOperation)
+                        // если список в адаптере не пустой и количество элементов списка равно одному,
+                        // то считаем, что был свайп последней операции мероприятия и выводим фрагмент комментария
+                        if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
+                            // считаем, что мероприятие выполнено, показ фрагмента комментария
+                            showEventComment(COMPLETED)
+                        }
+                    }
+                }
+            } else {
+                // делаем операцию выполненной
+                viewModel.setOperationComplete(eventOperation)
+                // если список в адаптере не пустой и количество элементов списка равно одному,
+                // то считаем, что был свайп последней операции мероприятия и выводим фрагмент комментария
+                if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
+                    // считаем, что мероприятие выполнено, показ фрагмента комментария
+                    showEventComment(COMPLETED)
+                }
             }
         }
     }

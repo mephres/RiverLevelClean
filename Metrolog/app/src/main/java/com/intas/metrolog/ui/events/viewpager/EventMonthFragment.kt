@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -111,6 +112,12 @@ class EventMonthFragment : Fragment() {
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventMonthFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
+        }
+
+        eventListAdapter.onEventLongClickListener = {
+            val text = "eventId = ${it.opId}\nequipId = ${it.equipId}\n" +
+                    "equipName = ${it.equipName}"
+            Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()
         }
     }
 

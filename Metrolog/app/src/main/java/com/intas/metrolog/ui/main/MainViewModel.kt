@@ -907,6 +907,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     it.eventId = eventId
                     it.opId = eventOperation.subId
                     it.equipId = equipId
+
+                    eventOperation.hasOperationControl = true
+                    db.eventOperationDao().updateEventOperation(eventOperation)
+
                     insertOperControl(it)
                 }
             }
@@ -1061,6 +1065,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
 
+                if (it.requestError != null) {
+                    if (it.requestError.code.equals("406") && it.requestError.message.equals("Мероприятие уже проводилось", true)) {
+                        setEventOperationSendedById(eventOperation.subId)
+                    }
+                }
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.toLong()?.let {
