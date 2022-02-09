@@ -14,6 +14,7 @@ import com.intas.metrolog.databinding.FragmentBottomSelectEventBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.events.select_event.adapter.SelectEventListAdapter
 import com.intas.metrolog.ui.operation.OperationActivity
+import com.intas.metrolog.util.Journal
 
 class SelectEventFragment : BottomSheetDialogFragment() {
     private lateinit var selectEventListAdapter: SelectEventListAdapter
@@ -108,6 +109,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
                 if (eventList.isNotEmpty()) {
                     selectEventListAdapter.submitList(eventList)
                 }
+                Journal.insertJournal("SelectEventFragmentFragment->getEventByRfid", list = eventList)
             }
             MODE_GET_HIGH_PRIORITY_EVENTS -> {
 
@@ -119,6 +121,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
                         it.opId != eventId
                     })
                 }
+                Journal.insertJournal("SelectEventFragmentFragment->highPriorityEventList", list = eventList)
             }
             MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT -> {
 
@@ -130,6 +133,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
                 if (eventList.isNotEmpty()) {
                     selectEventListAdapter.submitList(eventList)
                 }
+                Journal.insertJournal("SelectEventFragmentFragment->launchedHighPriorityEvent", list = eventList)
             }
         }
     }
@@ -150,6 +154,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
     private fun setClickListener() {
         selectEventListAdapter.onItemClickListener = {
+            Journal.insertJournal("SelectEventFragmentFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, needVerify))
             closeFragment()
         }
