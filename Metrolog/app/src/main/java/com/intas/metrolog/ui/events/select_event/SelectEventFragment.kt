@@ -21,6 +21,8 @@ class SelectEventFragment : BottomSheetDialogFragment() {
     private var equipRfid: String = ""
     private var scannerMode: String = MODE_UNKNOWN
     private var needVerify: Boolean = false
+    private var eventId: Long = 0
+    var onCloseListener: ((String) -> Unit)? = null
 
     private val binding by lazy {
         FragmentBottomSelectEventBinding.inflate(layoutInflater)
@@ -51,7 +53,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
         launchMode()
 
         dialog?.setOnDismissListener {
-            if (requireActivity() is OperationActivity) requireActivity().finish()
+            onCloseListener?.invoke(it.toString())
         }
     }
 
@@ -83,6 +85,17 @@ class SelectEventFragment : BottomSheetDialogFragment() {
             }
             equipRfid = equipItem?.equipRFID.toString()
         }
+
+        if (scannerMode == MODE_GET_HIGH_PRIORITY_EVENTS) {
+            if (!args.containsKey(EVENT_ID)) {
+                return
+            }
+            eventId = args.getLong(EVENT_ID)
+
+            if (eventId == 0L) {
+                return
+            }
+        }
     }
 
     private fun launchMode() {
@@ -102,7 +115,9 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
                 val eventList = viewModel.getHighPriorityEventList()
                 if (eventList.isNotEmpty()) {
-                    selectEventListAdapter.submitList(eventList)
+                    selectEventListAdapter.submitList(eventList.filter {
+                        it.opId != eventId
+                    })
                 }
             }
             MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT -> {
@@ -135,8 +150,6 @@ class SelectEventFragment : BottomSheetDialogFragment() {
 
     private fun setClickListener() {
         selectEventListAdapter.onItemClickListener = {
-            if (requireActivity() is OperationActivity) requireActivity().finish()
-
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, needVerify))
             closeFragment()
         }
@@ -147,6 +160,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
             parentFragmentManager.findFragmentByTag(SELECT_EVENT_FRAGMENT)
         fragment?.let {
             parentFragmentManager.beginTransaction().remove(it).commit()
+            onCloseListener?.invoke(it.toString())
         }
     }
 
@@ -159,6 +173,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
         private const val MODE_GET_HIGH_PRIORITY_EVENTS = "mode_get_high_priority_events"
         private const val MODE_GET_LAUNCHED_HIGH_PRIORITY_EVENT = "mode_get_launched_high_priority_event"
         private const val EQUIP_ITEM = "equip_item"
+        private const val EVENT_ID = "event_id"
 
         fun newInstance(equip: EquipItem) =
             SelectEventFragment().apply {
@@ -168,10 +183,11 @@ class SelectEventFragment : BottomSheetDialogFragment() {
                 }
             }
 
-        fun newInstanceGetHighPriorityEvents() =
+        fun newInstanceGetHighPriorityEvents(eventId: Long) =
             SelectEventFragment().apply {
                 arguments = Bundle().apply {
                     putString(SCANNER_MODE, MODE_GET_HIGH_PRIORITY_EVENTS)
+                    putLong(EVENT_ID, eventId)
                 }
             }
 

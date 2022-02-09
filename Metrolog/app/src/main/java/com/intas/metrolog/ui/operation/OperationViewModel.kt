@@ -33,24 +33,36 @@ class OperationViewModel(
     private var _timerDuration = MutableLiveData<Long>()
     val timerDuration: LiveData<Long> = _timerDuration
 
+    private val startDate = DateTimeUtil.getBeginToday()
+    private val endDate = DateTimeUtil.getEndToday()
+
     init {
         initDefaultValues()
     }
 
+    /**
+     * Проверка наличия важных [EventPriority.SERIOUS] мероприятий, ожидающих выполнения
+     * @return - true/false
+     */
     fun isSeriousPriorityEventsExists(): Boolean {
-        return db.eventDao().isSeriousPriorityEventsExists(EventPriority.SERIOUS.ordinal)
+        return db.eventDao().isSeriousPriorityEventsExists(startDate, endDate, EventPriority.SERIOUS.ordinal)
     }
 
+    /**
+     * Проверка наличия аварийных [EventPriority.ACCIDENT] мероприятий, ожидающих выполнения
+     * @return - true/false
+     */
     fun isAccidentPriorityEventsExists(): Boolean {
-        return db.eventDao().isAccidentPriorityEventsExists(EventPriority.ACCIDENT.ordinal)
+        return db.eventDao().isAccidentPriorityEventsExists(startDate, endDate, EventPriority.ACCIDENT.ordinal)
     }
 
-    fun isSeriousPriorityEventsLaunched(): Boolean {
-        return db.eventDao().isSeriousPriorityEventsLaunched(EventPriority.SERIOUS.ordinal)
-    }
-
-    fun isAccidentPriorityEventsLaunched(): Boolean {
-        return db.eventDao().isAccidentPriorityEventsLaunched(EventPriority.ACCIDENT.ordinal)
+    /**
+     * Проверка наличия запущенного мероприятия в высшим приоритетом
+     * @return - true/false
+     */
+    fun isHighPriorityEventsLaunched(): Boolean {
+        return db.eventDao().isHighPriorityEventsLaunched(accident = EventPriority.ACCIDENT.ordinal,
+            serious = EventPriority.SERIOUS.ordinal)
     }
 
     fun getEquipById(equipId: Long): LiveData<EquipItem> {

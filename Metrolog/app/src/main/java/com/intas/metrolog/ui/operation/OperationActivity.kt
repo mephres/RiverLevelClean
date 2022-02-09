@@ -113,26 +113,30 @@ class OperationActivity : AppCompatActivity() {
         }
 
         binding.startEventFab.setOnClickListener {
-            val currentPriority = currentEvent?.priority ?: 0
-            val isAccidentExists = viewModel.isAccidentPriorityEventsExists()
-            val isSeriousExists = viewModel.isSeriousPriorityEventsExists()
-            val isSeriousLaunched = viewModel.isSeriousPriorityEventsLaunched()
-            val isAccidentLaunched = viewModel.isAccidentPriorityEventsLaunched()
+            val currentPriority = currentEvent?.priority ?: 0 // приоритет текущего меропрития
+            val currentEventId = currentEvent?.opId ?: 0 // id текущего мероприятия
+            val isAccidentExists = viewModel.isAccidentPriorityEventsExists() // проверка на наличие аварий
+            val isSeriousExists = viewModel.isSeriousPriorityEventsExists() // проверка на наличие важных мероприятий
+            val isHighPriorityLaunched = viewModel.isHighPriorityEventsLaunched() // проверка на наличие запущенного высокоприоритетного мероприятия
 
-            if (isSeriousLaunched || isAccidentLaunched) {
+            // если имеется начатое высокоприоритетное мероприятие
+            if (isHighPriorityLaunched) {
 
-                SelectEventFragment.newInstanceGetLaunchedHighPriorityEvent().show(
-                    supportFragmentManager,
-                    SelectEventFragment.SELECT_EVENT_FRAGMENT
-                )
+                val selectEventFragment = SelectEventFragment.newInstanceGetLaunchedHighPriorityEvent()
+                selectEventFragment.show(supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
+                selectEventFragment.onCloseListener = { finish() }
+
+            // если текущее обычное мероприятие и есть высокоприоритетные, ожидающие выполнение
+            // или текущее важное и есть аварийные
             } else if ((currentPriority == EventPriority.PLANED.ordinal && (isAccidentExists || isSeriousExists)) ||
                 (currentPriority == EventPriority.SERIOUS.ordinal && isAccidentExists)) {
 
-                SelectEventFragment.newInstanceGetHighPriorityEvents().show(
-                    supportFragmentManager,
-                    SelectEventFragment.SELECT_EVENT_FRAGMENT
-                )
+                val selectEventFragment = SelectEventFragment.newInstanceGetHighPriorityEvents(currentEventId)
+                selectEventFragment.show(supportFragmentManager, SelectEventFragment.SELECT_EVENT_FRAGMENT)
+                selectEventFragment.onCloseListener = { finish() }
                 showToast(getString(R.string.operation_activity_priority_check_message))
+
+            // если текущее с самым высоким приоритетом
             } else {
 
                 beginEvent()

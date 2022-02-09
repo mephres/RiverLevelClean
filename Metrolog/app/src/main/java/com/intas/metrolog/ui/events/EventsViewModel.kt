@@ -76,7 +76,6 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
 
         Log.d("MO_GET_EVENT_CANCELED", "startDate: $startDate, endDate: $endDate")
 
-        //return db.eventDao().getEventList(startDate, endDate, EventStatus.CANCELED)
-        return db.eventDao().getEventList()
+        return db.eventDao().getEventList(startDate, endDate, EventStatus.CANCELED)
     }
 }
