@@ -153,6 +153,9 @@ class OperationActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(binding.operationRecyclerView)
     }
 
+    /**
+     * Слушатель свапа операции мероприятия
+     */
     private fun setSwipeListener() {
 
         operationListAdapter.onSwiped = {eventOperation->
@@ -176,7 +179,7 @@ class OperationActivity : AppCompatActivity() {
                     }
                 }
             } else {
-                // делаем операцию выполненной
+                // выполнение операции
                 viewModel.setOperationComplete(eventOperation)
                 // если список в адаптере не пустой и количество элементов списка равно одному,
                 // то считаем, что был свайп последней операции мероприятия и выводим фрагмент комментария
@@ -209,6 +212,7 @@ class OperationActivity : AppCompatActivity() {
             controlButtons()
         })
 
+        // отображение значений таймера
         viewModel.timerDuration.observe(this, {
             if (it >= 0) {
                 val strDate = DateTimeUtil.getTimerTimeFromMili(it)
@@ -221,16 +225,22 @@ class OperationActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Отображение фрагмента ввода комментария и фотофиксации
+     * @param status - статус мероприятия, в котором оно должно оказаться после ввода комментария
+     */
     private fun showEventComment(status: Int) {
 
         currentEvent?.let {
             val eventCommentFragment = if (currentEvent?.needPhotoFix == true) {
+                // если фотофиксация нужна, запускаем фрагмент с возможностью добавить изображение фотофиксации
                 EventCommentFragment.newInstanceWithImage(it.opId, status)
             } else {
                 EventCommentFragment.newInstanceWithoutImage(it.opId, status)
             }
             eventCommentFragment.show(supportFragmentManager, EVENT_COMMENT_FRAGMENT_TAG)
             eventCommentFragment.onSaveCommentListener = { comment, eventStatus ->
+                // получение статуса мероприятия и текста комментария
                 when (eventStatus) {
                     COMPLETED, CANCELED -> finishEvent(eventStatus, comment)
                 }
@@ -244,10 +254,14 @@ class OperationActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Загрузка списка операций мероприятия
+     */
     private fun loadOperationList() {
 
         viewModel.getOperationList().observe(this, { checkList ->
             if (checkList.isNullOrEmpty()) {
+                // если список пуст, скрываем заголовок списка мероприятий
                 binding.operationListTitleTextView.visibility = View.GONE
             } else {
                 binding.operationListTitleTextView.visibility = View.VISIBLE
@@ -260,6 +274,9 @@ class OperationActivity : AppCompatActivity() {
         showToast("Сделать вывод приоритетной информации об оборудовании!!!")
     }
 
+    /**
+     * Отображение или скрытие значения таймера выполнения мероприятия взависимости от статуса мероприятия
+     */
     private fun setTimer(eventState: Int) {
         var timerDuration = currentEvent?.durationTimer ?: 0
         when (eventState) {
@@ -294,6 +311,9 @@ class OperationActivity : AppCompatActivity() {
         viewModel.setTimerValue(timerDuration)
     }
 
+    /**
+     * Отображение кнопок управления мероприятием взависимости от текущего статуса мероприятия
+     */
     private fun configureControlButtonVisibility(clicked: Boolean) {
         if (clicked) {
             when (currentEventStatus) {
@@ -351,6 +371,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Установка значений параметров мероприятия
+     */
     private fun setUi(event: EventItem) {
         val equip = event.equip
 
@@ -387,6 +410,9 @@ class OperationActivity : AppCompatActivity() {
         fillFactDate(event)
     }
 
+    /**
+     * Установка актуальности тэга оборудования мероприятия
+     */
     private fun fillEquipTagActual(equip: EquipItem?) {
         when (equip?.equipTagActual) {
             0 -> {
@@ -420,6 +446,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Отображение статуса мероприятия
+     */
     private fun fillOperationStatus(event: EventItem) {
 
         val shapeAppearanceModel = ShapeAppearanceModel()
@@ -517,6 +546,9 @@ class OperationActivity : AppCompatActivity() {
         ViewCompat.setBackground(binding.statusTextView, shapeDrawable)
     }
 
+    /**
+     * Заполнение даты фактического выполнения/отказа мероприятия
+     */
     private fun fillFactDate(event: EventItem) {
         if (event.factDate.isNullOrEmpty()) {
             binding.factDateTextView.visibility = View.GONE
@@ -549,6 +581,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Отображение сокращенного или полного списка параметров мероприятия
+     */
     private fun showFullEquipInfo(view: View) {
         ViewUtil.runAnimationButton(applicationContext, view)
 
@@ -611,6 +646,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Настройка Toolbar
+     */
     private fun setToolbar() {
         setSupportActionBar(binding.operationToolbar)
         binding.operationToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.md_black))
@@ -622,6 +660,11 @@ class OperationActivity : AppCompatActivity() {
         this.title = getString(R.string.operation_activity_title)
     }
 
+    /**
+     * Завершение мероприятия
+     * @param status - статус, с которым завершается мероприятие (COMPLETED или CANCELED)
+     * @param comment - текст введеного комментария при завершении мероприятия
+     */
     private fun finishEvent(status: Int, comment: String? = null) {
         viewModel.setDateTimeTimer(false)
         viewModel.stopTimer()
@@ -629,6 +672,9 @@ class OperationActivity : AppCompatActivity() {
         viewModel.setEventStatus(status, comment)
     }
 
+    /**
+     * Установка мероприятия на паузу или снятие мероприятия с паузы
+     */
     private fun pauseEvent() {
         if (currentEventStatus == IN_WORK) {
             viewModel.setDateTimeTimer(false)
@@ -645,6 +691,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Старт выполнения мероприятия
+     */
     private fun beginEvent() {
 
         val deviceId = Util.getDeviceUniqueID(this)
@@ -666,6 +715,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Отображение сканера
+     */
     private fun showScanner() {
         val scanner = NfcFragment.newInstanceStartEvent()
         scanner.show(supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)

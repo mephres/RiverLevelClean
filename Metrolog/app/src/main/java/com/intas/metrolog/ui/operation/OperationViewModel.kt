@@ -44,6 +44,9 @@ class OperationViewModel(
         _timerDuration.value = duration
     }
 
+    /**
+     * Запуск таймера
+     */
     fun startTimer() {
         timer?.cancel()
         timer?.purge()
@@ -55,6 +58,9 @@ class OperationViewModel(
         }, 0, 1000)
     }
 
+    /**
+     * Остановка таймера
+     */
     fun stopTimer() {
         timer?.cancel()
         timer?.purge()
@@ -66,14 +72,22 @@ class OperationViewModel(
         }
     }
 
+    /**
+     * Получение списка операций мероприятия
+     */
     fun getOperationList(): LiveData<List<EventOperationItem>> {
         return if (eventItem.value?.status == EventStatus.NEW || eventItem.value?.status == EventStatus.IN_WORK) {
-            return db.eventOperationDao().getNotCompletedOperationList(eventId)
+            //если мероприятие в статусе НОВОЕ или ВЫПОЛНЯЕТСЯ, то выводим список всех невыполненных операций
+            db.eventOperationDao().getNotCompletedOperationList(eventId)
         } else {
+            // иначе - список всех операций
             db.eventOperationDao().getOperationList(eventId)
         }
     }
 
+    /**
+     * Выполнение операции
+     */
     fun setOperationComplete(eventOperationItem: EventOperationItem) {
         viewModelScope.launch {
             eventOperationItem.completed = 1
@@ -155,8 +169,7 @@ class OperationViewModel(
     }
 
     override fun onCleared() {
-        timer?.cancel()
-        timer?.purge()
+        stopTimer()
         super.onCleared()
     }
 }
