@@ -21,6 +21,7 @@ import com.intas.metrolog.databinding.FragmentOperationControlInputValueBinding
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dict_data.FieldDictData
 import com.intas.metrolog.ui.operation.operation_control.adapter.OperationControlSpinnerAdapter
+import com.intas.metrolog.util.Journal
 
 class OperationControlInputValueFragment : BottomSheetDialogFragment() {
 
@@ -94,6 +95,7 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
             spinnerArray[i]?.visibility = View.GONE
         }
     }
+
     /**
      * Отображение и настройка элементов интерфейса типа EditText
      * @param fieldList - полный список измеряемых параметров операционного контроля
@@ -288,6 +290,10 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
                 // установка флага для отсылки на сервер операционного контроля
                 viewModel.setOperationControlReadyToSend(it.eventId, it.operationId)
                 onSaveValueListener?.invoke(true)
+                Journal.insertJournal(
+                    "OperationControlInputValueFragment->initClickListener->operationControlSaveButton",
+                    it
+                )
             }
             closeFragment()
         }
@@ -303,6 +309,8 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
         }
 
         operationId = args.getLong(OPERATION_ID)
+
+        Journal.insertJournal("OperationControlInputValueFragment->parseArgs", operationId)
     }
 
     /**
@@ -314,6 +322,7 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
         fragment?.let {
             parentFragmentManager.beginTransaction().remove(it).commit()
         }
+        Journal.insertJournal("OperationControlInputValueFragment->closeFragment", "")
     }
 
     /**

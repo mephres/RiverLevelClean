@@ -48,6 +48,7 @@ class OperationViewModel(
      * Запуск таймера
      */
     fun startTimer() {
+        Journal.insertJournal("OperationViewModel->startTimer", "")
         timer?.cancel()
         timer?.purge()
         timer = Timer()
@@ -64,6 +65,7 @@ class OperationViewModel(
     fun stopTimer() {
         timer?.cancel()
         timer?.purge()
+        Journal.insertJournal("OperationViewModel->stopTimer", "")
     }
 
     fun changeControlButtonVisibleValue() {
@@ -96,6 +98,7 @@ class OperationViewModel(
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
+            Journal.insertJournal("OperationViewModel->setOperationComplete", eventOperationItem)
         }
     }
 
@@ -133,6 +136,7 @@ class OperationViewModel(
                 dateTime // записываем дату-время начала работы таймера
 
             eventItem.value?.let {
+                Journal.insertJournal("OperationViewModel->setDateTimeTimer->event", it)
                 db.eventDao().updateEvent(it)
             }
         }
@@ -145,6 +149,7 @@ class OperationViewModel(
     fun setEventStatus(status: Int, comment: String? = null) {
 
         viewModelScope.launch {
+            Journal.insertJournal("OperationViewModel->setEventStatus", "status: $status, comment: $comment")
             eventItem.value?.let {
                 comment?.let { comment ->
                     it.comment = comment
@@ -162,7 +167,7 @@ class OperationViewModel(
                         it.isSended = 0
                     }
                 }
-                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it.toString())
+                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it)
                 db.eventDao().updateEvent(it)
             }
         }

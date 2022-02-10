@@ -9,6 +9,7 @@ import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.FieldItem
 import com.intas.metrolog.pojo.event.event_operation.operation_control.field.dict_data.FieldDictData
 import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import kotlinx.coroutines.launch
 
@@ -30,7 +31,9 @@ class OperationControlInputValueViewModel(application: Application): AndroidView
      */
     fun getOperationDoneParameter(operationId: Long) {
 
+        Journal.insertJournal("OperationControlInputValueViewModel->getOperationDoneParameter", operationId )
         db.fieldDao().getFieldsByOperationId(operationId)?.let {
+            Journal.insertJournal("OperationControlInputValueViewModel->getOperationDoneParameter->getFieldsByOperationId", list = it )
             _fieldList.value = it
             getFieldDictData(it)
         }
@@ -41,10 +44,15 @@ class OperationControlInputValueViewModel(application: Application): AndroidView
      * @param fieldList - список параметров операционного контроля операции мероприятия
      */
     private fun getFieldDictData(fieldList: List<FieldItem>) {
+
+        Journal.insertJournal("OperationControlInputValueViewModel->getFieldDictData", list = fieldList)
+
         val tempDictDataMap = HashMap<Long, List<FieldDictData>>()
         fieldList.forEach { field->
             if (field.type.equals("dict", true)) {
+                Journal.insertJournal("OperationControlInputValueViewModel->getFieldDictData", field)
                 db.fieldDictDataDao().getDictDataByFieldId(field.id)?.let {
+                    Journal.insertJournal("OperationControlInputValueViewModel->getFieldDictData->getDictDataByFieldId", list = it)
                     tempDictDataMap.put(field.id, it)
                 }
             }
@@ -59,12 +67,15 @@ class OperationControlInputValueViewModel(application: Application): AndroidView
      */
     fun saveParameter(field: FieldItem, value: String) {
         viewModelScope.launch {
+
             field.value = value
             field.userId = Util.authUser?.userId ?: 0
             field.dateTime = DateTimeUtil.getUnixDateTimeNow()
             field.isSended = 0
 
             db.fieldDao().updateField(field)
+
+            Journal.insertJournal("OperationControlInputValueViewModel->saveParameter", field)
         }
     }
 
@@ -73,6 +84,7 @@ class OperationControlInputValueViewModel(application: Application): AndroidView
      */
     fun setOperationControlReadyToSend(eventId: Long, operationId: Long) {
         viewModelScope.launch {
+            Journal.insertJournal("OperationControlInputValueViewModel->setOperationControlReadyToSend", "eventId: $eventId, operationId: $operationId")
             db.operControlDao().setEventOperationControlReadyForSendBy(eventId, operationId)
         }
     }

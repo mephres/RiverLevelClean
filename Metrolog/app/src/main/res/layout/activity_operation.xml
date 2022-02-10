@@ -72,7 +72,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/factDateLabelTextView" />
+                            app:layout_constraintTop_toBottomOf="@+id/eventCommentLabelTextView" />
 
                         <ImageView
                             android:id="@+id/operationInfoImageView"
@@ -329,7 +329,7 @@
                             android:id="@+id/operationNameTextView"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
+                            android:layout_marginStart="8dp"
                             android:layout_marginTop="16dp"
                             android:layout_marginEnd="8dp"
                             android:text="@string/operation_activity_name"
@@ -346,6 +346,7 @@
                             android:id="@+id/typeLabelTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
                             android:layout_marginTop="4dp"
                             android:text="@string/operation_activity_event_type_label"
                             app:layout_constraintStart_toStartOf="@+id/operationNameTextView"
@@ -367,6 +368,7 @@
                             android:id="@+id/planDateLabelTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
                             android:layout_marginTop="4dp"
                             android:text="@string/operation_activity_event_plan_date_label"
                             app:layout_constraintStart_toStartOf="@+id/operationNameTextView"
@@ -404,6 +406,31 @@
                             app:layout_constraintStart_toStartOf="@+id/planDateTextView"
                             app:layout_constraintTop_toTopOf="@+id/factDateLabelTextView"
                             tools:text="02.11.2019 00:11:22"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/eventCommentLabelTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginTop="4dp"
+                            android:text="@string/event_comment_label_title"
+                            android:visibility="gone"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@+id/factDateTextView"
+                            tools:visibility="visible" />
+
+                        <TextView
+                            android:id="@+id/eventCommentTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:textStyle="bold"
+                            android:visibility="gone"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/factDateTextView"
+                            app:layout_constraintTop_toTopOf="@+id/eventCommentLabelTextView"
+                            tools:text="Выполнено с успехом"
                             tools:visibility="visible" />
 
                         <com.google.android.material.textview.MaterialTextView
