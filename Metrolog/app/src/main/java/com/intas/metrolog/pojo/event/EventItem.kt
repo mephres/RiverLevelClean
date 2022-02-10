@@ -102,7 +102,7 @@ data class EventItem(
      */
     @SerializedName("priority")
     @Expose
-    val priority: Int? = EventPriority.PLANED.ordinal,
+    var priority: Int? = EventPriority.PLANED.ordinal,
 
     /**
      * 0 - не отправлено на сервер

@@ -22,6 +22,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.IN_WORK
@@ -29,10 +30,14 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.NEW
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment.Companion.EVENT_COMMENT_FRAGMENT_TAG
+import com.intas.metrolog.ui.events.select_event.SelectEventFragment
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
+import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment
+import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment.Companion.OPERATION_CONTROL_FRAGMENT_TAG
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.ViewUtil
 
@@ -89,6 +94,7 @@ class OperationActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        Journal.insertJournal("OperationActivity->onBackPressed", "")
         if (viewModel.controlButtonClicked.value == true) {
             viewModel.changeControlButtonVisibleValue()
         } else {
@@ -99,34 +105,39 @@ class OperationActivity : AppCompatActivity() {
     private fun setClickListeners() {
 
         binding.operationInfoImageView.setOnClickListener {
+            Journal.insertJournal("OperationActivity->setClickListeners", "operationInfoImageView.setOnClickListener")
             showFullEquipInfo(it)
         }
 
         binding.eventControlFab.setOnClickListener {
+            Journal.insertJournal("OperationActivity->setClickListeners", "eventControlFab.setOnClickListener")
             viewModel.changeControlButtonVisibleValue()
         }
 
         binding.shadowView.setOnClickListener {
+            Journal.insertJournal("OperationActivity->setClickListeners", "shadowView.setOnClickListener")
             viewModel.changeControlButtonVisibleValue()
         }
 
         binding.startEventFab.setOnClickListener {
-            beginEvent()
-            viewModel.changeControlButtonVisibleValue()
+            startEvent()
         }
 
         binding.stopEventFab.setOnClickListener {
+            Journal.insertJournal("OperationActivity->setClickListeners", "stopEventFab.setOnClickListener")
             pauseEvent()
             viewModel.changeControlButtonVisibleValue()
         }
 
         binding.cancelEventFab.setOnClickListener {
+            Journal.insertJournal("OperationActivity->setClickListeners", "cancelEventFab.setOnClickListener")
             showEventComment(CANCELED)
             viewModel.changeControlButtonVisibleValue()
             binding.eventControlFab.visibility = View.GONE
         }
 
         binding.completeEventFab.setOnClickListener {
+            Journal.insertJournal("OperationActivity->setClickListeners", "completeEventFab.setOnClickListener")
             operationListAdapter.currentList.let {
                 it.forEach { eoi ->
                     if (eoi.completed == 0) {
@@ -151,13 +162,43 @@ class OperationActivity : AppCompatActivity() {
         itemTouchHelper.attachToRecyclerView(binding.operationRecyclerView)
     }
 
+    /**
+     * Слушатель свапа операции мероприятия
+     */
     private fun setSwipeListener() {
 
-        operationListAdapter.onSwiped = {
-            viewModel.setOperationComplete(it)
+        operationListAdapter.onSwiped = {eventOperation->
+            Journal.insertJournal("OperationActivity->setSwipeListener->eventOperation", eventOperation)
 
-            if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
-                showEventComment(COMPLETED)
+            // если у данной операции есть операционный контроль
+            if (eventOperation.hasOperationControl) {
+                // запуск фрагмента с операционным контролем
+                val operationControlFragment = OperationControlInputValueFragment.newInstance(eventOperation.subId)
+                operationControlFragment.show(supportFragmentManager, OPERATION_CONTROL_FRAGMENT_TAG)
+
+                // слушатель на нажатие кнопки Сохранить
+                operationControlFragment.onSaveValueListener = {
+                    if (it) {
+                        Journal.insertJournal("OperationActivity->setSwipeListener->onSaveValueListener", eventOperation)
+                        // делаем операцию выполненной
+                        viewModel.setOperationComplete(eventOperation)
+                        // если список в адаптере не пустой и количество элементов списка равно одному,
+                        // то считаем, что был свайп последней операции мероприятия и выводим фрагмент комментария
+                        if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
+                            // считаем, что мероприятие выполнено, показ фрагмента комментария
+                            showEventComment(COMPLETED)
+                        }
+                    }
+                }
+            } else {
+                // выполнение операции
+                viewModel.setOperationComplete(eventOperation)
+                // если список в адаптере не пустой и количество элементов списка равно одному,
+                // то считаем, что был свайп последней операции мероприятия и выводим фрагмент комментария
+                if (!operationListAdapter.currentList.isNullOrEmpty() && operationListAdapter.currentList.size == 1) {
+                    // считаем, что мероприятие выполнено, показ фрагмента комментария
+                    showEventComment(COMPLETED)
+                }
             }
         }
     }
@@ -166,6 +207,7 @@ class OperationActivity : AppCompatActivity() {
 
         viewModel.eventItem.observe(this, { event ->
 
+            Journal.insertJournal("OperationActivity->showEventComment->event", event)
             viewModel.getEquipById(event.equipId ?: 0).observe(this, { equip ->
                 event.equip = equip
                 setUi(event)
@@ -173,6 +215,7 @@ class OperationActivity : AppCompatActivity() {
                 fillOperationStatus(event)
                 currentEquip = equip
                 currentEvent?.equip = equip
+                Journal.insertJournal("OperationActivity->showEventComment->equip", equip)
             })
             currentEvent = event
             currentEventStatus = event.status
@@ -183,6 +226,7 @@ class OperationActivity : AppCompatActivity() {
             controlButtons()
         })
 
+        // отображение значений таймера
         viewModel.timerDuration.observe(this, {
             if (it >= 0) {
                 val strDate = DateTimeUtil.getTimerTimeFromMili(it)
@@ -195,16 +239,26 @@ class OperationActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Отображение фрагмента ввода комментария и фотофиксации
+     * @param status - статус мероприятия, в котором оно должно оказаться после ввода комментария
+     */
     private fun showEventComment(status: Int) {
 
+        Journal.insertJournal("OperationActivity->showEventComment", status)
+
         currentEvent?.let {
+            Journal.insertJournal("OperationActivity->showEventComment->currentEvent", it)
+
             val eventCommentFragment = if (currentEvent?.needPhotoFix == true) {
+                // если фотофиксация нужна, запускаем фрагмент с возможностью добавить изображение фотофиксации
                 EventCommentFragment.newInstanceWithImage(it.opId, status)
             } else {
                 EventCommentFragment.newInstanceWithoutImage(it.opId, status)
             }
             eventCommentFragment.show(supportFragmentManager, EVENT_COMMENT_FRAGMENT_TAG)
             eventCommentFragment.onSaveCommentListener = { comment, eventStatus ->
+                // получение статуса мероприятия и текста комментария
                 when (eventStatus) {
                     COMPLETED, CANCELED -> finishEvent(eventStatus, comment)
                 }
@@ -218,23 +272,32 @@ class OperationActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Загрузка списка операций мероприятия
+     */
     private fun loadOperationList() {
 
         viewModel.getOperationList().observe(this, { checkList ->
             if (checkList.isNullOrEmpty()) {
+                // если список пуст, скрываем заголовок списка мероприятий
                 binding.operationListTitleTextView.visibility = View.GONE
             } else {
                 binding.operationListTitleTextView.visibility = View.VISIBLE
             }
             operationListAdapter.submitList(checkList)
+            Journal.insertJournal("OperationActivity->loadOperationList", list = checkList)
         })
     }
 
     private fun loadEquipPriorityInfo() {
-        showToast("Сделать вывод приоритетной информации об оборудовании!!!")
+       // showToast("Сделать вывод приоритетной информации об оборудовании!!!")
     }
 
+    /**
+     * Отображение или скрытие значения таймера выполнения мероприятия взависимости от статуса мероприятия
+     */
     private fun setTimer(eventState: Int) {
+        Journal.insertJournal("OperationActivity->setTimer", eventState)
         var timerDuration = currentEvent?.durationTimer ?: 0
         when (eventState) {
             NEW -> {
@@ -268,6 +331,9 @@ class OperationActivity : AppCompatActivity() {
         viewModel.setTimerValue(timerDuration)
     }
 
+    /**
+     * Отображение кнопок управления мероприятием взависимости от текущего статуса мероприятия
+     */
     private fun configureControlButtonVisibility(clicked: Boolean) {
         if (clicked) {
             when (currentEventStatus) {
@@ -325,6 +391,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Установка значений параметров мероприятия
+     */
     private fun setUi(event: EventItem) {
         val equip = event.equip
 
@@ -359,8 +428,12 @@ class OperationActivity : AppCompatActivity() {
         }
 
         fillFactDate(event)
+        fillEventComment(event)
     }
 
+    /**
+     * Установка актуальности тэга оборудования мероприятия
+     */
     private fun fillEquipTagActual(equip: EquipItem?) {
         when (equip?.equipTagActual) {
             0 -> {
@@ -394,6 +467,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Отображение статуса мероприятия
+     */
     private fun fillOperationStatus(event: EventItem) {
 
         val shapeAppearanceModel = ShapeAppearanceModel()
@@ -491,6 +567,24 @@ class OperationActivity : AppCompatActivity() {
         ViewCompat.setBackground(binding.statusTextView, shapeDrawable)
     }
 
+    /**
+     * Заполнение текста комментария к мероприятию
+     */
+    private fun fillEventComment(event: EventItem) {
+
+        binding.eventCommentLabelTextView.visibility = View.GONE
+        binding.eventCommentTextView.visibility = View.GONE
+
+        if ((event.status == COMPLETED || event.status == CANCELED) && (!event.comment.isNullOrEmpty())) {
+            binding.eventCommentLabelTextView.visibility = View.VISIBLE
+            binding.eventCommentTextView.visibility = View.VISIBLE
+            binding.eventCommentTextView.text = event.comment
+        }
+    }
+
+    /**
+     * Заполнение даты фактического выполнения/отказа мероприятия
+     */
     private fun fillFactDate(event: EventItem) {
         if (event.factDate.isNullOrEmpty()) {
             binding.factDateTextView.visibility = View.GONE
@@ -523,6 +617,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Отображение сокращенного или полного списка параметров мероприятия
+     */
     private fun showFullEquipInfo(view: View) {
         ViewUtil.runAnimationButton(applicationContext, view)
 
@@ -585,6 +682,9 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Настройка Toolbar
+     */
     private fun setToolbar() {
         setSupportActionBar(binding.operationToolbar)
         binding.operationToolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.md_black))
@@ -596,14 +696,26 @@ class OperationActivity : AppCompatActivity() {
         this.title = getString(R.string.operation_activity_title)
     }
 
+    /**
+     * Завершение мероприятия
+     * @param status - статус, с которым завершается мероприятие (COMPLETED или CANCELED)
+     * @param comment - текст введеного комментария при завершении мероприятия
+     */
     private fun finishEvent(status: Int, comment: String? = null) {
+        Journal.insertJournal("OperationActivity->finishEvent", "status: $status, comment: $comment")
+
         viewModel.setDateTimeTimer(false)
         viewModel.stopTimer()
         setTimer(status)
         viewModel.setEventStatus(status, comment)
     }
 
+    /**
+     * Установка мероприятия на паузу или снятие мероприятия с паузы
+     */
     private fun pauseEvent() {
+        Journal.insertJournal("OperationActivity->pauseEvent", currentEventStatus)
+
         if (currentEventStatus == IN_WORK) {
             viewModel.setDateTimeTimer(false)
             viewModel.stopTimer()
@@ -619,8 +731,12 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Старт выполнения мероприятия
+     */
     private fun beginEvent() {
 
+        Journal.insertJournal("OperationActivity->beginEvent", "")
         val deviceId = Util.getDeviceUniqueID(this)
 
         Util.deviceUniqueIdArray.forEach {
@@ -640,10 +756,69 @@ class OperationActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Проверка приоритета мероприятия и его запуск
+     */
+    private fun startEvent() {
+        val currentPriority = currentEvent?.priority ?: 0 // приоритет текущего меропрития
+        val currentEventId = currentEvent?.opId ?: 0 // id текущего мероприятия
+        val isAccidentExists =
+            viewModel.isAccidentPriorityEventsExists() // проверка на наличие аварий
+        val isSeriousExists =
+            viewModel.isSeriousPriorityEventsExists() // проверка на наличие важных мероприятий
+        val isHighPriorityLaunched =
+            viewModel.isHighPriorityEventsLaunched() // проверка на наличие запущенного высокоприоритетного мероприятия
+
+        Journal.insertJournal(
+            "OperationActivity->startEvent",
+            "event: ${currentEvent}, isAccidentExists: ${isAccidentExists}, isSeriousExists: ${isSeriousExists}, isHighPriorityLaunched: ${isHighPriorityLaunched}"
+        )
+
+        // если имеется начатое высокоприоритетное мероприятие
+        if (isHighPriorityLaunched) {
+
+            val selectEventFragment = SelectEventFragment.newInstanceGetLaunchedHighPriorityEvent()
+            selectEventFragment.show(
+                supportFragmentManager,
+                SelectEventFragment.SELECT_EVENT_FRAGMENT
+            )
+            selectEventFragment.onCloseListener = { finish() }
+
+            // если текущее обычное мероприятие и есть высокоприоритетные, ожидающие выполнение
+            // или текущее важное и есть аварийные
+        } else if ((currentPriority == EventPriority.PLANED.ordinal && (isAccidentExists || isSeriousExists)) ||
+            (currentPriority == EventPriority.SERIOUS.ordinal && isAccidentExists)
+        ) {
+
+            val selectEventFragment =
+                SelectEventFragment.newInstanceGetHighPriorityEvents(currentEventId)
+            selectEventFragment.show(
+                supportFragmentManager,
+                SelectEventFragment.SELECT_EVENT_FRAGMENT
+            )
+            selectEventFragment.onCloseListener = { finish() }
+            showToast(getString(R.string.operation_activity_priority_check_message))
+
+            // если текущее с самым высоким приоритетом
+        } else {
+            Journal.insertJournal(
+                "OperationActivity->startEvent",
+                "High Priority"
+            )
+            beginEvent()
+            viewModel.changeControlButtonVisibleValue()
+        }
+    }
+
+    /**
+     * Отображение сканера
+     */
     private fun showScanner() {
+        Journal.insertJournal("OperationActivity->showScanner", "")
         val scanner = NfcFragment.newInstanceStartEvent()
         scanner.show(supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
         scanner.onRFIDReadListener = {
+            Journal.insertJournal("OperationActivity->showScanner->rfid", it)
             if (currentEvent?.equipRfid.equals(it, true)) {
                 needVerify = false
                 beginEvent()
@@ -665,6 +840,7 @@ class OperationActivity : AppCompatActivity() {
 
         eventId = intent.getLongExtra(EVENT_ID, 0)
         needVerify = intent.getBooleanExtra(NEED_VERIFY_FOR_BEGIN, true)
+        Journal.insertJournal("OperationActivity->parseIntent", "eventId: $eventId, needVerify: $needVerify")
     }
 
     companion object {

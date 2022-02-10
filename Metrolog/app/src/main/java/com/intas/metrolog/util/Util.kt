@@ -8,7 +8,7 @@ import com.intas.metrolog.pojo.authuser.AuthUser
 import java.util.*
 
 object Util {
-    var deviceUniqueIdArray = arrayOf("c9840a92e310f689")
+    var deviceUniqueIdArray = arrayOf("c9840a92e310f689", "06b0e0e504e68b85")
 
     var eventLoggingEnabled = false
 
@@ -59,6 +59,7 @@ object Util {
     val BOTTOM_DIALOG_SHEET_FRAGMENT_TAG = "BOTTOM_DIALOG_SHEET_FRAGMENT_TAG"
 
     var authUser: AuthUser? = null
+        get() = AppPreferences.authUser
 
     lateinit var serverIpAddress: String
 

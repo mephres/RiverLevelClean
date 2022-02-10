@@ -80,9 +80,11 @@ class PinCodeViewModel(application: Application) : AndroidViewModel(application)
                         Journal.insertJournal("PinCodeViewModel->authUser->requestError", journalText = it)
                     }
                 } else {
-                    insertUser(response.data)
-                    onSuccess?.invoke(response.data)
-                    Util.authUser = response.data
+                    val authUserData = response.data
+                    insertUser(authUserData)
+                    onSuccess?.invoke(authUserData)
+                    AppPreferences.authUser = authUserData
+                    Util.authUser = authUserData
 
                     AppPreferences.userLoginDateTime = DateTimeUtil.getUnixDateTimeNow()
 

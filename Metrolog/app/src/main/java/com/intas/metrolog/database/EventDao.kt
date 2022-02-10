@@ -41,4 +41,19 @@ interface EventDao {
 
         @Query("UPDATE event SET equipRfid = :rfid WHERE equipId = :equipId")
         fun updateEventByRfid(equipId: Long, rfid: String): Int
+
+        @Query("SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND priority > 1 AND eventDone = 0 AND status = 0 ORDER BY priority DESC")
+        fun getHighPriorityEventList(dateStart: Long, dateEnd: Long): List<EventItem>
+
+        @Query("SELECT EXISTS(SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND priority = :serious AND eventDone = 0 AND status = 0)")
+        fun isSeriousPriorityEventsExists(dateStart: Long, dateEnd: Long, serious: Int): Boolean
+
+        @Query("SELECT EXISTS(SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND priority = :accident AND eventDone = 0 AND status = 0)")
+        fun isAccidentPriorityEventsExists(dateStart: Long, dateEnd: Long, accident: Int): Boolean
+
+        @Query("SELECT EXISTS(SELECT * FROM event WHERE (priority = :accident OR priority =:serious) AND (status = 1 OR status = 2))")
+        fun isHighPriorityEventsLaunched(accident: Int, serious: Int): Boolean
+
+        @Query("SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND priority > 1 AND (status = 1 OR status = 2)")
+        fun getLaunchedHighPriorityEvent(dateStart: Long, dateEnd: Long): List<EventItem>
 }

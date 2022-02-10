@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.util.DateTimeUtil
@@ -32,8 +33,36 @@ class OperationViewModel(
     private var _timerDuration = MutableLiveData<Long>()
     val timerDuration: LiveData<Long> = _timerDuration
 
+    private val startDate = DateTimeUtil.getBeginToday()
+    private val endDate = DateTimeUtil.getEndToday()
+
     init {
         initDefaultValues()
+    }
+
+    /**
+     * Проверка наличия важных [EventPriority.SERIOUS] мероприятий, ожидающих выполнения
+     * @return - true/false
+     */
+    fun isSeriousPriorityEventsExists(): Boolean {
+        return db.eventDao().isSeriousPriorityEventsExists(startDate, endDate, EventPriority.SERIOUS.ordinal)
+    }
+
+    /**
+     * Проверка наличия аварийных [EventPriority.ACCIDENT] мероприятий, ожидающих выполнения
+     * @return - true/false
+     */
+    fun isAccidentPriorityEventsExists(): Boolean {
+        return db.eventDao().isAccidentPriorityEventsExists(startDate, endDate, EventPriority.ACCIDENT.ordinal)
+    }
+
+    /**
+     * Проверка наличия запущенного мероприятия в высшим приоритетом
+     * @return - true/false
+     */
+    fun isHighPriorityEventsLaunched(): Boolean {
+        return db.eventDao().isHighPriorityEventsLaunched(accident = EventPriority.ACCIDENT.ordinal,
+            serious = EventPriority.SERIOUS.ordinal)
     }
 
     fun getEquipById(equipId: Long): LiveData<EquipItem> {
@@ -44,7 +73,11 @@ class OperationViewModel(
         _timerDuration.value = duration
     }
 
+    /**
+     * Запуск таймера
+     */
     fun startTimer() {
+        Journal.insertJournal("OperationViewModel->startTimer", "")
         timer?.cancel()
         timer?.purge()
         timer = Timer()
@@ -55,9 +88,13 @@ class OperationViewModel(
         }, 0, 1000)
     }
 
+    /**
+     * Остановка таймера
+     */
     fun stopTimer() {
         timer?.cancel()
         timer?.purge()
+        Journal.insertJournal("OperationViewModel->stopTimer", "")
     }
 
     fun changeControlButtonVisibleValue() {
@@ -66,14 +103,22 @@ class OperationViewModel(
         }
     }
 
+    /**
+     * Получение списка операций мероприятия
+     */
     fun getOperationList(): LiveData<List<EventOperationItem>> {
         return if (eventItem.value?.status == EventStatus.NEW || eventItem.value?.status == EventStatus.IN_WORK) {
-            return db.eventOperationDao().getNotCompletedOperationList(eventId)
+            //если мероприятие в статусе НОВОЕ или ВЫПОЛНЯЕТСЯ, то выводим список всех невыполненных операций
+            db.eventOperationDao().getNotCompletedOperationList(eventId)
         } else {
+            // иначе - список всех операций
             db.eventOperationDao().getOperationList(eventId)
         }
     }
 
+    /**
+     * Выполнение операции
+     */
     fun setOperationComplete(eventOperationItem: EventOperationItem) {
         viewModelScope.launch {
             eventOperationItem.completed = 1
@@ -82,6 +127,7 @@ class OperationViewModel(
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
+            Journal.insertJournal("OperationViewModel->setOperationComplete", eventOperationItem)
         }
     }
 
@@ -119,6 +165,7 @@ class OperationViewModel(
                 dateTime // записываем дату-время начала работы таймера
 
             eventItem.value?.let {
+                Journal.insertJournal("OperationViewModel->setDateTimeTimer->event", it)
                 db.eventDao().updateEvent(it)
             }
         }
@@ -131,6 +178,7 @@ class OperationViewModel(
     fun setEventStatus(status: Int, comment: String? = null) {
 
         viewModelScope.launch {
+            Journal.insertJournal("OperationViewModel->setEventStatus", "status: $status, comment: $comment")
             eventItem.value?.let {
                 comment?.let { comment ->
                     it.comment = comment
@@ -148,15 +196,14 @@ class OperationViewModel(
                         it.isSended = 0
                     }
                 }
-                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it.toString())
+                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it)
                 db.eventDao().updateEvent(it)
             }
         }
     }
 
     override fun onCleared() {
-        timer?.cancel()
-        timer?.purge()
+        stopTimer()
         super.onCleared()
     }
 }

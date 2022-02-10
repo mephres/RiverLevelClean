@@ -31,6 +31,7 @@ class SelectEventListAdapter : ListAdapter<EventItem, SelectEventItemViewHolder>
     override fun onBindViewHolder(holder: SelectEventItemViewHolder, position: Int) {
 
         val eventItem = getItem(position)
+        holder.eventEquipNameTextView.text = eventItem.equipName
         holder.eventNameTextView.text = eventItem.name
 
         eventItem.planDate?.let {
