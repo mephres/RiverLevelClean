@@ -73,7 +73,11 @@ class OperationViewModel(
         _timerDuration.value = duration
     }
 
+    /**
+     * Запуск таймера
+     */
     fun startTimer() {
+        Journal.insertJournal("OperationViewModel->startTimer", "")
         timer?.cancel()
         timer?.purge()
         timer = Timer()
@@ -84,9 +88,13 @@ class OperationViewModel(
         }, 0, 1000)
     }
 
+    /**
+     * Остановка таймера
+     */
     fun stopTimer() {
         timer?.cancel()
         timer?.purge()
+        Journal.insertJournal("OperationViewModel->stopTimer", "")
     }
 
     fun changeControlButtonVisibleValue() {
@@ -95,14 +103,22 @@ class OperationViewModel(
         }
     }
 
+    /**
+     * Получение списка операций мероприятия
+     */
     fun getOperationList(): LiveData<List<EventOperationItem>> {
         return if (eventItem.value?.status == EventStatus.NEW || eventItem.value?.status == EventStatus.IN_WORK) {
-            return db.eventOperationDao().getNotCompletedOperationList(eventId)
+            //если мероприятие в статусе НОВОЕ или ВЫПОЛНЯЕТСЯ, то выводим список всех невыполненных операций
+            db.eventOperationDao().getNotCompletedOperationList(eventId)
         } else {
+            // иначе - список всех операций
             db.eventOperationDao().getOperationList(eventId)
         }
     }
 
+    /**
+     * Выполнение операции
+     */
     fun setOperationComplete(eventOperationItem: EventOperationItem) {
         viewModelScope.launch {
             eventOperationItem.completed = 1
@@ -111,6 +127,7 @@ class OperationViewModel(
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
+            Journal.insertJournal("OperationViewModel->setOperationComplete", eventOperationItem)
         }
     }
 
@@ -148,6 +165,7 @@ class OperationViewModel(
                 dateTime // записываем дату-время начала работы таймера
 
             eventItem.value?.let {
+                Journal.insertJournal("OperationViewModel->setDateTimeTimer->event", it)
                 db.eventDao().updateEvent(it)
             }
         }
@@ -160,6 +178,7 @@ class OperationViewModel(
     fun setEventStatus(status: Int, comment: String? = null) {
 
         viewModelScope.launch {
+            Journal.insertJournal("OperationViewModel->setEventStatus", "status: $status, comment: $comment")
             eventItem.value?.let {
                 comment?.let { comment ->
                     it.comment = comment
@@ -177,15 +196,14 @@ class OperationViewModel(
                         it.isSended = 0
                     }
                 }
-                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it.toString())
+                Journal.insertJournal("OperationViewModel->setEventStatus->Event", it)
                 db.eventDao().updateEvent(it)
             }
         }
     }
 
     override fun onCleared() {
-        timer?.cancel()
-        timer?.purge()
+        stopTimer()
         super.onCleared()
     }
 }

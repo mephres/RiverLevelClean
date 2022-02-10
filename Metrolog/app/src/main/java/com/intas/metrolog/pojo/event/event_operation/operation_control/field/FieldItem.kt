@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 /**
- * Поле для заполнения при выполнении операции мероприятия
+ * Параметр операционного контроля, который заполняется при выполнении операции мероприятия
  */
 @Parcelize
 @Entity(tableName = "field")
@@ -36,6 +36,8 @@ data class FieldItem(
     val code: String? = null,
     /**
      * тип поля
+     * dict - это спиннер со своим списком из таблицы [FieldDictData]
+     * иначе - это EditText
      */
     val type: String? = null,
     /**
@@ -52,17 +54,17 @@ data class FieldItem(
     /**
      * значение после измерения
      */
-    val value: String? = null,
+    var value: String? = null,
 
     /**
      * идентификатор пользователя, проводившего измерения
      */
-    val userId: Long = 0,
+    var userId: Int? = null,
 
     /**
      * дата-время измерения в UNIX формате
      */
-    val dateTime: Long = 0,
+    var dateTime: Long? = null,
 
     /**
      * код

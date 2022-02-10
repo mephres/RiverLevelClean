@@ -13,6 +13,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.R
@@ -61,6 +62,7 @@ class RequestsFragment : Fragment() {
         setUI()
         initObserver()
         setSearchViewListener()
+        onScrollListener()
 
         binding.requestSwipeRefreshLayout.setOnRefreshListener {
             binding.requestSwipeRefreshLayout.isRefreshing = false
@@ -75,6 +77,16 @@ class RequestsFragment : Fragment() {
         binding.requestFilterFab.setOnClickListener {
             showFilter()
         }
+
+        requestViewModel.scroll.observe(viewLifecycleOwner, {
+            if (it > 0) {
+                binding.addNewRequestFab.hide()
+                binding.requestFilterFab.hide()
+            } else {
+                binding.addNewRequestFab.show()
+                binding.requestFilterFab.show()
+            }
+        })
     }
 
     private fun showSelectDialog() {
@@ -240,5 +252,14 @@ class RequestsFragment : Fragment() {
         requestListAdapter.onRequestLongClickListener = {
 
         }
+    }
+
+    private fun onScrollListener() {
+        binding.requestRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                requestViewModel.onScrolled(dy)
+            }
+        })
     }
 }

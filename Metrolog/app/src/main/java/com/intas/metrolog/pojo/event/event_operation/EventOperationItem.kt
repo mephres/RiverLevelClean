@@ -73,7 +73,9 @@ data class EventOperationItem(
      * 0 - не отправлена
      * 1 - отправлена
      */
-    var isSended: Int = 1
+    var isSended: Int = 1,
+
+    var hasOperationControl: Boolean = false
 ) : Parcelable {
     /**
      * операционный контроль
@@ -81,5 +83,4 @@ data class EventOperationItem(
     @androidx.room.Ignore
     @SerializedName("operControl")
     val operControl: OperControlItem? = null
-
 }

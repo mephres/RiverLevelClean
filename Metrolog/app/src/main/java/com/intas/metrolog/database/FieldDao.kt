@@ -12,6 +12,9 @@ interface FieldDao {
     @Query("SELECT * FROM field WHERE id = :id")
     fun getFieldById(id: Long): FieldItem?
 
+    @Query("SELECT * FROM field WHERE operationId = :operationId")
+    fun getFieldsByOperationId(operationId: Long): List<FieldItem>?
+
     @Update(onConflict = OnConflictStrategy.REPLACE)
     suspend fun updateField(field: FieldItem)
 

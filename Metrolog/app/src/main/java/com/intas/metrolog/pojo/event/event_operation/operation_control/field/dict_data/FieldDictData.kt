@@ -5,6 +5,9 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
+/**
+ * Список способов измерения для параметра операционного контроля
+ */
 @Parcelize
 @Entity(tableName = "fieldDictData")
 data class FieldDictData(

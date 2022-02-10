@@ -127,6 +127,7 @@
     <string name="event_fact_date_label_pause">Отложено:</string>
     <string name="event_fact_date_label_complete">Выполнено:</string>
     <string name="event_fact_date_label_cancel">Отменено:</string>
+    <string name="event_comment_label_title">Комментарий:</string>
 
     <string name="select_event_title">Список мероприятий</string>
     <string name="select_event_no_data_title">По данному оборудованию мероприятий не найдено</string>
@@ -164,11 +165,15 @@
 
     <string name="chat_item_menu_forward_title">Переслать</string>
     <string name="chat_item_menu_delete_title">Удалить</string>
-    
+
     <string name="event_comment_title">Комментарий к мероприятию</string>
     <string name="event_comment_comment_hint">Текст комментария</string>
     <string name="event_comment_add_comment_error_message">Комментарий не должен быть пустым</string>
-    <string name="event_comment_add_comment_empty_image_list_error_message">Для данного мероприятия фотофиксация обязательна. Сделайте фото или добавьте изображение из галереи"</string>
+    <string name="event_comment_add_comment_empty_image_list_error_message">Для данного мероприятия фотофиксация обязательна. Сделайте фото или добавьте изображение из галереи</string>
 
+    <string name="operation_control_title">Операционный контроль</string>
+    <string name="operation_control_parameter_hint">Параметр</string>
+    <string name="operation_control_parameter_save_error">Все параметры операционного контроля должны быть заполнены</string>
+    <string name="operation_control_parameter_spinner_hint">Метод измерения</string>
 
 </resources>

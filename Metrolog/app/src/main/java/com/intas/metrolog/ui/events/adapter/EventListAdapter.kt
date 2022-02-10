@@ -26,6 +26,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
     lateinit var context: Context
     lateinit var db: AppDatabase
     var onEventClickListener: ((EventItem) -> Unit)? = null
+    var onEventLongClickListener: ((EventItem) -> Unit)? = null
 
     val enterTransition = MaterialFadeThrough()
     val exitTransition = MaterialFadeThrough()
@@ -77,6 +78,11 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
 
         holder.itemView.setOnClickListener {
             onEventClickListener?.invoke(eventItem)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            onEventLongClickListener?.invoke(eventItem)
+            false
         }
 
         holder.equipFullInfoImageView.setOnClickListener {
