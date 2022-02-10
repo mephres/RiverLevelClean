@@ -13,6 +13,47 @@
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/settings_activity_equip_document_pdf_title">
+        <ListPreference
+            app:defaultValue="3"
+            app:entries="@array/pdf_image_size_entries"
+            app:entryValues="@array/pdf_image_size_values"
+            app:key="pdf_image_size"
+            app:title="@string/settings_activity_pdf_image_size_title"
+            app:icon="@drawable/ic_baseline_picture_as_pdf_36"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory app:title="@string/settings_activity_phoho_comment_title">
+        <ListPreference
+            app:defaultValue="JPEG"
+            app:entries="@array/format_type_entries"
+            app:entryValues="@array/format_type_values"
+            app:key="format_type"
+            app:title="@string/settings_activity_image_format_title"
+            app:icon="@drawable/ic_baseline_raw_on_36"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:defaultValue="2"
+            app:entries="@array/image_size_entries"
+            app:entryValues="@array/image_size_values"
+            app:key="image_size"
+            app:title="@string/settings_activity_image_size_title"
+            app:icon="@drawable/ic_baseline_photo_size_select_large_36"
+            app:useSimpleSummaryProvider="true" />
+
+        <SeekBarPreference
+            app:title="@string/settings_activity_image_quality_title"
+            android:key="image_quality"
+            app:defaultValue="50"
+            app:min="10"
+            android:max="100"
+            app:icon="@drawable/ic_baseline_high_quality_36"
+            app:showSeekBarValue="true" />
+
+    </PreferenceCategory>
+
     <PreferenceCategory
         android:key="auth_tools_category"
         app:title="Безопасность">

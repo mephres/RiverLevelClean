@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.util.Base64
 import android.util.Log
+import androidx.preference.PreferenceManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.io.ByteArrayOutputStream
 
@@ -35,17 +36,23 @@ object ImageUtil {
      * @return кодированная картинка
      */
     @Throws(Exception::class)
-    fun Bitmap.getScreen(): String {
+    fun Bitmap.getScreen(context: Context): String {
         synchronized(ImageUtil) {
+
             val beginTime = DateTimeUtil.getUnixDateTimeNow()
+
+            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
+            val imageSize = preferences.getString("image_size", "2")?.toInt() ?: 1
+            val formatType = preferences.getString("format_type", "JPEG")
+            val imageQuality = preferences.getInt("image_quality", 100)
 
             // Вычисляем ширину и высоту изображения
             val bitmapWidth = width
             val bitmapHeight = height
 
             // Половинки
-            val halfWidth: Int = bitmapWidth / 1
-            val halfHeight: Int = bitmapHeight / 1
+            val halfWidth: Int = bitmapWidth / imageSize
+            val halfHeight: Int = bitmapHeight / imageSize
             val bitmapHalf = Bitmap.createScaledBitmap(
                 this, halfWidth,
                 halfHeight, false
@@ -53,7 +60,7 @@ object ImageUtil {
             val byteArrayOutputStream = ByteArrayOutputStream()
             var imageFormat: CompressFormat? = null
             var prefixString = ""
-            when ("JPEG") {
+            when (formatType) {
                 "JPEG" -> {
                     imageFormat = CompressFormat.JPEG
                     prefixString = "data:image/jpeg;base64,"
@@ -70,7 +77,7 @@ object ImageUtil {
             }
             bitmapHalf.compress(
                 imageFormat,
-                100,
+                imageQuality,
                 byteArrayOutputStream
             )
 
@@ -98,7 +105,7 @@ object ImageUtil {
             val bitmap = getBitmapFromUri(context, uri)
             var screen: String? = null
             bitmap?.let {
-                screen = bitmap.getScreen()
+                screen = bitmap.getScreen(context)
             }
             val endTime = DateTimeUtil.getUnixDateTimeNow()
             val diff = endTime - beginTime

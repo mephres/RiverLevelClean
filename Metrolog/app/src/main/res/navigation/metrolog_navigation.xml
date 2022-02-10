@@ -30,9 +30,9 @@
             app:destination="@id/messageFragment" />
     </fragment>
     <fragment
-        android:id="@+id/navigation_more"
-        android:name="com.intas.metrolog.ui.more.MoreFragment"
-        android:label="MoreFragment"
+        android:id="@+id/navigation_settings"
+        android:name="com.intas.metrolog.ui.settings.SettingsActivity$SettingsFragment"
+        android:label="Настройки"
         tools:layout="@layout/fragment_more"/>
 
     <fragment

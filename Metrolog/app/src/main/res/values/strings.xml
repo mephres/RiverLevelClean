@@ -23,6 +23,12 @@
     <string name="settings_activity_about_app">О приложении</string>
     <string name="settings_activity_event_log_write_title">Запись данных</string>
     <string name="settings_activity_event_log_export_title">Экспорт данных</string>
+    <string name="settings_activity_equip_document_pdf_title">PDF документ оборудования</string>
+    <string name="settings_activity_pdf_image_size_title">Размер изображения</string>
+    <string name="settings_activity_phoho_comment_title">Фотофиксация мероприятия</string>
+    <string name="settings_activity_image_format_title">Формат изображения</string>
+    <string name="settings_activity_image_size_title">Размер изображения</string>
+    <string name="settings_activity_image_quality_title">Качество изображения</string>
 
     <string name="pin_activity_input_pin_code">Введите пин код</string>
     <string name="pin_activity_input_pin_code_again">Введите пин код еще раз</string>
@@ -43,6 +49,7 @@
     <string name="bottom_menu_events_equip">Оборудование</string>
     <string name="bottom_menu_events_chat">Чат</string>
     <string name="bottom_menu_more_title">Еще</string>
+    <string name="bottom_menu_settings_title">Настройки</string>
 
     <string name="equip_ZavNum_label">Заводской номер:</string>
     <string name="equip_search_bar_hint">Поиск оборудования</string>
