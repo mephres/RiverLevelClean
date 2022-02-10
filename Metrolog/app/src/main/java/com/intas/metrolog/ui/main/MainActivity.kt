@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         initLoadMessageObserver()
         initNewChatMessageCountObserver()
         initNotSentChatMessageObserver()
+        initNotSendedCheckedEquipInfoListObserver()
     }
 
     /**
@@ -255,6 +256,19 @@ class MainActivity : AppCompatActivity() {
             it.forEach {
                 if (!Util.chatMessageQueue.contains(it.id)) {
                     viewModel.sendChatMessage(it)
+                }
+            }
+        }
+    }
+
+    /**
+     * Получение и отправка на сервер отметки, что комментарий к оборудованию прочитан пользователем
+     */
+    private fun initNotSendedCheckedEquipInfoListObserver() {
+        viewModel.notSendedCheckedEquipInfoList.observe(this) {
+            for (equipInfo in it) {
+                if (!Util.equipInfoCheckedQueue.contains(equipInfo.id)) {
+                    viewModel.sendEquipInfoChecked(equipInfo)
                 }
             }
         }

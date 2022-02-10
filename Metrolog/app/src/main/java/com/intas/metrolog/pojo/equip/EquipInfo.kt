@@ -61,13 +61,13 @@ data class EquipInfo(
      */
     @SerializedName("checkedDateTime")
     @Expose
-    val checkedDateTime: Long = 0,
+    var checkedDateTime: Long = 0,
     /**
      * идентификатор промотревшего информацию пользователя
      */
     @SerializedName("checkedUserId")
     @Expose
-    val checkedUserId: Long = 0,
+    var checkedUserId: Int = 0,
     /**
      * Признак отсылки записи на сервер
      * 0 - не отослана

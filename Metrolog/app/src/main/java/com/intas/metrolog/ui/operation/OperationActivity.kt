@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
 import android.os.Bundle
+import android.view.Gravity
 import android.view.MenuItem
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -17,6 +19,8 @@ import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.RelativeCornerSize
 import com.google.android.material.shape.RoundedCornerTreatment
 import com.google.android.material.shape.ShapeAppearanceModel
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialFadeThrough
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityOperationBinding
@@ -33,6 +37,7 @@ import com.intas.metrolog.ui.events.event_comment.EventCommentFragment.Companion
 import com.intas.metrolog.ui.events.select_event.SelectEventFragment
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
+import com.intas.metrolog.ui.operation.equip_info.EquipInfoFragment
 import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment
 import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment.Companion.OPERATION_CONTROL_FRAGMENT_TAG
 import com.intas.metrolog.ui.scanner.NfcFragment
@@ -215,6 +220,7 @@ class OperationActivity : AppCompatActivity() {
                 fillOperationStatus(event)
                 currentEquip = equip
                 currentEvent?.equip = equip
+                showEquipInfo(equip)
                 Journal.insertJournal("OperationActivity->showEventComment->equip", equip)
             })
             currentEvent = event
@@ -807,6 +813,19 @@ class OperationActivity : AppCompatActivity() {
             )
             beginEvent()
             viewModel.changeControlButtonVisibleValue()
+        }
+    }
+
+    /**
+     * Отображение списка приоритетной информации по оборудованию, при наличии
+     */
+    private fun showEquipInfo(equip: EquipItem) {
+        if (viewModel.isNotCheckedEquipInfoExists(equip.equipId)) {
+            val equipInfoFragment = EquipInfoFragment.newInstance(equip)
+            equipInfoFragment.show(
+                supportFragmentManager,
+                EquipInfoFragment.EQUIP_INFO_FRAGMENT_TAG
+            )
         }
     }
 
