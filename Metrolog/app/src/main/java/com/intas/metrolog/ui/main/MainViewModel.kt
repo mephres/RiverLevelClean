@@ -116,6 +116,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val requestFilter: LiveData<RequestFilter>
         get() = _requestFilter
 
+    private var _equipLoaded = MutableLiveData<Boolean>()
+    val equipLoaded: LiveData<Boolean>
+        get() = _equipLoaded
+
     init {
         getEventStatus()
         getUserList()
@@ -322,6 +326,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let { equipList ->
+                        _equipLoaded.value = true
                         insertEquipList(equipList)
                     }
                 }, {

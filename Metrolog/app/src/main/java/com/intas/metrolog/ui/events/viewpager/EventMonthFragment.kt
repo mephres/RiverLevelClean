@@ -70,6 +70,12 @@ class EventMonthFragment : Fragment() {
                 binding.eventProgressIndicator.visibility = View.GONE
             }
         }
+
+        mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
+            if (it) {
+                eventListAdapter.notifyDataSetChanged()
+            }
+        })
     }
 
     private fun setFilter(text: String) {
