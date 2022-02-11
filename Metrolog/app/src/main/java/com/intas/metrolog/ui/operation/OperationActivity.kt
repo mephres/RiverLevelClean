@@ -59,6 +59,7 @@ class OperationActivity : AppCompatActivity() {
     private var currentEventStatus: Int = 0
     private var currentEvent: EventItem? = null
     private var currentEquip: EquipItem? = null
+    private var equipInfoIsShowing = false
 
     private lateinit var operationListAdapter: OperationListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
@@ -227,7 +228,6 @@ class OperationActivity : AppCompatActivity() {
             currentEventStatus = event.status
             setTimer(currentEventStatus)
             loadOperationList()
-            loadEquipPriorityInfo()
             initTouchHelper()
             controlButtons()
         })
@@ -293,10 +293,6 @@ class OperationActivity : AppCompatActivity() {
             operationListAdapter.submitList(checkList)
             Journal.insertJournal("OperationActivity->loadOperationList", list = checkList)
         })
-    }
-
-    private fun loadEquipPriorityInfo() {
-       // showToast("Сделать вывод приоритетной информации об оборудовании!!!")
     }
 
     /**
@@ -820,12 +816,13 @@ class OperationActivity : AppCompatActivity() {
      * Отображение списка приоритетной информации по оборудованию, при наличии
      */
     private fun showEquipInfo(equip: EquipItem) {
-        if (viewModel.isNotCheckedEquipInfoExists(equip.equipId)) {
+        if (viewModel.isNotCheckedEquipInfoExists(equip.equipId) && !equipInfoIsShowing) {
             val equipInfoFragment = EquipInfoFragment.newInstance(equip)
             equipInfoFragment.show(
                 supportFragmentManager,
                 EquipInfoFragment.EQUIP_INFO_FRAGMENT_TAG
             )
+            equipInfoIsShowing = true
         }
     }
 

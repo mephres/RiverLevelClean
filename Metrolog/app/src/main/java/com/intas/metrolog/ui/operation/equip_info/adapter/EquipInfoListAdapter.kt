@@ -15,6 +15,7 @@ class EquipInfoListAdapter :
 
     lateinit var context: Context
     var onEquipInfoItemCheckedListener: ((EquipInfo) -> Unit)? = null
+    var onEquipInfoItemUncheckedListener: ((EquipInfo) -> Unit)? = null
 
     companion object {
         const val MAX_POOL_SIZE = 15
@@ -46,7 +47,8 @@ class EquipInfoListAdapter :
                     checkedUserId = it,
                     isSended = 0
                 )
-                if (equipInfo.checked) onEquipInfoItemCheckedListener?.invoke(equipInfo)
+                if (isChecked) onEquipInfoItemCheckedListener?.invoke(equipInfo)
+                else onEquipInfoItemUncheckedListener?.invoke(equipInfo)
             }
         }
     }

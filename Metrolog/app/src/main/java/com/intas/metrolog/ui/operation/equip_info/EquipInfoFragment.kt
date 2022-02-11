@@ -75,12 +75,14 @@ class EquipInfoFragment : BottomSheetDialogFragment() {
 
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setClickListeners() {
-        equipInfoListAdapter.onEquipInfoItemCheckedListener = { equipInfo ->
-            checkedEquipInfoList.removeIf {
-                it.id == equipInfo.id
-            }
-            checkedEquipInfoList.add(equipInfo)
+        equipInfoListAdapter.onEquipInfoItemCheckedListener = { info ->
+            checkedEquipInfoList.add(info)
             Journal.insertJournal("EquipInfoFragment->onEquipInfoChecked", checkedEquipInfoList.toString())
+        }
+
+        equipInfoListAdapter.onEquipInfoItemUncheckedListener = { info ->
+            checkedEquipInfoList.removeIf { it.id == info.id }
+            Journal.insertJournal("EquipInfoFragment->onEquipInfoUnchecked", checkedEquipInfoList.toString())
         }
 
         binding.equipInfoCheckedConfirmButton.setOnClickListener {
