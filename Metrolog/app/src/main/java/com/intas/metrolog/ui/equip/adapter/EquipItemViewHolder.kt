@@ -24,7 +24,5 @@ class EquipItemViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
     val equipCalibrationLabelTextView: TextView = view.findViewById(R.id.equipCalibrationLabelTextView)
     val equipVerificationTextView: TextView = view.findViewById(R.id.equipVerificationTextView)
     val equipVerificationLabelTextView: TextView = view.findViewById(R.id.equipVerificationLabelTextView)
-    val addRFIDButton: Button = view.findViewById(R.id.addRFIDButton)
-    val createDocumentButton: Button = view.findViewById(R.id.createDocumentButton)
     val equipIsNotSendImageView: ImageView = view.findViewById(R.id.equipIsNotSendImageView)
 }

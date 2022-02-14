@@ -15,8 +15,7 @@ import com.intas.metrolog.ui.equip.callback.EquipItemDiffCallback
 class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDiffCallback()) {
 
     lateinit var context: Context
-    var onAddRFIDButtonClickListener: ((EquipItem) -> Unit)? = null
-    var onCreateDocumentButtonListener: ((EquipItem) -> Unit)? = null
+    var onEquipItemClickListener: ((EquipItem) -> Unit)? = null
 
     companion object {
         const val MAX_POOL_SIZE = 15
@@ -161,12 +160,8 @@ class EquipListAdapter : ListAdapter<EquipItem, EquipItemViewHolder>(EquipItemDi
             holder.equipIsNotSendImageView.visibility = View.GONE
         }
 
-        holder.addRFIDButton.setOnClickListener {
-            onAddRFIDButtonClickListener?.invoke(equipItem)
-        }
-
-        holder.createDocumentButton.setOnClickListener {
-            onCreateDocumentButtonListener?.invoke(equipItem)
+        holder.itemView.setOnClickListener {
+            onEquipItemClickListener?.invoke(equipItem)
         }
     }
 

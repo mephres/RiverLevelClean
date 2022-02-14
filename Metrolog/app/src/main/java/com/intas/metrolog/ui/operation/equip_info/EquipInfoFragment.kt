@@ -73,6 +73,7 @@ class EquipInfoFragment : BottomSheetDialogFragment() {
         }
     }
 
+
     @RequiresApi(Build.VERSION_CODES.N)
     private fun setClickListeners() {
         equipInfoListAdapter.onEquipInfoItemCheckedListener = { info ->
