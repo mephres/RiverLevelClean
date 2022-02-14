@@ -31,17 +31,11 @@
         android:textStyle="bold"
         tools:text="Микрошприц для газовой хроматографии SGE-Cromatec #1842913" />
 
-    <View
-        android:id="@+id/equipDivider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="16dp"
-        android:background="@color/md_grey_300" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/addRFIDView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
         android:background="?android:attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true">
@@ -51,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_baseline_nfc_24"
+            android:src="@drawable/ic_baseline_nfc_36"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -64,6 +58,7 @@
             android:layout_marginStart="16dp"
             android:text="@string/equip_add_rfid_label"
             android:textSize="16sp"
+            android:textColor="@color/md_black"
             app:layout_constraintBottom_toBottomOf="@+id/addRFIDImageView"
             app:layout_constraintStart_toEndOf="@+id/addRFIDImageView"
             app:layout_constraintTop_toTopOf="@id/addRFIDImageView" />
@@ -92,7 +87,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
-            android:src="@drawable/ic_baseline_picture_as_pdf_24"
+            android:src="@drawable/ic_baseline_picture_as_pdf_36"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -105,6 +100,7 @@
             android:layout_marginStart="16dp"
             android:text="@string/equip_create_document_label"
             android:textSize="16sp"
+            android:textColor="@color/md_black"
             app:layout_constraintBottom_toBottomOf="@+id/createDocumentImageView"
             app:layout_constraintStart_toEndOf="@+id/createDocumentImageView"
             app:layout_constraintTop_toTopOf="@id/createDocumentImageView" />
