@@ -15,4 +15,7 @@ interface AuthUserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAuthUser(authUser: AuthUser)
+
+    @Query("DELETE FROM auth_user")
+    fun deleteAll()
 }

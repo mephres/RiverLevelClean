@@ -56,6 +56,7 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
         Log.d("MO_INSERT_USER", authUser.toString())
 
         viewModelScope.launch {
+            db.authUserDao().deleteAll()
             db.authUserDao().insertAuthUser(authUser)
         }
     }

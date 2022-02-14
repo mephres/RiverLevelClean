@@ -109,6 +109,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
     val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
 
+    val authUser = db.authUserDao().getLoggedUser()
+
 
     val onErrorMessage = SingleLiveEvent<String>()
 
@@ -121,6 +123,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _equipLoaded
 
     init {
+
         getEventStatus()
         getUserList()
         getRequestList()

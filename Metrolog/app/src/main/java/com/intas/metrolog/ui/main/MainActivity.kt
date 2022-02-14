@@ -42,6 +42,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
+        viewModel.authUser.observe(this, {
+            Util.authUser = it
+        })
+
         initBottomNavigation()
         //initDeviceLocationObserver()
         //initNotSendedUserLocationObserver()
