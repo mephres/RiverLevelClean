@@ -816,6 +816,7 @@ class OperationActivity : AppCompatActivity() {
      * Отображение списка приоритетной информации по оборудованию, при наличии
      */
     private fun showEquipInfo(equip: EquipItem) {
+        Journal.insertJournal("OperationActivity->showEquipInfo", equip)
         if (viewModel.isNotCheckedEquipInfoExists(equip.equipId) && !equipInfoIsShowing) {
             val equipInfoFragment = EquipInfoFragment.newInstance(equip)
             equipInfoFragment.show(

@@ -108,7 +108,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
     val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
-    val notSendedCheckedEquipInfoList = db.equipInfoDao().getNotSendedCheckedEquipInfoList()
 
 
     val onErrorMessage = SingleLiveEvent<String>()
@@ -279,10 +278,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             for (equip in equipList) {
                 equip.equipInfoList?.let { eil ->
                     if (eil.isNotEmpty()) {
-                        insertEquipInfoList(eil.map {
+                        val list = eil.filter {
+                            val info = db.equipInfoDao().getEquipInfo(it.id)
+                            info == null
+                        }.map {
                             it.equipId = equip.equipId
                             it
-                        })
+                        }
+
+                        insertEquipInfoList(list)
                     }
                 }
             }
@@ -1674,48 +1678,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
             }
         }
-    }
-
-    /**
-     * Отправка на сервер ЦНО отметки, что комментарий к оборудованию прочитан пользователем
-     *
-     * @param equipInfo комментарий к оборудованию, экземпляр класса [EquipInfo]
-     */
-    fun sendEquipInfoChecked(equipInfo: EquipInfo) {
-
-        equipInfo.id.let {
-            Util.equipInfoCheckedQueue.addLast(it)
-        }
-
-        val map = mutableMapOf<String, String>()
-        map[QUERY_PARAM_USER_ID] = equipInfo.checkedUserId.toString()
-        map[QUERY_PARAM_ID] = equipInfo.id.toString()
-
-        val sendEquipInfoCheckedDisposable = ApiFactory.apiService.addEquipInfoChecked(map)
-            .retryWhen { f: Flowable<Throwable?> ->
-                f.take(600).delay(1, TimeUnit.MINUTES)
-            }
-            .doOnError {
-                FirebaseCrashlytics.getInstance().recordException(it)
-                Log.d("MM_SEND_EQ_INFO_CHECKED", it.message.toString())
-            }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({
-                if (it.requestSuccess != null) {
-
-                    it.requestSuccess?.let {
-                        Util.safeLet(it.id, it.serverId) { id, serverId ->
-
-                        }
-                    }
-                }
-                Log.d("MM_SEND_EQ_INFO_CHECKED", it.toString())
-            }, {
-                Log.d("MM_SEND_EQ_INFO_CHECKED", it.message.toString())
-            })
-
-        compositeDisposable.add(sendEquipInfoCheckedDisposable)
     }
 
     private fun initMessageFirstId() {

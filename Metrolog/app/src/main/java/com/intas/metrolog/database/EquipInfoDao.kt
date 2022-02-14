@@ -3,6 +3,7 @@ package com.intas.metrolog.database
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.intas.metrolog.pojo.equip.EquipInfo
+import com.intas.metrolog.pojo.event.EventItem
 
 @Dao
 interface EquipInfoDao {
@@ -13,11 +14,8 @@ interface EquipInfoDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEquipInfo(equipInfo: EquipInfo): Long
 
-    @Query("SELECT * FROM equipInfo WHERE isSended = 0 AND checked = 0 ORDER BY id")
+    @Query("SELECT * FROM equipInfo WHERE isSended = 0 ORDER BY id")
     fun getNotSendedEquipInfoList(): LiveData<List<EquipInfo>>
-
-    @Query("SELECT * FROM equipInfo WHERE isSended = 0 AND checked = 1 ORDER BY id")
-    fun getNotSendedCheckedEquipInfoList(): LiveData<List<EquipInfo>>
 
     @Query("UPDATE equipInfo SET isSended = 1 AND id = :serverId WHERE id = :id")
     suspend fun setEquipInfoSendedById(id: Long, serverId: Long)
@@ -27,4 +25,7 @@ interface EquipInfoDao {
 
     @Query("SELECT EXISTS(SELECT * FROM equipInfo WHERE equipId = :equipId AND checked = 0)")
     fun isNotCheckedEquipInfoExists(equipId: Long): Boolean
+
+    @Query("SELECT * FROM equipInfo WHERE id = :id LIMIT 1")
+    fun getEquipInfo(id: Int): EquipInfo?
 }

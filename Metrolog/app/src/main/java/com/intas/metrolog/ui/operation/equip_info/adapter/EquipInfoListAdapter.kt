@@ -44,8 +44,7 @@ class EquipInfoListAdapter :
                 val equipInfo = equipInfoItem.copy(
                     checked = isChecked,
                     checkedDateTime = DateTimeUtil.getUnixDateTimeNow(),
-                    checkedUserId = it,
-                    isSended = 0
+                    checkedUserId = it
                 )
                 if (isChecked) onEquipInfoItemCheckedListener?.invoke(equipInfo)
                 else onEquipInfoItemUncheckedListener?.invoke(equipInfo)
