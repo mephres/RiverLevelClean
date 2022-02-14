@@ -273,6 +273,16 @@ interface ApiService {
     @POST("addChatMessage")
     fun addChatMessage(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
 
+    /**
+     * Добавление отметки, что комментарий к оборудованию прочитан пользователем
+     *
+     * @param fields параметры запроса
+     * @return ответ сервера [UpdateResponse]
+     */
+    @FormUrlEncoded
+    @POST("addEquipInfoChecked")
+    fun addEquipInfoChecked(@FieldMap fields: Map<String, String>): Single<UpdateResponse>
+
     companion object {
         const val QUERY_PARAM_LOGIN = "login"
         const val QUERY_PARAM_PASSWORD = "pass"

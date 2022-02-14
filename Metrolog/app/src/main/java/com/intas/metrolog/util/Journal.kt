@@ -8,8 +8,14 @@ import androidx.preference.PreferenceManager
 import com.intas.metrolog.BuildConfig
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.JournalItem
-import kotlinx.coroutines.*
-import java.io.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import java.io.BufferedWriter
+import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileWriter
 import java.util.*
 
 /**
@@ -123,7 +129,7 @@ object Journal {
                     val sdPath =
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + File.separator + DIR_SD)
                     if (!sdPath.exists()) {
-                        sdPath.mkdir()
+                        sdPath.mkdirs()
                     }
 
                     if (!journal.isNullOrEmpty()) {
