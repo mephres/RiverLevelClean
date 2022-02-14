@@ -182,5 +182,6 @@
     <string name="operation_control_parameter_hint">Параметр</string>
     <string name="operation_control_parameter_save_error">Все параметры операционного контроля должны быть заполнены</string>
     <string name="operation_control_parameter_spinner_hint">Метод измерения</string>
+    <string name="confirm_title">Подтвердить</string>
 
 </resources>

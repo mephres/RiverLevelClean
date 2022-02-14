@@ -65,6 +65,10 @@ class OperationViewModel(
             serious = EventPriority.SERIOUS.ordinal)
     }
 
+    fun isNotCheckedEquipInfoExists(equipId: Long): Boolean {
+        return db.equipInfoDao().isNotCheckedEquipInfoExists(equipId)
+    }
+
     fun getEquipById(equipId: Long): LiveData<EquipItem> {
         return db.equipDao().getEquipItemByIdLD(equipId)
     }
