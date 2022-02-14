@@ -8,7 +8,7 @@ import com.intas.metrolog.pojo.authuser.AuthUser
 import java.util.*
 
 object Util {
-    var deviceUniqueIdArray = arrayOf("c9840a92e310f689", "06b0e0e504e68b85", "465d26ffc863ca4e")
+    var deviceUniqueIdArray = arrayOf("c9840a92e310f689", "06b0e0e504e68b85")
 
     var eventLoggingEnabled = false
 
@@ -24,15 +24,17 @@ object Util {
     var requestPhoto: LinkedList<Long> = LinkedList()
     var chatMessageQueue: LinkedList<Int> = LinkedList()
 
-    val appPermissionArray = arrayOf(
+    var appPermissionArray = arrayOf(
         Manifest.permission.INTERNET,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.CAMERA,
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.ACCESS_NETWORK_STATE,
-        Manifest.permission.MANAGE_DOCUMENTS
+        Manifest.permission.MANAGE_DOCUMENTS,
+        Manifest.permission.ACCESS_BACKGROUND_LOCATION
     )
+
     var YYYYMMDD_HHMMSS = "yyyyMMdd_HHmmss"
 
     /**
@@ -45,6 +47,9 @@ object Util {
      */
     const val PIN_COUNT_OF_DIGITS = 4
 
+    const val START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION"
+    const val STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION"
+
     val ALARM_REQUEST_CODE = 999
 
     val GALLERY_REQUEST = 3000
@@ -55,6 +60,10 @@ object Util {
     val NOTIFICATION_CHANNEL_ID = "101"
     val NOTIFICATION_CHANNEL_NAME = "Канал уведомлений Мобильный Оператор"
     val NOTIFICATION_CHANNEL_DESCRIPTION = "Уведомления о системных событиях"
+
+    val SERVICE_NOTIFICATION_CHANNEL_ID = "102"
+    val SERVICE_NOTIFICATION_CHANNEL_NAME = "Канал уведомлений службы Мобильный Метролог"
+    val SERVICE_NOTIFICATION_CHANNEL_DESCRIPTION = "Уведомления о системных событиях"
 
     val BOTTOM_DIALOG_SHEET_FRAGMENT_TAG = "BOTTOM_DIALOG_SHEET_FRAGMENT_TAG"
 

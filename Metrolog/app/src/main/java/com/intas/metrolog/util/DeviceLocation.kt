@@ -1,17 +1,14 @@
 package com.intas.metrolog.util
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.IntentSender.SendIntentException
+import android.content.Context
 import android.location.Location
 import android.os.Looper
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 
-class DeviceLocation(val activity: Activity) {
+class DeviceLocation(val activity: Context) {
 
     private var isLocationUpdatesActive: Boolean = false
     private var errorText: String = ""
@@ -78,7 +75,7 @@ class DeviceLocation(val activity: Activity) {
             return
         }
         fusedLocationClient.removeLocationUpdates(locationCallback)
-            .addOnCompleteListener(activity) { task ->
+            .addOnCompleteListener { task ->
                 isLocationUpdatesActive = false
             }
     }
@@ -86,11 +83,10 @@ class DeviceLocation(val activity: Activity) {
     /**
      * Запуск отслеживания изменения местоположения
      */
-    @SuppressLint("MissingPermission")
     private fun startLocationUpdates() {
         isLocationUpdatesActive = true
         settingsClient.checkLocationSettings(locationSettingsRequest)
-            .addOnSuccessListener(activity) { locationSettingsResponse ->
+            .addOnSuccessListener { locationSettingsResponse ->
                 Looper.myLooper()?.let {
                     fusedLocationClient.requestLocationUpdates(
                         locationRequest,
@@ -98,10 +94,10 @@ class DeviceLocation(val activity: Activity) {
                     )
                 }
                 updateLocationUi()
-            }.addOnFailureListener(activity) { e ->
+            }.addOnFailureListener { e ->
                 val statusCode = (e as ApiException).statusCode
                 when (statusCode) {
-                    LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->                     //Нужно разрешение пользователя
+                    /*LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->                     //Нужно разрешение пользователя
                         try {
                             val resolvableApiException = e as ResolvableApiException
                             resolvableApiException.startResolutionForResult(
@@ -121,7 +117,7 @@ class DeviceLocation(val activity: Activity) {
                         isLocationUpdatesActive = false
                     }
                     else -> {
-                    }
+                    }*/
                 }
                 updateLocationUi()
             }
@@ -165,7 +161,7 @@ class DeviceLocation(val activity: Activity) {
         with(locationRequest) {
             this.let {
                 it.interval = 60000 * 1
-                it.fastestInterval = 3000
+                it.fastestInterval = 20000
                 it.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
             }
         }

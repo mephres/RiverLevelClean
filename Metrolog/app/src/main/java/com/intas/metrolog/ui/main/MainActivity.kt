@@ -1,13 +1,12 @@
 package com.intas.metrolog.ui.main
 
-import android.os.Build
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
@@ -15,8 +14,9 @@ import androidx.preference.PreferenceManager
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.ActivityMainBinding
 import com.intas.metrolog.pojo.userlocation.UserLocation
-import com.intas.metrolog.util.DeviceLocation
-import com.intas.metrolog.util.Util
+import com.intas.metrolog.util.*
+import com.intas.metrolog.util.Util.START_FOREGROUND_ACTION
+import com.intas.metrolog.util.Util.STOP_FOREGROUND_ACTION
 
 class MainActivity : AppCompatActivity() {
     private var doubleBackToExitPressedOnce = false
@@ -27,10 +27,12 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
 
-    @RequiresApi(Build.VERSION_CODES.N)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        AppPreferences.init(this)
+        Journal.init(this)
 
         Util.serverIpAddress = PreferenceManager.getDefaultSharedPreferences(this)
             .getString(
@@ -41,8 +43,8 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         initBottomNavigation()
-        initDeviceLocationObserver()
-        initNotSendedUserLocationObserver()
+        //initDeviceLocationObserver()
+        //initNotSendedUserLocationObserver()
         initNotSendedEquipObserver()
         initNotSendedEquipDocumentObserver()
         initNotSendedEventObserver()
@@ -55,6 +57,8 @@ class MainActivity : AppCompatActivity() {
         initLoadMessageObserver()
         initNewChatMessageCountObserver()
         initNotSentChatMessageObserver()
+
+        controlDeviceLocationService(true)
     }
 
     /**
@@ -285,5 +289,16 @@ class MainActivity : AppCompatActivity() {
             super.onBackPressed()
             return
         }
+    }
+
+    override fun onDestroy() {
+        controlDeviceLocationService(false)
+        super.onDestroy()
+    }
+
+    private fun controlDeviceLocationService(runningState: Boolean) {
+        val deviceLocationServiceIntent = Intent(this, DeviceLocationService::class.java)
+        deviceLocationServiceIntent.action = if (runningState) START_FOREGROUND_ACTION else STOP_FOREGROUND_ACTION
+        ContextCompat.startForegroundService(this, deviceLocationServiceIntent)
     }
 }

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_corner_area"
+        android:text="                                                           "
+        android:textSize="1sp"
+        android:tint="@color/md_green_500" />
+
+    <TextView
+        android:id="@+id/equipNameTitleTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:textColor="@color/md_black"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        tools:text="Микрошприц для газовой хроматографии SGE-Cromatec #1842913" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/addRFIDView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/addRFIDImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_nfc_36"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/colorPrimary" />
+
+        <TextView
+            android:id="@+id/addRFIDTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/equip_add_rfid_label"
+            android:textSize="16sp"
+            android:textColor="@color/md_black"
+            app:layout_constraintBottom_toBottomOf="@+id/addRFIDImageView"
+            app:layout_constraintStart_toEndOf="@+id/addRFIDImageView"
+            app:layout_constraintTop_toTopOf="@id/addRFIDImageView" />
+
+        <View
+            android:id="@+id/addRFIDDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/md_grey_300"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/addRFIDTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/createDocumentView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:id="@+id/createDocumentImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_picture_as_pdf_36"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/md_red_500" />
+
+        <TextView
+            android:id="@+id/createDocumentTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="@string/equip_create_document_label"
+            android:textSize="16sp"
+            android:textColor="@color/md_black"
+            app:layout_constraintBottom_toBottomOf="@+id/createDocumentImageView"
+            app:layout_constraintStart_toEndOf="@+id/createDocumentImageView"
+            app:layout_constraintTop_toTopOf="@id/createDocumentImageView" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
