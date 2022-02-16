@@ -440,10 +440,6 @@ class EventCommentFragment : BottomSheetDialogFragment() {
                     }
                 }
                 Util.GALLERY_REQUEST -> {
-//                    data?.let {
-//                        photoURI = data.data
-//                        photoURI?.let { viewModel.addImage(it) }
-//                    }
                     data?.data?.let {
                         val imagePath = FileUtil.getPath(it)
                         var localUri: Uri? = null
