@@ -90,10 +90,10 @@ object Journal {
      * @param list - список событий
      * @param journalType - тип события
      */
-    fun insertJournal(comment: String, list: List<Any>?, journalType: Int = 0) {
+    fun insertJournal(comment: String, list: List<Any>?, journalType: Int = 111) {
         if (Util.eventLoggingEnabled) {
             CoroutineScope(Dispatchers.IO).launch {
-                list?.forEach {
+               list?.forEach {
                     insertJournal(
                         comment = comment,
                         journalText = it.toString(),
@@ -171,8 +171,11 @@ object Journal {
                     sdFile
                 } catch (f: FileNotFoundException) {
                     f
-                } catch (e: java.lang.Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
+                    onJournalExportFailure?.invoke(
+                        "При экпорте произошла ошибка - ${e.localizedMessage}"
+                    )
                 }
             }
             // ждем выполнения сопрограммы

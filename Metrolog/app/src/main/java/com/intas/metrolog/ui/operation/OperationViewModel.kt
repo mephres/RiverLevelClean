@@ -125,13 +125,14 @@ class OperationViewModel(
      */
     fun setOperationComplete(eventOperationItem: EventOperationItem) {
         viewModelScope.launch {
+            Journal.insertJournal("OperationViewModel->setOperationComplete->eventOperationItem", eventOperationItem)
             eventOperationItem.completed = 1
             eventOperationItem.dateEnd = DateTimeUtil.getUnixDateTimeNow()
             eventOperationItem.completedUserId = (Util.authUser?.userId ?: 0).toLong()
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
-            Journal.insertJournal("OperationViewModel->setOperationComplete", eventOperationItem)
+            Journal.insertJournal("OperationViewModel->setOperationComplete->updatedEvent", eventOperationItem)
         }
     }
 
@@ -147,6 +148,7 @@ class OperationViewModel(
      */
     fun setDateTimeTimer(isStopTimer: Boolean) {
 
+        Journal.insertJournal("OperationViewModel->setDateTimeTimer->isStopTimer", isStopTimer)
         viewModelScope.launch {
 
             val dateTime = DateTimeUtil.getUnixDateTimeNow() // получаем текущее время

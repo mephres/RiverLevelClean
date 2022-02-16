@@ -48,7 +48,7 @@ android {
         variant.outputs.all {
             def appName = buildType
             //outputFileName = appName + "-${variant.versionName}.apk"
-            outputFileName = "metrolog.apk"
+            outputFileName = "metrolog-${variant.versionName}.apk"
         }
     }
 }
