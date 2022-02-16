@@ -112,7 +112,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val authUser = db.authUserDao().getLoggedUser()
 
-
     val onErrorMessage = SingleLiveEvent<String>()
 
     private var _requestFilter = MutableLiveData<RequestFilter>()
