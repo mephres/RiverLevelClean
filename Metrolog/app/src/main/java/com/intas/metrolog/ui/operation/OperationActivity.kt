@@ -111,17 +111,26 @@ class OperationActivity : AppCompatActivity() {
     private fun setClickListeners() {
 
         binding.operationInfoImageView.setOnClickListener {
-            Journal.insertJournal("OperationActivity->setClickListeners", "operationInfoImageView.setOnClickListener")
+            Journal.insertJournal(
+                "OperationActivity->setClickListeners",
+                "operationInfoImageView.setOnClickListener"
+            )
             showFullEquipInfo(it)
         }
 
         binding.eventControlFab.setOnClickListener {
-            Journal.insertJournal("OperationActivity->setClickListeners", "eventControlFab.setOnClickListener")
+            Journal.insertJournal(
+                "OperationActivity->setClickListeners",
+                "eventControlFab.setOnClickListener"
+            )
             viewModel.changeControlButtonVisibleValue()
         }
 
         binding.shadowView.setOnClickListener {
-            Journal.insertJournal("OperationActivity->setClickListeners", "shadowView.setOnClickListener")
+            Journal.insertJournal(
+                "OperationActivity->setClickListeners",
+                "shadowView.setOnClickListener"
+            )
             viewModel.changeControlButtonVisibleValue()
         }
 
@@ -130,21 +139,37 @@ class OperationActivity : AppCompatActivity() {
         }
 
         binding.stopEventFab.setOnClickListener {
-            Journal.insertJournal("OperationActivity->setClickListeners", "stopEventFab.setOnClickListener")
+            Journal.insertJournal(
+                "OperationActivity->setClickListeners",
+                "stopEventFab.setOnClickListener"
+            )
             pauseEvent()
             viewModel.changeControlButtonVisibleValue()
         }
 
         binding.cancelEventFab.setOnClickListener {
-            Journal.insertJournal("OperationActivity->setClickListeners", "cancelEventFab.setOnClickListener")
+            Journal.insertJournal(
+                "OperationActivity->setClickListeners",
+                "cancelEventFab.setOnClickListener"
+            )
             showEventComment(CANCELED)
             viewModel.changeControlButtonVisibleValue()
             binding.eventControlFab.visibility = View.GONE
         }
 
         binding.completeEventFab.setOnClickListener {
-            Journal.insertJournal("OperationActivity->setClickListeners", "completeEventFab.setOnClickListener")
+            Journal.insertJournal(
+                "OperationActivity->setClickListeners",
+                "completeEventFab.setOnClickListener"
+            )
             operationListAdapter.currentList.let {
+                if (it.count() >= 15) {
+                    it.forEach { eoi ->
+                        if (!eoi.hasOperationControl) {
+                            viewModel.setOperationComplete(eoi)
+                        }
+                    }
+                }
                 it.forEach { eoi ->
                     if (eoi.completed == 0) {
                         showToast(getString(R.string.operation_activity_complete_event_error))
@@ -153,6 +178,7 @@ class OperationActivity : AppCompatActivity() {
                     }
                 }
             }
+
             showEventComment(COMPLETED)
             viewModel.changeControlButtonVisibleValue()
         }
@@ -173,19 +199,29 @@ class OperationActivity : AppCompatActivity() {
      */
     private fun setSwipeListener() {
 
-        operationListAdapter.onSwiped = {eventOperation->
-            Journal.insertJournal("OperationActivity->setSwipeListener->eventOperation", eventOperation)
+        operationListAdapter.onSwiped = { eventOperation ->
+            Journal.insertJournal(
+                "OperationActivity->setSwipeListener->eventOperation",
+                eventOperation
+            )
 
             // если у данной операции есть операционный контроль
             if (eventOperation.hasOperationControl) {
                 // запуск фрагмента с операционным контролем
-                val operationControlFragment = OperationControlInputValueFragment.newInstance(eventOperation.subId)
-                operationControlFragment.show(supportFragmentManager, OPERATION_CONTROL_FRAGMENT_TAG)
+                val operationControlFragment =
+                    OperationControlInputValueFragment.newInstance(eventOperation.subId)
+                operationControlFragment.show(
+                    supportFragmentManager,
+                    OPERATION_CONTROL_FRAGMENT_TAG
+                )
 
                 // слушатель на нажатие кнопки Сохранить
                 operationControlFragment.onSaveValueListener = {
                     if (it) {
-                        Journal.insertJournal("OperationActivity->setSwipeListener->onSaveValueListener", eventOperation)
+                        Journal.insertJournal(
+                            "OperationActivity->setSwipeListener->onSaveValueListener",
+                            eventOperation
+                        )
                         // делаем операцию выполненной
                         viewModel.setOperationComplete(eventOperation)
                         // если список в адаптере не пустой и количество элементов списка равно одному,
@@ -213,7 +249,7 @@ class OperationActivity : AppCompatActivity() {
 
         viewModel.eventItem.observe(this, { event ->
 
-            Journal.insertJournal("OperationActivity->showEventComment->event", event)
+            Journal.insertJournal("OperationActivity->observeViewModel->event", event)
             viewModel.getEquipById(event.equipId ?: 0).observe(this, { equip ->
                 event.equip = equip
                 setUi(event)
@@ -222,7 +258,7 @@ class OperationActivity : AppCompatActivity() {
                 currentEquip = equip
                 currentEvent?.equip = equip
                 showEquipInfo(equip)
-                Journal.insertJournal("OperationActivity->showEventComment->equip", equip)
+                Journal.insertJournal("OperationActivity->observeViewModel->equip", equip)
             })
             currentEvent = event
             currentEventStatus = event.status
@@ -251,7 +287,7 @@ class OperationActivity : AppCompatActivity() {
      */
     private fun showEventComment(status: Int) {
 
-        Journal.insertJournal("OperationActivity->showEventComment", status)
+        Journal.insertJournal("OperationActivity->showEventComment->status", status)
 
         currentEvent?.let {
             Journal.insertJournal("OperationActivity->showEventComment->currentEvent", it)
@@ -291,7 +327,7 @@ class OperationActivity : AppCompatActivity() {
                 binding.operationListTitleTextView.visibility = View.VISIBLE
             }
             operationListAdapter.submitList(checkList)
-            Journal.insertJournal("OperationActivity->loadOperationList", list = checkList)
+            Journal.insertJournal("OperationActivity->loadOperationList->list", list = checkList)
         })
     }
 
@@ -299,7 +335,7 @@ class OperationActivity : AppCompatActivity() {
      * Отображение или скрытие значения таймера выполнения мероприятия взависимости от статуса мероприятия
      */
     private fun setTimer(eventState: Int) {
-        Journal.insertJournal("OperationActivity->setTimer", eventState)
+        Journal.insertJournal("OperationActivity->setTimer->eventState", eventState)
         var timerDuration = currentEvent?.durationTimer ?: 0
         when (eventState) {
             NEW -> {
@@ -704,7 +740,10 @@ class OperationActivity : AppCompatActivity() {
      * @param comment - текст введеного комментария при завершении мероприятия
      */
     private fun finishEvent(status: Int, comment: String? = null) {
-        Journal.insertJournal("OperationActivity->finishEvent", "status: $status, comment: $comment")
+        Journal.insertJournal(
+            "OperationActivity->finishEvent",
+            "status: $status, comment: $comment"
+        )
 
         viewModel.setDateTimeTimer(false)
         viewModel.stopTimer()
@@ -716,7 +755,10 @@ class OperationActivity : AppCompatActivity() {
      * Установка мероприятия на паузу или снятие мероприятия с паузы
      */
     private fun pauseEvent() {
-        Journal.insertJournal("OperationActivity->pauseEvent", currentEventStatus)
+        Journal.insertJournal(
+            "OperationActivity->pauseEvent->currentEventStatus",
+            currentEventStatus
+        )
 
         if (currentEventStatus == IN_WORK) {
             viewModel.setDateTimeTimer(false)
@@ -816,7 +858,7 @@ class OperationActivity : AppCompatActivity() {
      * Отображение списка приоритетной информации по оборудованию, при наличии
      */
     private fun showEquipInfo(equip: EquipItem) {
-        Journal.insertJournal("OperationActivity->showEquipInfo", equip)
+        Journal.insertJournal("OperationActivity->showEquipInfo->equip", equip)
         if (viewModel.isNotCheckedEquipInfoExists(equip.equipId) && !equipInfoIsShowing) {
             val equipInfoFragment = EquipInfoFragment.newInstance(equip)
             equipInfoFragment.show(
@@ -857,7 +899,10 @@ class OperationActivity : AppCompatActivity() {
 
         eventId = intent.getLongExtra(EVENT_ID, 0)
         needVerify = intent.getBooleanExtra(NEED_VERIFY_FOR_BEGIN, true)
-        Journal.insertJournal("OperationActivity->parseIntent", "eventId: $eventId, needVerify: $needVerify")
+        Journal.insertJournal(
+            "OperationActivity->parseIntent",
+            "eventId: $eventId, needVerify: $needVerify"
+        )
     }
 
     companion object {

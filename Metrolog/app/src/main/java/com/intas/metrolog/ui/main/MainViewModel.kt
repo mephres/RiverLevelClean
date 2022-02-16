@@ -107,7 +107,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val getNotSendedRequestPhotoList = db.requestPhotoDao().getNotSendedRequestPhotoList()
     val chatMessageLastId = db.chatMessageDao().getChatMessageLastId()
     val newChatMessageCount = db.chatMessageDao().getNewChatMessageCount(Util.authUser?.userId ?: 0)
-    val notSendedChatMessageList = db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
+    val notSendedChatMessageList =
+        db.chatMessageDao().getNotSendedMessageList().distinctUntilChanged()
 
     val authUser = db.authUserDao().getLoggedUser()
 
@@ -139,6 +140,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addRequestFilter(requestFilter: RequestFilter) {
+        Journal.insertJournal("MainViewModel->addRequestFilter", requestFilter)
         _requestFilter.value = requestFilter
     }
 
@@ -148,6 +150,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertUserList(userList: List<UserItem>) {
 
+        Journal.insertJournal("MainViewModel->insertUserList->count", userList.count())
         Log.d("MM_INSERT_USERS", userList.toString())
 
         viewModelScope.launch {
@@ -172,6 +175,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let { userList ->
+                        Journal.insertJournal("MainViewModel->getUserList", list = userList)
                         insertUserList(userList)
                     }
                 }, {
@@ -187,6 +191,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertRequestList(requestList: List<RequestItem>) {
 
+        Journal.insertJournal("MainViewModel->insertRequestList->count", requestList.count())
         Log.d("MM_INSERT_REQUEST", requestList.toString())
 
         viewModelScope.launch {
@@ -225,6 +230,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 equipItem.mestUstan
             )
 
+            Journal.insertJournal("MainViewModel->fillRequestEquipInfo->equipInfo", equipInfo)
             db.requestDao().updateRequestEquipInfo(requestItem.id, equipInfo)
         }
     }
@@ -250,6 +256,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let { requestList ->
+                        Journal.insertJournal("MainViewModel->getRequestList", list = requestList)
                         insertRequestList(requestList)
                     }
                 }, {
@@ -271,6 +278,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertEquipList(equipList: List<EquipItem>) {
 
+        Journal.insertJournal("MainViewModel->insertEquipList->count", equipList.count())
         Log.d("MM_INSERT_EQUIP", equipList.toString())
 
         viewModelScope.launch {
@@ -293,6 +301,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             it
                         }
 
+                        Journal.insertJournal(
+                            "MainViewModel->insertEquipList->equipInfoList",
+                            list = list
+                        )
                         insertEquipInfoList(list)
                     }
                 }
@@ -306,6 +318,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertEquipInfoList(equipInfoList: List<EquipInfo>) {
 
+        Journal.insertJournal("MainViewModel->insertEquipInfoList->count", equipInfoList.count())
         Log.d("MM_INSERT_EQUIP_INFO", equipInfoList.toString())
 
         viewModelScope.launch {
@@ -334,6 +347,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let { equipList ->
+                        //Journal.insertJournal("MainViewModel->getEquip", list = equipList)
                         _equipLoaded.value = true
                         insertEquipList(equipList)
                     }
@@ -356,6 +370,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertEventCommentList(eventCommentList: List<EventComment>) {
 
+        Journal.insertJournal(
+            "MainViewModel->insertEventCommentList->count",
+            eventCommentList.count()
+        )
         Log.d("MM_INSERT_EVENT_COMMENT", eventCommentList.toString())
 
         viewModelScope.launch {
@@ -375,6 +393,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { eventComment ->
+                        Journal.insertJournal("MainViewModel->getEventComment", list = eventComment)
                         insertEventCommentList(eventComment)
                     }
                 }, {
@@ -390,6 +409,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertEquipInfoPriorityList(equipInfoPriorityList: List<EquipInfoPriority>) {
 
+        Journal.insertJournal(
+            "MainViewModel->insertEquipInfoPriorityList->count",
+            equipInfoPriorityList.count()
+        )
         Log.d("MM_INSERT_EQ_PRIORITY", equipInfoPriorityList.toString())
 
         viewModelScope.launch {
@@ -409,6 +432,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { equipPriority ->
+                        Journal.insertJournal(
+                            "MainViewModel->getEquipInfoPriority",
+                            list = equipPriority
+                        )
                         insertEquipInfoPriorityList(equipPriority)
                     }
                 }, {
@@ -424,6 +451,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertDocumentTypeList(documentTypeList: List<DocumentType>) {
 
+        Journal.insertJournal(
+            "MainViewModel->insertDocumentTypeList->count",
+            documentTypeList.count()
+        )
         Log.d("MM_INSERT_DOCUMENT_TYPE", documentTypeList.toString())
 
         viewModelScope.launch {
@@ -443,6 +474,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { docType ->
+                        Journal.insertJournal("MainViewModel->getDocumentType", list = docType)
                         insertDocumentTypeList(docType)
                     }
                 }, {
@@ -458,6 +490,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertEventOperationTypeList(operationTypeList: List<EventOperationTypeItem>) {
 
+        Journal.insertJournal(
+            "MainViewModel->insertEventOperationTypeList->count",
+            operationTypeList.count()
+        )
         Log.d("MM_INSERT_OPERATION", operationTypeList.toString())
 
         viewModelScope.launch {
@@ -477,6 +513,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { operationTypeList ->
+                        Journal.insertJournal(
+                            "MainViewModel->getEventOperation",
+                            list = operationTypeList
+                        )
                         insertEventOperationTypeList(operationTypeList)
                     }
                 }, {
@@ -492,6 +532,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertDisciplineList(disciplineList: List<DisciplineItem>) {
 
+        Journal.insertJournal("MainViewModel->insertDisciplineList->count", disciplineList.count())
         Log.d("MM_INSERT_DISCIPLINE", disciplineList.toString())
 
         viewModelScope.launch {
@@ -511,6 +552,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { disciplineList ->
+                        Journal.insertJournal("MainViewModel->getDiscipline", list = disciplineList)
                         insertDisciplineList(disciplineList)
 
                         val list = mutableListOf<Int>()
@@ -532,6 +574,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun insertRequestStatusList(requestStatusList: List<RequestStatusItem>) {
 
+        Journal.insertJournal(
+            "MainViewModel->insertRequestStatusList->count",
+            requestStatusList.count()
+        )
         Log.d("MM_INSERT_REQUEST_ST", requestStatusList.toString())
 
         viewModelScope.launch {
@@ -551,6 +597,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .subscribeOn(Schedulers.io())
                 .subscribe({
                     it.list?.let { statusList ->
+                        Journal.insertJournal("MainViewModel->getRequestStatus", list = statusList)
                         insertRequestStatusList(statusList)
 
                         val list = mutableListOf<Int>()
@@ -574,6 +621,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEquipLocation(equip: EquipItem) {
 
+        Journal.insertJournal("MainViewModel->sendEquipLocation->equip", equip)
+
         Util.equipLocationQueue.addLast(equip.equipId)
 
         val map = mutableMapOf<String, String>()
@@ -581,6 +630,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_EQUIP_ID] = equip.equipId.toString()
         map[QUERY_PARAM_LATITUDE] = equip.latitude.toString()
         map[QUERY_PARAM_LONGITUDE] = equip.longitude.toString()
+
+        Journal.insertJournal("MainViewModel->sendEquipLocation->map", map)
 
         val sendEquipLocationDisposable = ApiFactory.apiService.updateEquipGeo(map)
             .retryWhen { f: Flowable<Throwable?> ->
@@ -593,6 +644,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
+                Journal.insertJournal("MainViewModel->sendEquipLocation->UpdateResponse", it)
                 if (it.requestSuccess != null) {
                     it.requestSuccess?.id?.toLong()?.let {
                         setEquipLocationSendedById(it)
@@ -611,6 +663,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun setEquipLocationSendedById(id: Long) {
 
+        Journal.insertJournal("MainViewModel->setEquipLocationSendedById->id", id)
         Log.d("MM_EQUIP_LOCATION_SEND", id.toString())
 
         if (Util.equipRfidQueue.size > 50) {
@@ -647,6 +700,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
+                Journal.insertJournal("MainViewModel->sendEquipRFID->UpdateResponse", it)
                 if (it.requestSuccess != null) {
                     it.requestSuccess?.id?.toLong()?.let {
                         setEquipRFIDSendedById(it)
@@ -665,6 +719,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun setEquipRFIDSendedById(id: Long) {
 
+        Journal.insertJournal("MainViewModel->setEquipRFIDSendedById->id", id)
         Log.d("MM_SEND_EQUIP_RFID", id.toString())
 
         if (Util.equipRfidQueue.size > 50) {
@@ -682,6 +737,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun insertUserLocation(userLocation: UserLocation) {
 
+        Journal.insertJournal("MainViewModel->insertUserLocation->userLocation", userLocation)
         Log.d("MM_INSERT_USER_LOCATION", userLocation.toString())
 
         viewModelScope.launch {
@@ -698,6 +754,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (Util.userLocationQueue.contains(userLocation.id)) {
             return
         }
+
+        Journal.insertJournal("MainViewModel->sendUserLocation->userLocation", userLocation)
+
         Util.userLocationQueue.addLast(userLocation.id)
 
         val map = mutableMapOf<String, String>()
@@ -724,7 +783,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal("MainViewModel->sendUserLocation->UpdateResponse", it)
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.toLong()?.let {
@@ -746,6 +805,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun setUserLocationSendedById(id: Long) {
 
+        Journal.insertJournal("MainViewModel->setUserLocationSendedById->id", id)
         Log.d("MM_SET_LOCATION_SEND", id.toString())
 
         if (Util.userLocationQueue.size > 500) {
@@ -762,6 +822,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param equipDocument - документ оборудования
      */
     fun sendEquipDocument(equipDocument: EquipDocument) {
+
+        Journal.insertJournal("MainViewModel->sendEquipDocument->equipDocument", equipDocument)
 
         var multipartFile: MultipartBody.Part? = null
 
@@ -781,6 +843,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             equipDocument.documentTypeId.toString().toRequestBody(MultipartBody.FORM)
         val multipartDoc = equipDocument.filename.toString().toRequestBody(MultipartBody.FORM)
 
+        Journal.insertJournal(
+            "MainViewModel->sendEquipDocument->parameters",
+            "multipartFile: $multipartFile, multipartId: $multipartId, multipartUserId: $multipartUserId, multipartEquipId: $multipartEquipId, multipartType: $multipartType, multipartDoc: $multipartDoc"
+        )
+
         val sendEquipDocumentDisposable = ApiFactory.apiService.addEquipDocument(
             file = multipartFile,
             id = multipartId,
@@ -799,7 +866,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal("MainViewModel->sendEquipDocument->UpdateResponse", it)
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.toLong()?.let {
@@ -822,6 +889,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun setEquipDocumentSendedById(id: Long) {
 
+        Journal.insertJournal("MainViewModel->setEquipDocumentSendedById->id", id)
         Log.d("MM_SET_EQUIP_DOC_SEND", id.toString())
 
         viewModelScope.launch {
@@ -841,6 +909,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val year =
                 DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "YYYY").toInt()
 
+            Journal.insertJournal("MainViewModel->getEvent->parameters", "userId: $it, month: $month, year: $year")
+
             getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
                 .subscribeOn(Schedulers.io())
                 .repeatWhen { completed ->
@@ -852,6 +922,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let { eventList ->
+                        Journal.insertJournal("MainViewModel->getEvent", list = eventList)
                         insertEventList(eventList)
                         Log.d("eventList", eventList.toString())
                     }
@@ -871,7 +942,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private fun insertEventList(eventList: List<EventItem>) {
         viewModelScope.launch {
 
-            Journal.insertJournal("MainViewModel->insertEventList->list", list = eventList)
+            Journal.insertJournal("MainViewModel->insertEventList->count", eventList.count())
             val list = eventList.filter {
                 val event = db.eventDao().getEvent(it.opId)
                 (event?.isSended == 0 || (event?.status ?: 0 > NEW && event?.status ?: 0 != CANCELED)) == false
@@ -890,6 +961,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             list.forEach { event ->
 
                 Util.safeLet(event.operation, event.equipId) { eol, equipId ->
+                    Journal.insertJournal("MainViewModel->insertEventList->eol", list = eol)
                     insertEventOperationList(eol, event.opId, equipId)
                 }
             }
@@ -901,6 +973,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         eventId: Long,
         equipId: Long
     ) {
+
+        Journal.insertJournal("MainViewModel->insertEventOperationList->parameters", "eventEventOperationList: ${eventEventOperationList.count()}, eventId: $eventId, equipId: $equipId")
+
         viewModelScope.launch {
             val tempNotSendedEventOperationList = notSendedEventOperationList.value
 
@@ -911,6 +986,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             tempNotSendedEventOperationList?.let {
                 if (!tempNotSendedEventOperationList.isNullOrEmpty()) {
+                    Journal.insertJournal("MainViewModel->insertEventOperationList->tempNotSendedEventOperationList", list = tempNotSendedEventOperationList)
                     db.eventOperationDao().insertEventOperationList(it)
                 }
             }
@@ -924,6 +1000,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     eventOperation.hasOperationControl = true
                     db.eventOperationDao().updateEventOperation(eventOperation)
 
+                    Journal.insertJournal("MainViewModel->insertEventOperationList->operControl", it)
                     insertOperControl(it)
                 }
             }
@@ -933,6 +1010,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun updateEventCheckListSize(eventId: Long) {
+        Journal.insertJournal("MainViewModel->updateEventCheckListSize->eventId", eventId)
         viewModelScope.launch {
             val event = db.eventDao().getEvent(eventId)
 
@@ -945,6 +1023,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun insertOperControl(operControl: OperControlItem) {
+
+        Journal.insertJournal("MainViewModel->insertOperControl->operControl", operControl)
         viewModelScope.launch {
 
             val tempOperControl =
@@ -963,12 +1043,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     field.operationId = operControl.opId
                     field.classCode = operControl.classCode
 
+                    Journal.insertJournal("MainViewModel->insertOperControl->field", field)
                     val fieldId = db.fieldDao().insertField(field)
                     field.dictData?.let { dictData ->
                         if (!dictData.isNullOrEmpty()) {
                             for ((code, value) in dictData) {
                                 val dictDataObject =
                                     FieldDictData(fieldId = fieldId, code = code, value = value)
+                                Journal.insertJournal("MainViewModel->insertOperControl->dictDataObject", dictDataObject)
                                 db.fieldDictDataDao()
                                     .insertFieldDictData(dictDataObject) // запись в базу способа измерения
                             }
@@ -985,6 +1067,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEvent(event: EventItem) {
 
+        Journal.insertJournal("MainViewModel->sendEvent->event", event)
+
         Util.eventQueue.addLast(event.opId)
 
         val map = mutableMapOf<String, String>()
@@ -995,6 +1079,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DURATION_TIMER] = event.durationTimer.toString()
         map[QUERY_PARAM_DATE_TIME_START_TIMER] = event.dateTimeStartTimer.toString()
         map[QUERY_PARAM_COMMENT] = event.comment.toString()
+
+        Journal.insertJournal("MainViewModel->sendEvent->parameters", map)
 
         val sendEventDisposable = ApiFactory.apiService.updateEvent(map)
             .retryWhen { f: Flowable<Throwable?> ->
@@ -1007,7 +1093,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal("MainViewModel->sendEvent->UpdateResponse", it)
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.toLong()?.let {
@@ -1024,6 +1110,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun setEventSendedById(id: Long) {
+        Journal.insertJournal("MainViewModel->setEventSendedById->id", id)
         Log.d("MM_SET_EVENT_SEND", id.toString())
 
         if (Util.eventQueue.count() > 100) {
@@ -1041,6 +1128,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     @SuppressLint("LongLogTag")
     fun sendComplexEventOperation(eventOperation: EventOperationItem) {
+
+        Journal.insertJournal("MainViewModel->sendComplexEventOperation->eventOperation", eventOperation)
 
         Util.eventOperationQueue.addLast(eventOperation.subId)
 
@@ -1066,6 +1155,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DATE_TIME_START_TIMER] = dateTimeStartTimer.toString()
         map[QUERY_PARAM_COMMENT] = comment
 
+        Journal.insertJournal("MainViewModel->sendComplexEventOperation->parameters", map)
+
         val sendComplexEventOperationDisposable = ApiFactory.apiService.updateEvent(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
@@ -1077,9 +1168,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal(
+                    "MainViewModel->sendComplexEventOperation->UpdateResponse",
+                    it
+                )
                 if (it.requestError != null) {
-                    if (it.requestError.code.equals("406") && it.requestError.message.equals("Мероприятие уже проводилось", true)) {
+                    if (it.requestError.code.equals("406") && it.requestError.message.equals(
+                            "Мероприятие уже проводилось",
+                            true
+                        )
+                    ) {
                         setEventOperationSendedById(eventOperation.subId)
                     }
                 }
@@ -1104,6 +1202,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEventOperation(eventOperation: EventOperationItem) {
 
+        Journal.insertJournal("MainViewModel->sendEventOperation->eventOperation", eventOperation)
         Util.eventOperationQueue.addLast(eventOperation.subId)
 
         val map = mutableMapOf<String, String>()
@@ -1116,6 +1215,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_COMPLETED] = eventOperation.completed.toString()
         map[QUERY_PARAM_COMPLETED_USER_ID] = eventOperation.completedUserId.toString()
 
+        Journal.insertJournal("MainViewModel->sendEventOperation->parameters", map)
+
         val sendEventOperationDisposable = ApiFactory.apiService.addOperation(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
@@ -1127,7 +1228,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal("MainViewModel->sendEventOperation->UpdateResponse", it)
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.toLong()?.let {
@@ -1145,6 +1246,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     @SuppressLint("LongLogTag")
     private fun setEventOperationSendedById(id: Long) {
+
+        Journal.insertJournal("MainViewModel->setEventOperationSendedById->id", id)
         Log.d("MM_SET_EVENT_OPERATION_SEND", id.toString())
 
         if (Util.eventOperationQueue.count() > 100) {
@@ -1162,6 +1265,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEventOperationControl(operControl: OperControlItem) {
 
+        Journal.insertJournal("MainViewModel->sendEventOperationControl->operControl", operControl)
+
         Util.eventOperationControlQueue.addLast(operControl.id)
 
         val jsonObject =
@@ -1172,6 +1277,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map.put(QUERY_PARAM_DATA, jsonObject["data"].toString())
         map.put(QUERY_PARAM_EQUIP_ID, operControl.equipId.toString())
         map.put(QUERY_PARAM_OP_ID, jsonObject["opId"].toString())
+
+        Journal.insertJournal("MainViewModel->sendEventOperationControl->parameters", map)
 
         // отправка полей операционного контроля на сервер ЦНО
         val sendOperControlDisposable = ApiFactory.apiService.addOperControlFact(map)
@@ -1185,7 +1292,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal(
+                    "MainViewModel->sendEventOperationControl->UpdateResponse",
+                    it
+                )
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.let {
@@ -1203,6 +1313,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     @SuppressLint("LongLogTag")
     private fun setEventOperControlSendedById(ids: String) {
+
+        Journal.insertJournal("MainViewModel->setEventOperControlSendedById->ids", ids)
         Log.d("MM_SET_OPER_CONTROL_SEND", ids)
 
         viewModelScope.launch {
@@ -1310,6 +1422,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEventPhoto(eventPhoto: EventPhotoItem) {
 
+        Journal.insertJournal("MainViewModel->sendEventPhoto->eventPhoto", eventPhoto)
+
         eventPhoto.id?.let {
             Util.eventPhotoQueue.addLast(it)
         }
@@ -1329,6 +1443,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DATETIME] = eventPhoto.datetime.toString()
         map[QUERY_PARAM_USER_ID] = eventPhoto.userId.toString()
 
+        Journal.insertJournal("MainViewModel->sendEventPhoto->parameters", map)
+
         val sendEventPhotoDisposable = ApiFactory.apiService.addEventPhoto(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
@@ -1340,7 +1456,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                Journal.insertJournal("MainViewModel->sendEventPhoto->UpdateResponse", it)
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.id?.toLong()?.let {
@@ -1358,6 +1474,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     @SuppressLint("LongLogTag")
     private fun setEventPhotoSendedById(id: Long) {
+
+        Journal.insertJournal("MainViewModel->setEventPhotoSendedById->id", id)
 
         if (Util.eventPhotoQueue.count() > 100) {
             Util.eventPhotoQueue.removeFirst()
@@ -1377,6 +1495,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendRequest(request: RequestItem) {
 
+        Journal.insertJournal("MainViewModel->sendRequest->request", request)
+
         request.id.let {
             Util.requestQueue.addLast(it)
         }
@@ -1393,6 +1513,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_DISCIPLINE_ID] = request.discipline.toString()
         map[QUERY_PARAM_OPERATION_TYPE] = request.operationType.toString()
 
+        Journal.insertJournal("MainViewModel->sendRequest->parameters", map)
+
         val sendRequestDisposable = ApiFactory.apiService.addRequest(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
@@ -1404,6 +1526,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
+                Journal.insertJournal("MainViewModel->sendRequest->UpdateResponse", it)
                 it.requestSuccess?.let {
                     Util.safeLet(it.id, it.serverId) { id, serverId ->
                         setRequestSendedById(id.toLong(), serverId.toLong())
@@ -1422,6 +1545,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param id - идентификатор записи
      */
     private fun setRequestSendedById(id: Long, serverId: Long) {
+
+        Journal.insertJournal(
+            "MainViewModel->setRequestSendedById",
+            "id-> $id serverId-> $serverId"
+        )
 
         if (Util.requestQueue.count() > 100) {
             Util.requestQueue.removeFirst()
@@ -1446,6 +1574,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendRequestPhoto(requestPhoto: RequestPhoto) {
 
+        Journal.insertJournal("MainViewModel->sendRequestPhoto->requestPhoto", requestPhoto)
+
         requestPhoto.id.let {
             Util.requestPhoto.addLast(it)
         }
@@ -1456,6 +1586,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_REQUEST_ID] = requestPhoto.requestId.toString()
         map[QUERY_PARAM_REQUEST_PHOTO] = requestPhoto.photo.toString()
         map[QUERY_PARAM_DATETIME] = requestPhoto.dateTime.toString()
+
+        Journal.insertJournal("MainViewModel->sendRequestPhoto->parameters", map)
 
         val sendRequestPhotoDisposable = ApiFactory.apiService.addRequestPhoto(map)
             .retryWhen { f: Flowable<Throwable?> ->
@@ -1468,6 +1600,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
+                Journal.insertJournal("MainViewModel->sendRequestPhoto->UpdateResponse", it)
                 it.requestSuccess?.let {
                     Util.safeLet(it.id, it.serverId) { id, serverId ->
                         setRequestPhotoSendedById(id.toLong(), serverId.toLong())
@@ -1485,6 +1618,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param id - идентификатор записи
      */
     private fun setRequestPhotoSendedById(id: Long, serverId: Long) {
+
+        Journal.insertJournal(
+            "MainViewModel->setRequestPhotoSendedById",
+            "id-> $id serverId-> $serverId"
+        )
 
         Log.d("MM_SET_REQUEST_PH_SEND", id.toString())
 
@@ -1504,6 +1642,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun sendEquipInfo(equipInfo: EquipInfo) {
 
+        Journal.insertJournal("MainViewModel->sendEquipInfo->equipInfo", equipInfo)
+
         equipInfo.id.let {
             Util.equipInfoQueue.addLast(it)
         }
@@ -1516,6 +1656,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         map[QUERY_PARAM_PRIORITY] = equipInfo.priority.toString()
         map[QUERY_PARAM_DATETIME] = equipInfo.dateTime.toString()
 
+        Journal.insertJournal("MainViewModel->sendEquipInfo->parameters", map)
+
         val sendEquipInfoDisposable = ApiFactory.apiService.addEquipInfo(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(600).delay(1, TimeUnit.MINUTES)
@@ -1527,6 +1669,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
+                Journal.insertJournal("MainViewModel->sendEquipInfo->UpdateResponse", it)
                 if (it.requestSuccess != null) {
 
                     it.requestSuccess?.let {
@@ -1548,6 +1691,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param id - идентификатор записи
      */
     private fun setEquipInfoSendedById(id: Long, serverId: Long) {
+
+        Journal.insertJournal(
+            "MainViewModel->setEquipInfoSendedById",
+            "id-> $id serverId-> $serverId"
+        )
 
         if (Util.equipInfoQueue.count() > 100) {
             Util.equipInfoQueue.removeFirst()
@@ -1576,6 +1724,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun loadMessageList(messageLastId: Int) {
+
+        Journal.insertJournal("MainViewModel->loadMessageList->messageLastId", messageLastId)
+
         loadMessageDisposable?.let {
             compositeDisposable.remove(it)
         }
@@ -1599,6 +1750,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
                     it.list?.let {
+                        Journal.insertJournal("MainViewModel->loadMessageList->list", list = it)
                         insertMessageList(it)
                     }
                     it.requestError?.let {
@@ -1616,6 +1768,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun insertMessageList(list: List<MessageItem>) {
+
+        Journal.insertJournal("MainViewModel->insertMessageList->count", list.count())
+
         viewModelScope.launch {
 
             Log.d("MM_INSERT_MESSAGES", list.size.toString())
@@ -1626,18 +1781,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun sendChatMessage(chatMessage: MessageItem) {
 
+        Journal.insertJournal("MainViewModel->sendChatMessage->chatMessage", chatMessage)
+
         chatMessage.id?.let {
             Util.chatMessageQueue.addLast(it)
         }
 
-        val messagesMap = mutableMapOf<String, String>()
-        messagesMap[QUERY_PARAM_USER_ID] = Util.authUser?.userId.toString()
-        messagesMap[QUERY_PARAM_ID] = chatMessage.id.toString()
-        messagesMap[QUERY_PARAM_MESSAGE_TEXT] = chatMessage.message.toString()
-        messagesMap[QUERY_PARAM_TO_USER_ID] = chatMessage.companionUserId.toString()
-        messagesMap[QUERY_PARAM_DATETIME] = chatMessage.dateTime.toString()
+        val map = mutableMapOf<String, String>()
+        map[QUERY_PARAM_USER_ID] = Util.authUser?.userId.toString()
+        map[QUERY_PARAM_ID] = chatMessage.id.toString()
+        map[QUERY_PARAM_MESSAGE_TEXT] = chatMessage.message.toString()
+        map[QUERY_PARAM_TO_USER_ID] = chatMessage.companionUserId.toString()
+        map[QUERY_PARAM_DATETIME] = chatMessage.dateTime.toString()
 
-        val disposable = ApiFactory.apiService.addChatMessage(messagesMap)
+        Journal.insertJournal("MainViewModel->sendChatMessage->parameters", map)
+
+        val disposable = ApiFactory.apiService.addChatMessage(map)
             .retryWhen { f: Flowable<Throwable?> ->
                 f.take(500).delay(1, TimeUnit.MINUTES)
             }
@@ -1647,6 +1806,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             .subscribeOn(Schedulers.io())
             .subscribe({
+                Journal.insertJournal("MainViewModel->sendChatMessage->UpdateResponse", it)
                 it.requestSuccess?.let {
                     Util.safeLet(it.id, it.serverId) { id, serverId ->
                         setChatMessageSended(id.toInt(), serverId.toInt())
@@ -1672,6 +1832,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * @param serverId - идентификатор записи на стороне сервера
      */
     private fun setChatMessageSended(id: Int, serverId: Int) {
+
+        Journal.insertJournal(
+            "MainViewModel->setChatMessageSended",
+            "id-> $id serverId-> $serverId"
+        )
+
         if (Util.chatMessageQueue.count() > 100) {
             Util.chatMessageQueue.removeFirst()
         }
@@ -1682,6 +1848,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: SQLiteConstraintException) {
                 e.printStackTrace()
                 if (e.localizedMessage.contains("UNIQUE constraint")) {
+                    Journal.insertJournal("MainViewModel->setChatMessageSended->deleteMessageBy", id)
                     db.chatMessageDao().deleteMessageBy(id)
                 }
             }
