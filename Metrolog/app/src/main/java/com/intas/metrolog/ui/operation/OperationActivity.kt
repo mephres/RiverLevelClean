@@ -3,6 +3,7 @@ package com.intas.metrolog.ui.operation
 import android.content.Context
 import android.content.Intent
 import android.graphics.PorterDuff
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.MenuItem
@@ -35,16 +36,15 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment
 import com.intas.metrolog.ui.events.event_comment.EventCommentFragment.Companion.EVENT_COMMENT_FRAGMENT_TAG
 import com.intas.metrolog.ui.events.select_event.SelectEventFragment
+import com.intas.metrolog.ui.operation.adapter.EventPhotoListAdapter
 import com.intas.metrolog.ui.operation.adapter.OperationListAdapter
 import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemTouchHelperCallback
 import com.intas.metrolog.ui.operation.equip_info.EquipInfoFragment
 import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment
 import com.intas.metrolog.ui.operation.operation_control.OperationControlInputValueFragment.Companion.OPERATION_CONTROL_FRAGMENT_TAG
 import com.intas.metrolog.ui.scanner.NfcFragment
-import com.intas.metrolog.util.DateTimeUtil
-import com.intas.metrolog.util.Journal
-import com.intas.metrolog.util.Util
-import com.intas.metrolog.util.ViewUtil
+import com.intas.metrolog.util.*
+import java.io.File
 
 class OperationActivity : AppCompatActivity() {
     private var eventId: Long = 0
@@ -62,6 +62,7 @@ class OperationActivity : AppCompatActivity() {
     private var equipInfoIsShowing = false
 
     private lateinit var operationListAdapter: OperationListAdapter
+    private lateinit var eventPhotoListAdapter: EventPhotoListAdapter
     private lateinit var itemTouchHelper: ItemTouchHelper
 
     private val binding by lazy {
@@ -154,7 +155,6 @@ class OperationActivity : AppCompatActivity() {
             )
             showEventComment(CANCELED)
             viewModel.changeControlButtonVisibleValue()
-            binding.eventControlFab.visibility = View.GONE
         }
 
         binding.completeEventFab.setOnClickListener {
@@ -181,6 +181,31 @@ class OperationActivity : AppCompatActivity() {
 
             showEventComment(COMPLETED)
             viewModel.changeControlButtonVisibleValue()
+        }
+
+        eventPhotoListAdapter.onEventPhotoItemClickListener = { eventPhotoItem ->  
+            eventPhotoItem.photoUri?.let { photoUri ->
+                FileUtil.setContext(this)
+                val uri = Uri.parse(photoUri)
+                val file = File(FileUtil.getPath(uri))
+                val fileType = file.extension.lowercase()
+                if (file.exists()) {
+
+                    when (fileType) {
+                        "pdf" -> {
+                            FileUtil.openFileWithIntent(uri, "application/pdf")
+                        }
+
+                        "doc", "docx", "rtf", "txt", "xls", "xlsx" -> {
+                            FileUtil.openFileWithIntent(uri, "application/msword")
+                        }
+
+                        "jpg", "png" -> {
+                            FileUtil.openFileWithIntent(uri, "image/*")
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -247,10 +272,10 @@ class OperationActivity : AppCompatActivity() {
 
     private fun observeViewModel() {
 
-        viewModel.eventItem.observe(this, { event ->
+        viewModel.eventItem.observe(this) { event ->
 
             Journal.insertJournal("OperationActivity->observeViewModel->event", event)
-            viewModel.getEquipById(event.equipId ?: 0).observe(this, { equip ->
+            viewModel.getEquipById(event.equipId ?: 0).observe(this) { equip ->
                 event.equip = equip
                 setUi(event)
                 fillEquipTagActual(equip)
@@ -259,14 +284,15 @@ class OperationActivity : AppCompatActivity() {
                 currentEvent?.equip = equip
                 showEquipInfo(equip)
                 Journal.insertJournal("OperationActivity->observeViewModel->equip", equip)
-            })
+            }
             currentEvent = event
             currentEventStatus = event.status
             setTimer(currentEventStatus)
             loadOperationList()
             initTouchHelper()
             controlButtons()
-        })
+            loadEventPhotoList()
+        }
 
         // отображение значений таймера
         viewModel.timerDuration.observe(this, {
@@ -279,6 +305,21 @@ class OperationActivity : AppCompatActivity() {
                 binding.timerImageView.visibility = View.VISIBLE
             }
         })
+    }
+
+    /**
+     * Загрузка списка изображений мероприятия
+     */
+    private fun loadEventPhotoList() {
+        viewModel.eventPhotoList.observe(this) {
+            if (it.isNullOrEmpty()) {
+                binding.eventPhotoListTitleTextView.visibility = View.GONE
+            } else {
+                binding.eventPhotoListTitleTextView.visibility = View.VISIBLE
+            }
+            eventPhotoListAdapter.submitList(it)
+            Journal.insertJournal("OperationActivity->loadEventPhotoList->list", list = it)
+        }
     }
 
     /**
@@ -304,6 +345,8 @@ class OperationActivity : AppCompatActivity() {
                 when (eventStatus) {
                     COMPLETED, CANCELED -> finishEvent(eventStatus, comment)
                 }
+                // скрываем fab вызова кнопок управления статусом мероприятия
+                binding.eventControlFab.visibility = View.GONE
             }
         }
     }
@@ -713,10 +756,16 @@ class OperationActivity : AppCompatActivity() {
 
     private fun setRecyclerView() {
         operationListAdapter = OperationListAdapter()
+        eventPhotoListAdapter = EventPhotoListAdapter()
 
         with(binding.operationRecyclerView) {
             adapter = operationListAdapter
             recycledViewPool.setMaxRecycledViews(0, OperationListAdapter.MAX_POOL_SIZE)
+        }
+
+        with(binding.eventPhotoListRecyclerView) {
+            adapter = eventPhotoListAdapter
+            recycledViewPool.setMaxRecycledViews(0, EventPhotoListAdapter.MAX_POOL_SIZE)
         }
     }
 

@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
+import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
 import com.intas.metrolog.pojo.event.event_priority.EventPriority
 import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.PAUSED
@@ -29,6 +30,7 @@ class OperationViewModel(
     val controlButtonClicked: LiveData<Boolean> = _controlButtonClicked
 
     val eventItem = db.eventDao().getEventLD(eventId)
+    val eventPhotoList = db.eventPhotoDao().getEventPhotoListById(eventId)
 
     private var _timerDuration = MutableLiveData<Long>()
     val timerDuration: LiveData<Long> = _timerDuration
@@ -65,6 +67,11 @@ class OperationViewModel(
             serious = EventPriority.SERIOUS.ordinal)
     }
 
+    /**
+     * Проверка наличия в БД не просмотренной приоритеной информации по оборудованию
+     * @param - equipId идентификатор оборудования
+     * @return - true/false
+     */
     fun isNotCheckedEquipInfoExists(equipId: Long): Boolean {
         return db.equipInfoDao().isNotCheckedEquipInfoExists(equipId)
     }

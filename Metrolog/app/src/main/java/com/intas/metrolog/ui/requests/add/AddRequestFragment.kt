@@ -99,7 +99,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
         setSpinnerAdapters()
         checkMode()
-
+        binding.addRequestImageSliderView.setIndicatorVisibility(false)
         binding.addRequestImageFab.setOnClickListener {
             showRequestAttachImageFab()
         }

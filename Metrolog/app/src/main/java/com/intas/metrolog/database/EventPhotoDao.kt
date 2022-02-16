@@ -20,4 +20,7 @@ interface EventPhotoDao {
 
     @Query("UPDATE event_photo SET isSended = 1 WHERE id = :id")
     suspend fun setEventPhotoSendedById(id: Long)
+
+    @Query("SELECT * FROM event_photo WHERE opId = :id ORDER BY datetime DESC")
+    fun getEventPhotoListById(id: Long): LiveData<List<EventPhotoItem>>
 }
