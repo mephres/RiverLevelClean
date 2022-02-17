@@ -91,7 +91,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private var getEquipDisposable: Disposable? = null
     private var getRequestDisposable: Disposable? = null
-    private var getEventDisposable: Disposable? = null
     private var loadMessageDisposable: Disposable? = null
 
     val notSendedUserLocationList = db.userLocationDao().getNotSendedUserLocationList()
@@ -899,18 +898,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getEvent() {
         Util.authUser?.userId?.let {
 
-            getEventDisposable?.let {
-                compositeDisposable.remove(it)
-            }
-
             val month =
                 DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "MM").toInt()
             val year =
                 DateTimeUtil.getDateTimeFromMili(DateTimeUtil.getUnixDateTimeNow(), "YYYY").toInt()
 
-            Journal.insertJournal("MainViewModel->getEvent->parameters", "userId: $it, month: $month, year: $year")
+            Journal.insertJournal(
+                "MainViewModel->getEvent->parameters",
+                "userId: $it, month: $month, year: $year"
+            )
 
-            getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
+           val getEventDisposable = ApiFactory.apiService.getEventList(it, month, year)
                 .subscribeOn(Schedulers.io())
                 .repeatWhen { completed ->
                     completed.delay(5, TimeUnit.MINUTES)
@@ -973,7 +971,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         equipId: Long
     ) {
 
-        Journal.insertJournal("MainViewModel->insertEventOperationList->parameters", "eventEventOperationList: ${eventEventOperationList.count()}, eventId: $eventId, equipId: $equipId")
+        Journal.insertJournal(
+            "MainViewModel->insertEventOperationList->parameters",
+            "eventEventOperationList: ${eventEventOperationList.count()}, eventId: $eventId, equipId: $equipId"
+        )
 
         viewModelScope.launch {
             val tempNotSendedEventOperationList = notSendedEventOperationList.value
@@ -985,7 +986,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             tempNotSendedEventOperationList?.let {
                 if (!tempNotSendedEventOperationList.isNullOrEmpty()) {
-                    Journal.insertJournal("MainViewModel->insertEventOperationList->tempNotSendedEventOperationList", list = tempNotSendedEventOperationList)
+                    Journal.insertJournal(
+                        "MainViewModel->insertEventOperationList->tempNotSendedEventOperationList",
+                        list = tempNotSendedEventOperationList
+                    )
                     db.eventOperationDao().insertEventOperationList(it)
                 }
             }
@@ -999,7 +1003,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     eventOperation.hasOperationControl = true
                     db.eventOperationDao().updateEventOperation(eventOperation)
 
-                    Journal.insertJournal("MainViewModel->insertEventOperationList->operControl", it)
+                    Journal.insertJournal(
+                        "MainViewModel->insertEventOperationList->operControl",
+                        it
+                    )
                     insertOperControl(it)
                 }
             }
@@ -1049,7 +1056,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             for ((code, value) in dictData) {
                                 val dictDataObject =
                                     FieldDictData(fieldId = fieldId, code = code, value = value)
-                                Journal.insertJournal("MainViewModel->insertOperControl->dictDataObject", dictDataObject)
+                                Journal.insertJournal(
+                                    "MainViewModel->insertOperControl->dictDataObject",
+                                    dictDataObject
+                                )
                                 db.fieldDictDataDao()
                                     .insertFieldDictData(dictDataObject) // запись в базу способа измерения
                             }
@@ -1093,10 +1103,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 Journal.insertJournal("MainViewModel->sendEvent->UpdateResponse", it)
-                if (it.requestSuccess != null) {
-
-                    it.requestSuccess?.id?.toLong()?.let {
+                it.requestSuccess?.let {
+                    it.id?.toLong()?.let {
                         setEventSendedById(it)
+                    }
+                }
+                it.requestError?.let { re ->
+                    if (re.code.equals(
+                            "406",
+                            true
+                        ) && re.message.equals("Мероприятие уже проводилось",true)
+                    ) {
+                        setEventSendedById(event.opId)
                     }
                 }
                 Log.d("MM_SEND_EVENT", it.toString())
@@ -1128,7 +1146,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     @SuppressLint("LongLogTag")
     fun sendComplexEventOperation(eventOperation: EventOperationItem) {
 
-        Journal.insertJournal("MainViewModel->sendComplexEventOperation->eventOperation", eventOperation)
+        Journal.insertJournal(
+            "MainViewModel->sendComplexEventOperation->eventOperation",
+            eventOperation
+        )
 
         Util.eventOperationQueue.addLast(eventOperation.subId)
 
@@ -1847,7 +1868,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             } catch (e: SQLiteConstraintException) {
                 e.printStackTrace()
                 if (e.localizedMessage.contains("UNIQUE constraint")) {
-                    Journal.insertJournal("MainViewModel->setChatMessageSended->deleteMessageBy", id)
+                    Journal.insertJournal(
+                        "MainViewModel->setChatMessageSended->deleteMessageBy",
+                        id
+                    )
                     db.chatMessageDao().deleteMessageBy(id)
                 }
             }
