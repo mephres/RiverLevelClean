@@ -29,6 +29,7 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
 import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.equip_document.adapter.ImageSliderViewAdapter
+import com.intas.metrolog.util.FileUtil
 import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.ViewUtil
 import com.yalantis.ucrop.UCrop
@@ -88,6 +89,7 @@ class EventCommentFragment : BottomSheetDialogFragment() {
     }
 
     private fun initObservers() {
+        binding.eventCommentImageSliderView.setIndicatorVisibility(false)
         viewModel.uriList.observe(this) {
             binding.attachImageView.isVisible = it.isEmpty()
             uriList = it
@@ -145,8 +147,20 @@ class EventCommentFragment : BottomSheetDialogFragment() {
         uriList?.let {
             viewModel.saveEventPhoto(it, eventId)
         }
-        onSaveCommentListener?.invoke(comment, eventStatus)
-        closeFragment()
+
+        when (eventCommentMode) {
+            MODE_COMMENT_WITH_IMAGE -> {
+                viewModel.onEventPhotoSavedSuccess = {
+                    onSaveCommentListener?.invoke(comment, eventStatus)
+                    closeFragment()
+                }
+            }
+
+            MODE_COMMENT_WITHOUT_IMAGE -> {
+                onSaveCommentListener?.invoke(comment, eventStatus)
+                closeFragment()
+            }
+        }
     }
 
     private fun fillComment() {
@@ -183,6 +197,7 @@ class EventCommentFragment : BottomSheetDialogFragment() {
     private fun checkMode() {
         when (eventCommentMode) {
             MODE_COMMENT_WITH_IMAGE -> {
+                FileUtil.setContext(requireActivity().application)
                 binding.imageListCardView.visibility = View.VISIBLE
             }
 
@@ -295,6 +310,7 @@ class EventCommentFragment : BottomSheetDialogFragment() {
         val intent =
             Intent(Intent.ACTION_OPEN_DOCUMENT, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.addCategory(Intent.CATEGORY_OPENABLE)
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         intent.flags =
             Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION
         intent.type = "image/*"
@@ -389,13 +405,21 @@ class EventCommentFragment : BottomSheetDialogFragment() {
                 UCrop.REQUEST_CROP -> {
                     data?.let { intentData ->
                         val imageUri = UCrop.getOutput(intentData)
-                        try {
-                            imageBitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
-                        } catch (e: IOException) {
-                            FirebaseCrashlytics.getInstance().recordException(e)
-                        }
-                        imageUri?.let{
-                            viewModel.replaceImage(cropImagePosition, imageUri)
+                        imageUri?.let {
+                            val imagePath = FileUtil.getPath(it)
+                            var localUri: Uri? = null
+
+                            imagePath?.let {
+                                localUri = FileProvider.getUriForFile(
+                                    requireContext(),
+                                    "${BuildConfig.APPLICATION_ID}.provider",
+                                    File(imagePath)
+                                )
+                            }
+
+                            localUri?.let {
+                                viewModel.replaceImage(cropImagePosition, it)
+                            }
                         }
                     }
                 }
@@ -416,9 +440,42 @@ class EventCommentFragment : BottomSheetDialogFragment() {
                     }
                 }
                 Util.GALLERY_REQUEST -> {
-                    data?.let {
-                        photoURI = data.data
-                        photoURI?.let { viewModel.addImage(it) }
+                    data?.data?.let {
+                        val imagePath = FileUtil.getPath(it)
+                        var localUri: Uri? = null
+
+                        imagePath?.let {
+                            localUri = FileProvider.getUriForFile(
+                                requireContext(),
+                                "${BuildConfig.APPLICATION_ID}.provider",
+                                File(imagePath)
+                            )
+                        }
+
+                        localUri?.let {
+                            viewModel.addImage(it)
+                        }
+
+                    }
+
+                    data?.clipData?.let {
+                        for (i in 0 until it.itemCount) {
+                            val requestUri = it.getItemAt(i).uri
+                            val imagePath = FileUtil.getPath(requestUri)
+                            var localUri: Uri? = null
+
+                            imagePath?.let {
+                                localUri = FileProvider.getUriForFile(
+                                    requireContext(),
+                                    "${BuildConfig.APPLICATION_ID}.provider",
+                                    File(imagePath)
+                                )
+                            }
+
+                            localUri?.let {
+                                viewModel.addImage(it)
+                            }
+                        }
                     }
                 }
             }

@@ -18,6 +18,8 @@ class EventCommentViewModel(application: Application) : AndroidViewModel(applica
     private val db = AppDatabase.getInstance(application)
     private val context = application.applicationContext
 
+    var onEventPhotoSavedSuccess: ((Long) -> Unit)? = null
+
     private var _uriList = MutableLiveData<List<Uri>>()
     val uriList: LiveData<List<Uri>>
         get() = _uriList
@@ -50,6 +52,7 @@ class EventCommentViewModel(application: Application) : AndroidViewModel(applica
                 val eventComment = EventPhotoItem(opId = eventId, photoUri = it.toString())
                 db.eventPhotoDao().insertEventPhoto(eventComment)
             }
+            onEventPhotoSavedSuccess?.invoke(eventId)
         }
     }
 }

@@ -149,6 +149,7 @@
     <string name="operation_activity_pause_event_button_work_state">Остановить выполнение мероприятия</string>
     <string name="operation_activity_pause_event_button_pause_state">Продолжить выполнение мероприятия</string>
     <string name="operation_activity_complete_event_button">Закончить мероприятие</string>
+    <string name="operation_activity_complete_event_operations_button">Завершить все операции мероприятия без операционного контроля</string>
     <string name="operation_activity_cancel_event_button">Отменить выполнение мероприятия</string>
     <string name="operation_activity_control_button_title">Управление</string>
     <string name="operation_activity_equip_name">Название оборудования</string>
@@ -183,5 +184,6 @@
     <string name="operation_control_parameter_save_error">Все параметры операционного контроля должны быть заполнены</string>
     <string name="operation_control_parameter_spinner_hint">Метод измерения</string>
     <string name="confirm_title">Подтвердить</string>
+    <string name="operation_activity_event_photo_list_title">Прикрепленные файлы</string>
 
 </resources>
