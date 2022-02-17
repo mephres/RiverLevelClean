@@ -24,16 +24,18 @@
 
     <TextView
         android:id="@+id/dialogSheetTitleTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginTop="32dp"
-        tools:text="Заголовок"
+        android:layout_marginEnd="32dp"
         android:textColor="@color/md_black"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialogSheetImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/dialogSheetImageView"
+        tools:text="Заголовок" />
 
     <TextView
         android:id="@+id/dialogSheetTextTextView"
