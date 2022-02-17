@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.AsyncDifferConfig
 import androidx.recyclerview.widget.ListAdapter
 import com.intas.metrolog.R
 import com.intas.metrolog.database.AppDatabase
@@ -13,7 +14,7 @@ import com.intas.metrolog.ui.operation.adapter.callback.EventOperationItemDiffCa
 import com.intas.metrolog.util.DateTimeUtil
 
 class OperationListAdapter : ListAdapter<EventOperationItem, OperationItemViewHolder>(
-    EventOperationItemDiffCallback()
+    AsyncDifferConfig.Builder(EventOperationItemDiffCallback()).build()
 ) {
     lateinit var db: AppDatabase
     lateinit var context: Context

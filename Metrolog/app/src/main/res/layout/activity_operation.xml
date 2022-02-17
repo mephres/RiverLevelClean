@@ -494,7 +494,8 @@
                     android:textColor="@color/md_black"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:visibility="visible" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/eventPhotoListRecyclerView"
@@ -523,7 +524,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/operationRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="500dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

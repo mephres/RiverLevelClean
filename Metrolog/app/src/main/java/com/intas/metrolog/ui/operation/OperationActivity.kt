@@ -404,7 +404,8 @@ class OperationActivity : AppCompatActivity() {
             } else {
                 binding.operationListTitleTextView.visibility = View.VISIBLE
             }
-            operationListAdapter.submitList(checkList)
+
+            operationListAdapter.submitList(checkList.toList())
             Journal.insertJournal("OperationActivity->loadOperationList->list", list = checkList)
         })
     }
