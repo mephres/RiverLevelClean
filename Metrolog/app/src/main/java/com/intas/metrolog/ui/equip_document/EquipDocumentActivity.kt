@@ -80,6 +80,8 @@ class EquipDocumentActivity : AppCompatActivity() {
             it.setDisplayHomeAsUpEnabled(true)
         }
 
+        binding.equipDocumentImageSliderView.setIndicatorVisibility(false)
+
         viewModel.documentTypeList.observe(this, {
             //Journal.insertJournal("AddTaskFragment->fieldList", list = it)
             documentTypeAdapter =

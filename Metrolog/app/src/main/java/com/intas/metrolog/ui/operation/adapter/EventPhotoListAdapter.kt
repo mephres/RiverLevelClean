@@ -47,7 +47,7 @@ class EventPhotoListAdapter: ListAdapter<EventPhotoItem, EventPhotoItemViewHolde
 
             when(fileType) {
                 "jpg", "png" -> {
-                    Glide.with(context).load(file).fitCenter().into(holder.eventPhotoItemImageImageView)
+                    Glide.with(context).load(file).into(holder.eventPhotoItemImageImageView)
                 }
                 "pdf", "doc", "docx", "rtf", "txt", "xls", "xlsx" -> {
                     val resourceName = "filetypes_${fileType}_256px"

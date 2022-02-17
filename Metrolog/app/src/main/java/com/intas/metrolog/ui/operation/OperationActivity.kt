@@ -345,8 +345,7 @@ class OperationActivity : AppCompatActivity() {
                 when (eventStatus) {
                     COMPLETED, CANCELED -> finishEvent(eventStatus, comment)
                 }
-                // скрываем fab вызова кнопок управления статусом мероприятия
-                binding.eventControlFab.visibility = View.GONE
+
             }
         }
     }
