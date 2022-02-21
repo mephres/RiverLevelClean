@@ -97,15 +97,16 @@ object DatabaseUtil {
             onBackupProcess?.invoke("Запущен процесс копирования базы данных")
             // ожидание выполнения сохранения в архив
             job.await()
-            // если архив с данными сохранен, запускаем ACTION_SEND в SettingsActivity
-            if (zipFile.exists()) {
-                onBackupComplete?.invoke(zipFile)
-            }
+
             // если job возвращает исключение FileNotFoundException, запускаем ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION в SettingsActivity
             if (job.await() is FileNotFoundException) {
                 onBackupError?.invoke(
                     "Предоставьте права доступа"
                 )
+            }
+            // если архив с данными сохранен, запускаем ACTION_SEND в SettingsActivity
+            if (zipFile.exists()) {
+                onBackupComplete?.invoke(zipFile)
             }
             // закрываем поток сопрограммы
             job.cancel()

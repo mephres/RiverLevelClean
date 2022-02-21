@@ -173,15 +173,18 @@ object Journal {
                     f
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    onJournalExportFailure?.invoke(
-                        "При экпорте произошла ошибка - ${e.localizedMessage}"
-                    )
                 }
             }
             // ждем выполнения сопрограммы
             onJournalExportProcess?.invoke("Запущен процесс экспорта")
             job.await()
-            Log.d("dfsdfsdf", job.await().toString())
+
+            if (job.await() is FileNotFoundException) {
+                onJournalExportError?.invoke(
+                    "Предоставьте права доступа"
+                )
+            }
+
             // выводим результат работы сопрограммы
             if (FILENAME_SD.isNotEmpty() && sdFile.exists()) {
                 onJournalExportComplete?.invoke(
@@ -190,12 +193,6 @@ object Journal {
             } else {
                 onJournalExportFailure?.invoke(
                     "За выбранный период журналы отсутствуют"
-                )
-            }
-
-            if (job.await() is FileNotFoundException) {
-                onJournalExportError?.invoke(
-                    "Предоставьте права доступа"
                 )
             }
 
