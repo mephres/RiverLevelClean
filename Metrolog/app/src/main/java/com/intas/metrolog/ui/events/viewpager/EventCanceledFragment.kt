@@ -7,13 +7,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventTodayBinding
 import com.intas.metrolog.pojo.event.EventItem
+import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.events.EventsViewModel
 import com.intas.metrolog.ui.events.adapter.EventListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.Journal
+import com.intas.metrolog.util.Util
 
 class EventCanceledFragment : Fragment() {
     private lateinit var eventListAdapter: EventListAdapter
@@ -108,6 +112,23 @@ class EventCanceledFragment : Fragment() {
         eventListAdapter.onEventClickListener = {
             Journal.insertJournal("EventCanceledFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, false))
+        }
+
+        eventListAdapter.onEventLongClickListener = {
+            if (it.isSended == 1) deleteEventDialog(it.opId)
+        }
+    }
+
+    private fun deleteEventDialog(eventId: Long) {
+        val dialogSheet = BottomDialogSheet.newInstance(
+            getString(R.string.event_delete_dialog_title),
+            getString(R.string.event_delete_dialog_dialog_text),
+            getString(R.string.equip_document_activity_delete_image_dialog_positive_button),
+            getString(R.string.pequip_document_activity_delete_image_dialog_negative_button)
+        )
+        dialogSheet.show(childFragmentManager, Util.BOTTOM_DIALOG_SHEET_FRAGMENT_TAG)
+        dialogSheet.onPositiveClickListener = {
+            eventViewModel.deleteEventById(eventId)
         }
     }
 

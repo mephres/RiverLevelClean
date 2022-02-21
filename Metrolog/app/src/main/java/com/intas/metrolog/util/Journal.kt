@@ -24,7 +24,7 @@ import java.util.*
 object Journal {
 
     private lateinit var db: AppDatabase
-    private const val DIR_SD = "MobOpLogs"
+    private const val DIR_SD = "MetrologLogs"
     private var FILENAME_SD = ""
     private lateinit var sdFile: File
 

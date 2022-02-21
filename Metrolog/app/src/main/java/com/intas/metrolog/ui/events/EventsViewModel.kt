@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.util.DateTimeUtil
+import kotlinx.coroutines.launch
 
 class EventsViewModel(application: Application) : AndroidViewModel(application)  {
 
@@ -77,5 +79,14 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
         Log.d("MO_GET_EVENT_CANCELED", "startDate: $startDate, endDate: $endDate")
 
         return db.eventDao().getEventList(startDate, endDate, EventStatus.CANCELED)
+    }
+
+    fun deleteEventById(eventId: Long) {
+        viewModelScope.launch {
+            db.eventDao().deleteEventByEventId(eventId)
+            db.eventOperationDao().deleteEventOperationByEventId(eventId)
+            db.eventPhotoDao().deleteEventPhotoByEventId(eventId)
+            db.operControlDao().deleteOperControlByEventId(eventId)
+        }
     }
 }

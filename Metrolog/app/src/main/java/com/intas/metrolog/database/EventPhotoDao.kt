@@ -23,4 +23,7 @@ interface EventPhotoDao {
 
     @Query("SELECT * FROM event_photo WHERE opId = :id ORDER BY datetime DESC")
     fun getEventPhotoListById(id: Long): LiveData<List<EventPhotoItem>>
+
+    @Query("DELETE FROM event_photo WHERE opId = :id")
+    suspend fun deleteEventPhotoByEventId(id: Long)
 }

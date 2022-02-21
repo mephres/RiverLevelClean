@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream
 object DatabaseUtil {
     private var FILE_NAME = ""
     private var ZIP_NAME = ""
-    private const val DIR_SD = "MobOpBackup"
+    private const val DIR_SD = "MetrologBackup"
     var onBackupComplete: ((File) -> Unit)? = null
     var onBackupProcess: ((String) -> Unit)? = null
     var onBackupError: ((String) -> Unit)? = null
@@ -57,7 +57,7 @@ object DatabaseUtil {
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + File.separator + DIR_SD)
 
                     if (!sdPath.exists()) {
-                        sdPath.mkdir()
+                        sdPath.mkdirs()
                     }
 
                     saveFile = File(sdPath.path, FILE_NAME)
