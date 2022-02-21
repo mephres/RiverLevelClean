@@ -56,7 +56,7 @@ class EventsFragment : Fragment() {
         viewPagerAdapter.addFragment(EventCanceledFragment(), "Отмененные", 4)
 
         binding.eventViewPager.adapter = viewPagerAdapter
-        binding.eventViewPager.offscreenPageLimit = 1
+        binding.eventViewPager.offscreenPageLimit = 3
         binding.eventTabLayout.setupWithViewPager(binding.eventViewPager)
 
         viewPagerAdapter.notifyDataSetChanged()

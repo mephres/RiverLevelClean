@@ -113,14 +113,16 @@ class LoginViewModel(application: Application) : AndroidViewModel(application) {
                         )
                     }
                 } else {
-                    insertUser(response.data)
-                    Util.authUser = response.data
-                    onSuccess?.invoke(response.data)
+                    val authUser = response.data
+                    insertUser(authUser)
+                    Util.authUser = authUser
+                    onSuccess?.invoke(authUser)
 
                     AppPreferences.userLoginDateTime = DateTimeUtil.getUnixDateTimeNow()
+                    AppPreferences.authUser = authUser
 
-                    Log.d("MO_AUTH_USER", response.data.toString())
-                    Journal.insertJournal("LoginViewModel->authUser", journalText = response.data)
+                    Log.d("MO_AUTH_USER", authUser.toString())
+                    Journal.insertJournal("LoginViewModel->authUser", journalText = authUser)
                 }
             }, {
                 FirebaseCrashlytics.getInstance().recordException(it)

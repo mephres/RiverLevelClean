@@ -60,7 +60,6 @@ class OperationActivity : AppCompatActivity() {
     private var equipFullInfoVisible = false
     private var currentEventStatus: Int = 0
     private var currentEvent: EventItem? = null
-    private var currentEquip: EquipItem? = null
     private var equipInfoIsShowing = false
 
     private lateinit var operationListAdapter: OperationListAdapter
@@ -91,6 +90,9 @@ class OperationActivity : AppCompatActivity() {
         observeViewModel()
         setClickListeners()
         setSwipeListener()
+
+        controlButtons()
+        loadOperationList()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -245,6 +247,7 @@ class OperationActivity : AppCompatActivity() {
             viewModel.changeControlButtonVisibleValue()
         }
     }
+
     private fun initTouchHelper() {
 
         if (currentEvent?.status != IN_WORK) return
@@ -311,22 +314,18 @@ class OperationActivity : AppCompatActivity() {
         viewModel.eventItem.observe(this) { event ->
 
             Journal.insertJournal("OperationActivity->observeViewModel->event", event)
-            viewModel.getEquipById(event.equipId ?: 0).observe(this) { equip ->
-                event.equip = equip
-                setUi(event)
-                fillEquipTagActual(equip)
-                fillOperationStatus(event)
-                currentEquip = equip
-                currentEvent?.equip = equip
-                showEquipInfo(equip)
-                Journal.insertJournal("OperationActivity->observeViewModel->equip", equip)
-            }
+
             currentEvent = event
             currentEventStatus = event.status
+
+            setUi(event)
             setTimer(currentEventStatus)
-            loadOperationList()
+            fillEquipTagActual(event.equip)
+            fillOperationStatus(event)
+            showEquipInfo(event.equip)
+
             initTouchHelper()
-            controlButtons()
+
             loadEventPhotoList()
         }
 
@@ -403,9 +402,11 @@ class OperationActivity : AppCompatActivity() {
                 binding.operationListTitleTextView.visibility = View.GONE
             } else {
                 binding.operationListTitleTextView.visibility = View.VISIBLE
+                val text = "${getString(R.string.operation_activity_operations_list_title)} - ${checkList.size} шт."
+                binding.operationListTitleTextView.text = text
             }
 
-            operationListAdapter.submitList(checkList.toList())
+            operationListAdapter.submitList(checkList)
             Journal.insertJournal("OperationActivity->loadOperationList->list", list = checkList)
         })
     }
@@ -949,15 +950,17 @@ class OperationActivity : AppCompatActivity() {
     /**
      * Отображение списка приоритетной информации по оборудованию, при наличии
      */
-    private fun showEquipInfo(equip: EquipItem) {
-        Journal.insertJournal("OperationActivity->showEquipInfo->equip", equip)
-        if (viewModel.isNotCheckedEquipInfoExists(equip.equipId) && !equipInfoIsShowing) {
-            val equipInfoFragment = EquipInfoFragment.newInstance(equip)
-            equipInfoFragment.show(
-                supportFragmentManager,
-                EquipInfoFragment.EQUIP_INFO_FRAGMENT_TAG
-            )
-            equipInfoIsShowing = true
+    private fun showEquipInfo(equip: EquipItem?) {
+        equip?.let {
+            Journal.insertJournal("OperationActivity->showEquipInfo->equip", equip)
+            if (viewModel.isNotCheckedEquipInfoExists(equip.equipId) && !equipInfoIsShowing) {
+                val equipInfoFragment = EquipInfoFragment.newInstance(equip)
+                equipInfoFragment.show(
+                    supportFragmentManager,
+                    EquipInfoFragment.EQUIP_INFO_FRAGMENT_TAG
+                )
+                equipInfoIsShowing = true
+            }
         }
     }
 

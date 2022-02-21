@@ -43,7 +43,11 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         viewModel.authUser.observe(this, {
-            Util.authUser = it
+            if (it != null) {
+                Util.authUser = it
+            } else {
+                Util.authUser = AppPreferences.authUser
+            }
         })
 
         initBottomNavigation()

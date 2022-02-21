@@ -88,9 +88,10 @@ class PinCodeViewModel(application: Application) : AndroidViewModel(application)
                     Util.authUser = authUserData
 
                     AppPreferences.userLoginDateTime = DateTimeUtil.getUnixDateTimeNow()
+                    AppPreferences.authUser = authUserData
 
-                    Log.d("MO_AUTH_USER", response.data.toString())
-                    Journal.insertJournal("PinCodeViewModel->authUser", journalText = response.data)
+                    Log.d("MO_AUTH_USER", authUserData.toString())
+                    Journal.insertJournal("PinCodeViewModel->authUser", journalText = authUserData)
                 }
             }, {
                 FirebaseCrashlytics.getInstance().recordException(it)

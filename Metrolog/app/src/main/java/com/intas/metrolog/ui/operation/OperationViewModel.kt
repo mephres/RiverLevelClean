@@ -1,10 +1,7 @@
 package com.intas.metrolog.ui.operation
 
 import android.app.Application
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.pojo.event.event_operation.EventOperationItem
@@ -16,6 +13,7 @@ import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 import java.util.*
 import kotlin.concurrent.timerTask
 
@@ -29,7 +27,11 @@ class OperationViewModel(
     private val _controlButtonClicked = MutableLiveData<Boolean>()
     val controlButtonClicked: LiveData<Boolean> = _controlButtonClicked
 
-    val eventItem = db.eventDao().getEventLD(eventId)
+    val eventItem = db.eventDao().getEventLD(eventId).map { event ->
+        event.equip = db.equipDao().getEquipItemById(event.equipId ?: 0)
+        event
+    }
+
     val eventPhotoList = db.eventPhotoDao().getEventPhotoListById(eventId)
 
     private var _timerDuration = MutableLiveData<Long>()
@@ -47,7 +49,8 @@ class OperationViewModel(
      * @return - true/false
      */
     fun isSeriousPriorityEventsExists(): Boolean {
-        return db.eventDao().isSeriousPriorityEventsExists(startDate, endDate, EventPriority.SERIOUS.ordinal)
+        return db.eventDao()
+            .isSeriousPriorityEventsExists(startDate, endDate, EventPriority.SERIOUS.ordinal)
     }
 
     /**
@@ -55,7 +58,8 @@ class OperationViewModel(
      * @return - true/false
      */
     fun isAccidentPriorityEventsExists(): Boolean {
-        return db.eventDao().isAccidentPriorityEventsExists(startDate, endDate, EventPriority.ACCIDENT.ordinal)
+        return db.eventDao()
+            .isAccidentPriorityEventsExists(startDate, endDate, EventPriority.ACCIDENT.ordinal)
     }
 
     /**
@@ -63,8 +67,10 @@ class OperationViewModel(
      * @return - true/false
      */
     fun isHighPriorityEventsLaunched(): Boolean {
-        return db.eventDao().isHighPriorityEventsLaunched(accident = EventPriority.ACCIDENT.ordinal,
-            serious = EventPriority.SERIOUS.ordinal)
+        return db.eventDao().isHighPriorityEventsLaunched(
+            accident = EventPriority.ACCIDENT.ordinal,
+            serious = EventPriority.SERIOUS.ordinal
+        )
     }
 
     /**
@@ -74,10 +80,6 @@ class OperationViewModel(
      */
     fun isNotCheckedEquipInfoExists(equipId: Long): Boolean {
         return db.equipInfoDao().isNotCheckedEquipInfoExists(equipId)
-    }
-
-    fun getEquipById(equipId: Long): LiveData<EquipItem> {
-        return db.equipDao().getEquipItemByIdLD(equipId)
     }
 
     fun setTimerValue(duration: Long) {
@@ -118,13 +120,15 @@ class OperationViewModel(
      * Получение списка операций мероприятия
      */
     fun getOperationList(): LiveData<List<EventOperationItem>> {
-        return if (eventItem.value?.status == EventStatus.NEW || eventItem.value?.status == EventStatus.IN_WORK) {
-            //если мероприятие в статусе НОВОЕ или ВЫПОЛНЯЕТСЯ, то выводим список всех невыполненных операций
-            db.eventOperationDao().getNotCompletedOperationList(eventId)
-        } else {
-            // иначе - список всех операций
-            db.eventOperationDao().getOperationList(eventId)
-        }
+        return Transformations.switchMap(eventItem, {
+            if (eventItem.value?.status == EventStatus.NEW || eventItem.value?.status == EventStatus.IN_WORK) {
+                //если мероприятие в статусе НОВОЕ или ВЫПОЛНЯЕТСЯ, то выводим список всех невыполненных операций
+                db.eventOperationDao().getNotCompletedOperationList(eventId)
+            } else {
+                // иначе - список всех операций
+                db.eventOperationDao().getOperationList(eventId)
+            }
+        })
     }
 
     /**
@@ -132,14 +136,20 @@ class OperationViewModel(
      */
     fun setOperationComplete(eventOperationItem: EventOperationItem) {
         viewModelScope.launch {
-            Journal.insertJournal("OperationViewModel->setOperationComplete->eventOperationItem", eventOperationItem)
+            Journal.insertJournal(
+                "OperationViewModel->setOperationComplete->eventOperationItem",
+                eventOperationItem
+            )
             eventOperationItem.completed = 1
             eventOperationItem.dateEnd = DateTimeUtil.getUnixDateTimeNow()
             eventOperationItem.completedUserId = (Util.authUser?.userId ?: 0).toLong()
             eventOperationItem.isSended = 0
 
             db.eventOperationDao().updateEventOperation(eventOperationItem)
-            Journal.insertJournal("OperationViewModel->setOperationComplete->updatedEvent", eventOperationItem)
+            Journal.insertJournal(
+                "OperationViewModel->setOperationComplete->updatedEvent",
+                eventOperationItem
+            )
         }
     }
 
@@ -191,7 +201,10 @@ class OperationViewModel(
     fun setEventStatus(status: Int, comment: String? = null) {
 
         viewModelScope.launch {
-            Journal.insertJournal("OperationViewModel->setEventStatus", "status: $status, comment: $comment")
+            Journal.insertJournal(
+                "OperationViewModel->setEventStatus",
+                "status: $status, comment: $comment"
+            )
             eventItem.value?.let {
                 comment?.let { comment ->
                     it.comment = comment

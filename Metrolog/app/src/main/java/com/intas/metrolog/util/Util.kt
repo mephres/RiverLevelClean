@@ -68,6 +68,9 @@ object Util {
     val BOTTOM_DIALOG_SHEET_FRAGMENT_TAG = "BOTTOM_DIALOG_SHEET_FRAGMENT_TAG"
 
     var authUser: AuthUser? = null
+        get() {
+            return AppPreferences.authUser
+        }
 
     lateinit var serverIpAddress: String
 
