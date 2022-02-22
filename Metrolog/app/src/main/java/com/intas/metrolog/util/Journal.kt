@@ -109,12 +109,12 @@ object Journal {
      * @param startTime - начало периода записи
      * @param endTime - конец периода записи
      */
-    fun exportJournalFromDb(startTime: Long, endTime: Long) {
+    fun exportJournalFromDb(startTime: Long, endTime: Long, scope: CoroutineScope) {
         // проверяем доступность хранилища
         if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
             return
         }
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             val job = async(Dispatchers.IO) {
                 FILENAME_SD = ""
                 try {

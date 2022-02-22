@@ -30,12 +30,12 @@ object DatabaseUtil {
     /**
      * Функция копирования БД и записи в архив в локальном хранилище
      */
-    fun backupDatabase(context: Context) {
+    fun backupDatabase(context: Context, scope: CoroutineScope) {
         // проверяем доступность хранилища
         if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
             return
         }
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             val job = async(Dispatchers.IO) {
                 FILE_NAME = ""
                 ZIP_NAME = ""
