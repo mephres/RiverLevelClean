@@ -10,6 +10,9 @@ import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -33,6 +36,7 @@ import java.io.File
 import java.net.URLConnection
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.launch
 
 
@@ -64,7 +68,7 @@ class SettingsActivity : AppCompatActivity() {
         private lateinit var serverIpAddress: EditTextPreference
         private lateinit var getBiometricSettingsResult: ActivityResultLauncher<Intent>
 
-        private var toastToShow: Toast? = null
+        private var loadingSnackBar: Snackbar? = null
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -184,29 +188,28 @@ class SettingsActivity : AppCompatActivity() {
             }
         }
 
+        override fun onDestroy() {
+            super.onDestroy()
+            loadingSnackBar?.dismiss()
+        }
+
         private fun initDatabaseUtilCallback() {
             // если данные из локальной базы успешно архивированы
             DatabaseUtil.onBackupComplete = {
-                toastToShow?.cancel()
-                toastToShow =
-                    Toast.makeText(requireContext(), "Копирование базы данных завершено", Toast.LENGTH_SHORT)
-                toastToShow?.show()
-
+                loadingSnackBar?.dismiss()
                 shareFile(it)
                 preferenceScreen.isEnabled = true
             }
             // индикация процесса архивирования данных из локальной базы
             DatabaseUtil.onBackupProcess = {
-                toastToShow?.cancel()
-                toastToShow = Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT)
-                toastToShow?.show()
+                showLoadingSnackBar(it)
                 preferenceScreen.isEnabled = false
             }
             // если потребуется предоставить особые права доступа MANAGE_EXTERNAL_STORAGE
             DatabaseUtil.onBackupError = {
-                toastToShow?.cancel()
-                toastToShow = Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT)
-                toastToShow?.show()
+                loadingSnackBar?.dismiss()
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+
                 val permissionIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                 startActivity(permissionIntent)
                 preferenceScreen.isEnabled = true
@@ -216,34 +219,28 @@ class SettingsActivity : AppCompatActivity() {
         private fun initJournalUtilCallback() {
             // если экспорт файла журнала завершен
             Journal.onJournalExportComplete = {
-                toastToShow?.cancel()
-                toastToShow = Toast.makeText(requireContext(), "Экспорт завершен", Toast.LENGTH_SHORT)
-                toastToShow?.show()
-
+                loadingSnackBar?.dismiss()
                 // открываем диалог, чтобы отправить файл
                 shareFile(it)
                 preferenceScreen.isEnabled = true
             }
             // если записи в БД отсутствуют и файл не создан
             Journal.onJournalExportFailure = {
-                toastToShow?.cancel()
-                toastToShow = Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT)
-                toastToShow?.show()
+                loadingSnackBar?.dismiss()
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+
                 preferenceScreen.isEnabled = true
             }
             // индикация процесса создания файла журнала
             Journal.onJournalExportProcess = {
-                toastToShow?.cancel()
-                toastToShow = Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT)
-                toastToShow?.show()
+                showLoadingSnackBar(it)
                 preferenceScreen.isEnabled = false
             }
             // если потребуется предоставить особые права доступа MANAGE_EXTERNAL_STORAGE
             Journal.onJournalExportError = {
-                toastToShow?.cancel()
-                toastToShow =
-                    Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT)
-                toastToShow?.show()
+                loadingSnackBar?.dismiss()
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+
                 val permissionIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
                 startActivity(permissionIntent)
                 preferenceScreen.isEnabled = true
@@ -367,6 +364,13 @@ class SettingsActivity : AppCompatActivity() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             startActivity(intent)
             requireActivity().finish()
+        }
+
+        private fun showLoadingSnackBar(message: String){
+            loadingSnackBar = Snackbar.make(requireView(), message, Snackbar.LENGTH_INDEFINITE)
+            val viewGroup = loadingSnackBar?.view?.findViewById<View>(com.google.android.material.R.id.snackbar_text)?.parent as ViewGroup
+            viewGroup.addView(ProgressBar(requireContext()))// Or Context if not in Activity
+            loadingSnackBar?.show()
         }
     }
 
