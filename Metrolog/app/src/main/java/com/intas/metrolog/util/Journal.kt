@@ -205,8 +205,8 @@ object Journal {
      * Удаление записей из БД и файлов, хранящихся более "day" дней
      * @param day - количество дней хранения записей и файлов
      */
-    fun deleteOldJournal(day: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun deleteOldJournal(day: Int, scope: CoroutineScope) {
+        scope.launch {
             // очищаем журналы из базы, хранящиеся более day дней
             val twoWeakLater = DateTimeUtil.getUnixDateTimeNow() - (day * 86400).toLong()
             db.journalDao().deleteJournalByDate(twoWeakLater)
