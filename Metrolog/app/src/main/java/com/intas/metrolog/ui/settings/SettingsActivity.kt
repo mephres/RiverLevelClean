@@ -79,7 +79,7 @@ class SettingsActivity : AppCompatActivity() {
             initJournalUtilCallback()
 
             backupDatabaseButton?.setOnPreferenceClickListener {
-                DatabaseUtil.backupDatabase(requireContext(), lifecycleScope)
+                DatabaseUtil.backupDatabase(requireContext(), viewLifecycleOwner.lifecycleScope)
                 true
             }
 
@@ -108,7 +108,7 @@ class SettingsActivity : AppCompatActivity() {
                         ).build()
 
                 dateRangePicker.addOnPositiveButtonClickListener {
-                    Journal.exportJournalFromDb(startTime = it.first, endTime = it.second, lifecycleScope)
+                    Journal.exportJournalFromDb(startTime = it.first, endTime = it.second, viewLifecycleOwner.lifecycleScope)
                 }
                 dateRangePicker.show(
                     (requireContext() as AppCompatActivity).supportFragmentManager,
