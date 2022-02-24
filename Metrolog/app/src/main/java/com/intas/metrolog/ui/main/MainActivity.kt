@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.preference.PreferenceManager
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
 
         AppPreferences.init(this)
         Journal.init(this)
+        Journal.deleteOldJournal(14, lifecycleScope)
 
         Util.serverIpAddress = PreferenceManager.getDefaultSharedPreferences(this)
             .getString(

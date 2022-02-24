@@ -11,7 +11,10 @@ import android.os.Looper
 import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.biometric.BiometricManager
@@ -19,7 +22,6 @@ import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.util.Pair
-import androidx.core.view.isVisible
 import androidx.preference.*
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -32,6 +34,10 @@ import io.github.tonnyl.whatsnew.WhatsNew
 import io.github.tonnyl.whatsnew.util.PresentationOption
 import java.io.File
 import java.net.URLConnection
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.launch
 
 
 class SettingsActivity : AppCompatActivity() {
@@ -39,8 +45,6 @@ class SettingsActivity : AppCompatActivity() {
     private val binding by lazy {
         SettingsActivityBinding.inflate(layoutInflater)
     }
-
-    private var toastToShow: Toast? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,111 +58,7 @@ class SettingsActivity : AppCompatActivity() {
                 .commit()
         }
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-
         title = getString(R.string.settings_activity_title)
-
-        binding.settingsProgressIndicator.visibility = View.GONE
-        binding.shadowView.isVisible = false
-        // если экспорт файла журнала завершен
-        Journal.onJournalExportComplete = {
-            //openFile(it)
-            toastToShow?.cancel()
-            toastToShow = Toast.makeText(this, "Экспорт завершен", Toast.LENGTH_SHORT)
-            toastToShow?.show()
-            binding.settingsProgressIndicator.visibility = View.GONE
-            binding.shadowView.isVisible = false
-            // открываем диалог, чтобы отправить файл
-            shareFile(it)
-        }
-        // если записи в БД отсутствуют и файл не создан
-        Journal.onJournalExportFailure = {
-            binding.settingsProgressIndicator.visibility = View.GONE
-            binding.shadowView.isVisible = false
-            toastToShow?.cancel()
-            toastToShow = Toast.makeText(this, it, Toast.LENGTH_SHORT)
-            toastToShow?.show()
-        }
-        // индикация процесса создания файла журнала
-        Journal.onJournalExportProcess = {
-            binding.settingsProgressIndicator.visibility = View.VISIBLE
-            binding.shadowView.isVisible = true
-            toastToShow?.cancel()
-            toastToShow = Toast.makeText(this, it, Toast.LENGTH_SHORT)
-            toastToShow?.show()
-        }
-        // если потребуется предоставить особые права доступа MANAGE_EXTERNAL_STORAGE
-        Journal.onJournalExportError = {
-            toastToShow?.cancel()
-            toastToShow =
-                Toast.makeText(this, it, Toast.LENGTH_SHORT)
-            toastToShow?.show()
-            binding.settingsProgressIndicator.visibility = View.GONE
-            binding.shadowView.isVisible = false
-            val permissionIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-            startActivity(permissionIntent)
-        }
-        // если данные из локальной базы успешно архивированы
-        DatabaseUtil.onBackupComplete = {
-            toastToShow?.cancel()
-            toastToShow =
-                Toast.makeText(this, "Копирование базы данных завершено", Toast.LENGTH_SHORT)
-            toastToShow?.show()
-            binding.settingsProgressIndicator.visibility = View.GONE
-            binding.shadowView.isVisible = false
-            shareFile(it)
-        }
-        // индикация процесса архивирования данных из локальной базы
-        DatabaseUtil.onBackupProcess = {
-            binding.settingsProgressIndicator.visibility = View.VISIBLE
-            binding.shadowView.isVisible = true
-            toastToShow?.cancel()
-            toastToShow = Toast.makeText(this, it, Toast.LENGTH_SHORT)
-            toastToShow?.show()
-        }
-        // если потребуется предоставить особые права доступа MANAGE_EXTERNAL_STORAGE
-        DatabaseUtil.onBackupError = {
-            toastToShow?.cancel()
-            toastToShow =
-                Toast.makeText(this, it, Toast.LENGTH_SHORT)
-            toastToShow?.show()
-            binding.settingsProgressIndicator.visibility = View.GONE
-            binding.shadowView.isVisible = false
-            val permissionIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
-            startActivity(permissionIntent)
-        }
-    }
-
-    private fun openFile(file: File) {
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        val uri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.provider", file)
-
-        intent.setDataAndType(
-            uri,
-            URLConnection.guessContentTypeFromName(file.getName())
-        )
-        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION)
-
-        startActivity(intent)
-    }
-
-    private fun shareFile(file: File) {
-
-        val intent = Intent(Intent.ACTION_SEND)
-        val uri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.provider", file)
-
-        intent.setDataAndType(
-            uri,
-            URLConnection.guessContentTypeFromName(file.getName())
-        )
-        intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION)
-
-        intent.putExtra(
-            Intent.EXTRA_STREAM,
-            uri
-        )
-        startActivity(Intent.createChooser(intent, "Переслать файл..."))
     }
 
     class SettingsFragment : PreferenceFragmentCompat() {
@@ -166,22 +66,9 @@ class SettingsActivity : AppCompatActivity() {
         private lateinit var biometricPrompt: BiometricPrompt
         private lateinit var authMode: SwitchPreference
         private lateinit var serverIpAddress: EditTextPreference
+        private lateinit var getBiometricSettingsResult: ActivityResultLauncher<Intent>
 
-        private var callActivityResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_CANCELED) {
-
-                    when (BiometricManager.from(requireContext()).canAuthenticate()) {
-                        BiometricManager.BIOMETRIC_SUCCESS -> {
-                            showBiometricPromptForDecryption()
-                        }
-                        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                            authMode.isChecked = AppPreferences.fingerPrintIsSave
-                        }
-                        else -> return@registerForActivityResult
-                    }
-                }
-            }
+        private var loadingSnackBar: Snackbar? = null
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey)
@@ -192,8 +79,11 @@ class SettingsActivity : AppCompatActivity() {
             val eventLogSwitch = findPreference<SwitchPreference>("event_log_switch")
             val backupDatabaseButton = findPreference<Preference>("backup_database_button")
 
+            initDatabaseUtilCallback()
+            initJournalUtilCallback()
+
             backupDatabaseButton?.setOnPreferenceClickListener {
-                DatabaseUtil.backupDatabase(requireContext())
+                DatabaseUtil.backupDatabase(requireContext(), viewLifecycleOwner.lifecycleScope)
                 true
             }
 
@@ -222,7 +112,7 @@ class SettingsActivity : AppCompatActivity() {
                         ).build()
 
                 dateRangePicker.addOnPositiveButtonClickListener {
-                    Journal.exportJournalFromDb(startTime = it.first, endTime = it.second)
+                    Journal.exportJournalFromDb(startTime = it.first, endTime = it.second, viewLifecycleOwner.lifecycleScope)
                 }
                 dateRangePicker.show(
                     (requireContext() as AppCompatActivity).supportFragmentManager,
@@ -231,18 +121,15 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
 
-
             button?.setOnPreferenceClickListener {
                 val dialog = MaterialAlertDialogBuilder(requireContext() as AppCompatActivity)
                 dialog.setTitle(getString(R.string.settings_activity_change_user_title))
                     .setMessage("При выходе из профиля произойдет удаление сохраненных данных учетной записи и пин кода")
                     .setCancelable(false)
                     .setIcon(R.drawable.ic_baseline_people_black_36dp)
-                    .setPositiveButton("Выйти из профиля", { _, _ ->
-                        AppPreferences.clear()
-                        startActivity(Intent(context, LoginActivity::class.java))
-                        getActivity()?.onBackPressed()
-                    })
+                    .setPositiveButton("Выйти из профиля") { _, _ ->
+                        changeAccount()
+                    }
                     .setNegativeButton("Отмена") { _, _ ->
                     }
                     .show()
@@ -281,10 +168,124 @@ class SettingsActivity : AppCompatActivity() {
                 true
             }
 
+            serverIpAddress = findPreference("server_ip_address") ?: return
+            serverIpAddress.setOnPreferenceChangeListener { _, newValue ->
+                Util.serverIpAddress = newValue.toString()
+                return@setOnPreferenceChangeListener true
+            }
+
+            initBiometricAuth()
+        }
+
+        override fun onResume() {
+            super.onResume()
+            when (BiometricManager.from(requireContext()).canAuthenticate(BIOMETRIC_WEAK)) {
+                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                    AppPreferences.fingerPrintIsSave = false
+                    authMode.isChecked = false
+                }
+                else -> return
+            }
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            loadingSnackBar?.dismiss()
+        }
+
+        private fun initDatabaseUtilCallback() {
+            // если данные из локальной базы успешно архивированы
+            DatabaseUtil.onBackupComplete = {
+                loadingSnackBar?.dismiss()
+                shareFile(it)
+                preferenceScreen.isEnabled = true
+            }
+            // индикация процесса архивирования данных из локальной базы
+            DatabaseUtil.onBackupProcess = {
+                showLoadingSnackBar(it)
+                preferenceScreen.isEnabled = false
+            }
+            // если потребуется предоставить особые права доступа MANAGE_EXTERNAL_STORAGE
+            DatabaseUtil.onBackupError = {
+                loadingSnackBar?.dismiss()
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+
+                val permissionIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                startActivity(permissionIntent)
+                preferenceScreen.isEnabled = true
+            }
+        }
+
+        private fun initJournalUtilCallback() {
+            // если экспорт файла журнала завершен
+            Journal.onJournalExportComplete = {
+                loadingSnackBar?.dismiss()
+                // открываем диалог, чтобы отправить файл
+                shareFile(it)
+                preferenceScreen.isEnabled = true
+            }
+            // если записи в БД отсутствуют и файл не создан
+            Journal.onJournalExportFailure = {
+                loadingSnackBar?.dismiss()
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+
+                preferenceScreen.isEnabled = true
+            }
+            // индикация процесса создания файла журнала
+            Journal.onJournalExportProcess = {
+                showLoadingSnackBar(it)
+                preferenceScreen.isEnabled = false
+            }
+            // если потребуется предоставить особые права доступа MANAGE_EXTERNAL_STORAGE
+            Journal.onJournalExportError = {
+                loadingSnackBar?.dismiss()
+                Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
+
+                val permissionIntent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                startActivity(permissionIntent)
+                preferenceScreen.isEnabled = true
+            }
+        }
+
+        private fun shareFile(file: File) {
+
+            val intent = Intent(Intent.ACTION_SEND)
+            val uri = FileProvider.getUriForFile(requireContext(), "${BuildConfig.APPLICATION_ID}.provider", file)
+
+            intent.setDataAndType(
+                uri,
+                URLConnection.guessContentTypeFromName(file.getName())
+            )
+            intent.addFlags(FLAG_GRANT_READ_URI_PERMISSION)
+
+            intent.putExtra(
+                Intent.EXTRA_STREAM,
+                uri
+            )
+            startActivity(Intent.createChooser(intent, "Переслать файл..."))
+        }
+
+        private fun initBiometricAuth() {
             val authCategory = findPreference<PreferenceCategory>("auth_tools_category")
             authMode = findPreference("auth_mode") ?: return
 
-            when (BiometricManager.from(requireContext()).canAuthenticate()) {
+            getBiometricSettingsResult =
+                registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                    if (result.resultCode == Activity.RESULT_CANCELED) {
+
+                        when (BiometricManager.from(requireContext()).canAuthenticate(BIOMETRIC_WEAK)) {
+                            BiometricManager.BIOMETRIC_SUCCESS -> {
+                                showBiometricPromptForDecryption()
+                            }
+                            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+                                authMode.isChecked = AppPreferences.fingerPrintIsSave
+                            }
+                            else -> return@registerForActivityResult
+                        }
+                    }
+                }
+
+            when (BiometricManager.from(requireContext()).canAuthenticate(BIOMETRIC_WEAK)) {
                 BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
                     authCategory?.isVisible = false
                 }
@@ -307,7 +308,7 @@ class SettingsActivity : AppCompatActivity() {
                     }
 
                     true -> {
-                        when (BiometricManager.from(requireContext()).canAuthenticate()) {
+                        when (BiometricManager.from(requireContext()).canAuthenticate(BIOMETRIC_WEAK)) {
                             BiometricManager.BIOMETRIC_SUCCESS -> {
                                 showBiometricPromptForDecryption()
                             }
@@ -327,23 +328,6 @@ class SettingsActivity : AppCompatActivity() {
 
             BiometricPromptUtils.onAuthenticationError = {
                 authMode.isChecked = AppPreferences.fingerPrintIsSave
-            }
-
-            serverIpAddress = findPreference("server_ip_address") ?: return
-            serverIpAddress.setOnPreferenceChangeListener { _, newValue ->
-                Util.serverIpAddress = newValue.toString()
-                return@setOnPreferenceChangeListener true
-            }
-        }
-
-        override fun onResume() {
-            super.onResume()
-            when (BiometricManager.from(requireContext()).canAuthenticate()) {
-                BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                    AppPreferences.fingerPrintIsSave = false
-                    authMode.isChecked = false
-                }
-                else -> return
             }
         }
 
@@ -366,12 +350,27 @@ class SettingsActivity : AppCompatActivity() {
                 .setCancelable(false)
                 .setIcon(R.drawable.ic_fingerprint_24)
                 .setPositiveButton("Настроить", DialogInterface.OnClickListener { _, _ ->
-                    callActivityResultLauncher.launch(Intent(Settings.ACTION_SECURITY_SETTINGS))
+                    getBiometricSettingsResult.launch(Intent(Settings.ACTION_SECURITY_SETTINGS))
                 })
                 .setNegativeButton("Отмена") { _, _ ->
                     authMode.isChecked = AppPreferences.fingerPrintIsSave
                 }
                 .show()
+        }
+
+        private fun changeAccount() {
+            AppPreferences.clear()
+            val intent = Intent(requireContext(), LoginActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            startActivity(intent)
+            requireActivity().finish()
+        }
+
+        private fun showLoadingSnackBar(message: String){
+            loadingSnackBar = Snackbar.make(requireView(), message, Snackbar.LENGTH_INDEFINITE)
+            val viewGroup = loadingSnackBar?.view?.findViewById<View>(com.google.android.material.R.id.snackbar_text)?.parent as ViewGroup
+            viewGroup.addView(ProgressBar(requireContext()))
+            loadingSnackBar?.show()
         }
     }
 

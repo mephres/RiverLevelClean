@@ -56,4 +56,7 @@ interface EventDao {
 
         @Query("SELECT * FROM event WHERE :dateStart <= planDate AND planDate <= :dateEnd AND priority > 1 AND (status = 1 OR status = 2)")
         fun getLaunchedHighPriorityEvent(dateStart: Long, dateEnd: Long): List<EventItem>
+
+        @Query("DELETE FROM event WHERE opId = :eventId")
+        suspend fun deleteEventByEventId(eventId: Long)
 }

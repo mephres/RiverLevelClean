@@ -27,4 +27,7 @@ interface OperControlDao {
 
     @Query("UPDATE oper_control SET isSended = 0 WHERE eventId = :eventId AND opId = :operationId")
     suspend fun setEventOperationControlReadyForSendBy(eventId: Long, operationId: Long)
+
+    @Query("DELETE FROM oper_control WHERE opId = :id")
+    suspend fun deleteOperControlByEventId(id: Long)
 }

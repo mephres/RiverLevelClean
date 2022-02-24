@@ -20,7 +20,7 @@ import java.util.zip.ZipOutputStream
 object DatabaseUtil {
     private var FILE_NAME = ""
     private var ZIP_NAME = ""
-    private const val DIR_SD = "MobOpBackup"
+    private const val DIR_SD = "MetrologBackup"
     var onBackupComplete: ((File) -> Unit)? = null
     var onBackupProcess: ((String) -> Unit)? = null
     var onBackupError: ((String) -> Unit)? = null
@@ -30,12 +30,12 @@ object DatabaseUtil {
     /**
      * Функция копирования БД и записи в архив в локальном хранилище
      */
-    fun backupDatabase(context: Context) {
+    fun backupDatabase(context: Context, scope: CoroutineScope) {
         // проверяем доступность хранилища
         if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
             return
         }
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             val job = async(Dispatchers.IO) {
                 FILE_NAME = ""
                 ZIP_NAME = ""
@@ -57,7 +57,7 @@ object DatabaseUtil {
                         Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS + File.separator + DIR_SD)
 
                     if (!sdPath.exists()) {
-                        sdPath.mkdir()
+                        sdPath.mkdirs()
                     }
 
                     saveFile = File(sdPath.path, FILE_NAME)
@@ -97,15 +97,16 @@ object DatabaseUtil {
             onBackupProcess?.invoke("Запущен процесс копирования базы данных")
             // ожидание выполнения сохранения в архив
             job.await()
-            // если архив с данными сохранен, запускаем ACTION_SEND в SettingsActivity
-            if (zipFile.exists()) {
-                onBackupComplete?.invoke(zipFile)
-            }
+
             // если job возвращает исключение FileNotFoundException, запускаем ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION в SettingsActivity
             if (job.await() is FileNotFoundException) {
                 onBackupError?.invoke(
                     "Предоставьте права доступа"
                 )
+            }
+            // если архив с данными сохранен, запускаем ACTION_SEND в SettingsActivity
+            if (zipFile.exists()) {
+                onBackupComplete?.invoke(zipFile)
             }
             // закрываем поток сопрограммы
             job.cancel()

@@ -24,7 +24,7 @@ import java.util.*
 object Journal {
 
     private lateinit var db: AppDatabase
-    private const val DIR_SD = "MobOpLogs"
+    private const val DIR_SD = "MetrologLogs"
     private var FILENAME_SD = ""
     private lateinit var sdFile: File
 
@@ -109,12 +109,12 @@ object Journal {
      * @param startTime - начало периода записи
      * @param endTime - конец периода записи
      */
-    fun exportJournalFromDb(startTime: Long, endTime: Long) {
+    fun exportJournalFromDb(startTime: Long, endTime: Long, scope: CoroutineScope) {
         // проверяем доступность хранилища
         if (Environment.getExternalStorageState() != Environment.MEDIA_MOUNTED) {
             return
         }
-        CoroutineScope(Dispatchers.Main).launch {
+        scope.launch {
             val job = async(Dispatchers.IO) {
                 FILENAME_SD = ""
                 try {
@@ -173,15 +173,18 @@ object Journal {
                     f
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    onJournalExportFailure?.invoke(
-                        "При экпорте произошла ошибка - ${e.localizedMessage}"
-                    )
                 }
             }
             // ждем выполнения сопрограммы
             onJournalExportProcess?.invoke("Запущен процесс экспорта")
             job.await()
-            Log.d("dfsdfsdf", job.await().toString())
+
+            if (job.await() is FileNotFoundException) {
+                onJournalExportError?.invoke(
+                    "Предоставьте права доступа"
+                )
+            }
+
             // выводим результат работы сопрограммы
             if (FILENAME_SD.isNotEmpty() && sdFile.exists()) {
                 onJournalExportComplete?.invoke(
@@ -190,12 +193,6 @@ object Journal {
             } else {
                 onJournalExportFailure?.invoke(
                     "За выбранный период журналы отсутствуют"
-                )
-            }
-
-            if (job.await() is FileNotFoundException) {
-                onJournalExportError?.invoke(
-                    "Предоставьте права доступа"
                 )
             }
 
@@ -208,8 +205,8 @@ object Journal {
      * Удаление записей из БД и файлов, хранящихся более "day" дней
      * @param day - количество дней хранения записей и файлов
      */
-    fun deleteOldJournal(day: Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+    fun deleteOldJournal(day: Int, scope: CoroutineScope) {
+        scope.launch {
             // очищаем журналы из базы, хранящиеся более day дней
             val twoWeakLater = DateTimeUtil.getUnixDateTimeNow() - (day * 86400).toLong()
             db.journalDao().deleteJournalByDate(twoWeakLater)

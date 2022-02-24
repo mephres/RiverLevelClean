@@ -186,4 +186,7 @@
     <string name="confirm_title">Подтвердить</string>
     <string name="operation_activity_event_photo_list_title">Прикрепленные файлы</string>
 
+    <string name="event_delete_dialog_title">Удаление мероприятия</string>
+    <string name="event_delete_dialog_dialog_text">Выбранное мероприятие будет удалено. Продолжить?</string>
+
 </resources>

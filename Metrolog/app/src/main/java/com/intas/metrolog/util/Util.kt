@@ -8,7 +8,7 @@ import com.intas.metrolog.pojo.authuser.AuthUser
 import java.util.*
 
 object Util {
-    var deviceUniqueIdArray = arrayOf("b53108b2de27208a", "2f655dfde9746468", "fa1c69d48f89a2b2")
+    var deviceUniqueIdArray = arrayOf("b53108b2de27208a", "2f655dfde9746468", "02b0a6e1a25510b5")
 
     var eventLoggingEnabled = false
 

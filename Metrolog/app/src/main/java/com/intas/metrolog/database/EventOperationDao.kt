@@ -30,4 +30,7 @@ interface EventOperationDao {
 
     @Query("SELECT COUNT(*) FROM eventOperation WHERE opId = :opId")
     fun getOperationListSize(opId: Long): Int
+
+    @Query("DELETE FROM eventOperation WHERE opId = :opId")
+    suspend fun deleteEventOperationByEventId(opId: Long)
 }
