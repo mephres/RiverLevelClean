@@ -368,8 +368,9 @@ class SettingsActivity : AppCompatActivity() {
 
         private fun showLoadingSnackBar(message: String){
             loadingSnackBar = Snackbar.make(requireView(), message, Snackbar.LENGTH_INDEFINITE)
-            val viewGroup = loadingSnackBar?.view?.findViewById<View>(com.google.android.material.R.id.snackbar_text)?.parent as ViewGroup
-            viewGroup.addView(ProgressBar(requireContext()))
+            val progress = layoutInflater.inflate(R.layout.progress_indicator, null)
+            val snackView: Snackbar.SnackbarLayout = loadingSnackBar?.view as Snackbar.SnackbarLayout
+            snackView.addView(progress)
             loadingSnackBar?.show()
         }
     }
