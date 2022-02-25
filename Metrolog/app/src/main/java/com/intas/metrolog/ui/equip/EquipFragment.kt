@@ -21,6 +21,7 @@ import com.intas.metrolog.ui.equip.equip_menu.EquipMenuFragment
 import com.intas.metrolog.ui.equip_document.EquipDocumentActivity
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.scanner.NfcFragment
+import com.intas.metrolog.util.Journal
 
 class EquipFragment : Fragment() {
     private lateinit var equipListAdapter: EquipListAdapter
@@ -167,13 +168,19 @@ class EquipFragment : Fragment() {
             val equipMenuFragment = EquipMenuFragment.newInstance(equipItem)
             equipMenuFragment.show(requireActivity().supportFragmentManager, EquipMenuFragment.EQUIP_MENU_TAG)
 
+            Journal.insertJournal("EquipFragment->equipItemClick", "equip: $equipItem")
+
             equipMenuFragment.onAddRFIDClickListener = {
                 val equip = it
                 val nfcFragment = NfcFragment.newInstanceAddTag(equip)
                 nfcFragment.show(requireActivity().supportFragmentManager, NfcFragment.NFC_FRAGMENT_TAG)
+
+                Journal.insertJournal("EquipFragment->addRfid", "equip: $it")
             }
             equipMenuFragment.onCreateDocumentClickListener = {
                 startActivity(EquipDocumentActivity.newIntent(requireContext(), it))
+
+                Journal.insertJournal("NfcViewModel->createDocument", "equip: $it")
             }
         }
     }

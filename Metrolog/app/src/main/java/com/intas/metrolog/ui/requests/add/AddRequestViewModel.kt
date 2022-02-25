@@ -10,6 +10,7 @@ import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.pojo.request.RequestPhoto
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.getEncodedScreen
 import kotlinx.coroutines.launch
 
@@ -44,6 +45,7 @@ class AddRequestViewModel(application: Application) : AndroidViewModel(applicati
                         dateTime = requestItem.creationDate
                     )
                 db.requestPhotoDao().insertRequestPhoto(requestPhoto)
+                Journal.insertJournal("AddRequestViewModel->requestPhoto", requestPhoto)
             }
             onRequestSavedSuccess?.invoke("")
         }

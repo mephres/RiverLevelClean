@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.equip.EquipInfo
+import com.intas.metrolog.util.Journal
 import kotlinx.coroutines.launch
 
 class EquipInfoViewModel(application: Application) : AndroidViewModel(application) {
@@ -18,6 +19,7 @@ class EquipInfoViewModel(application: Application) : AndroidViewModel(applicatio
     fun updateEquipInfo(list: List<EquipInfo>) {
         viewModelScope.launch {
             db.equipInfoDao().insertEquipInfoList(list)
+            Journal.insertJournal("EquipInfoViewModel->updateEquipInfo", list = list)
         }
     }
 }

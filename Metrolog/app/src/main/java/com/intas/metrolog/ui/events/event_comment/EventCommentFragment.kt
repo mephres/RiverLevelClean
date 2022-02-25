@@ -30,6 +30,7 @@ import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETE
 import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.equip_document.adapter.ImageSliderViewAdapter
 import com.intas.metrolog.util.FileUtil
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.ViewUtil
 import com.yalantis.ucrop.UCrop
@@ -199,10 +200,12 @@ class EventCommentFragment : BottomSheetDialogFragment() {
             MODE_COMMENT_WITH_IMAGE -> {
                 FileUtil.setContext(requireActivity().application)
                 binding.imageListCardView.visibility = View.VISIBLE
+                Journal.insertJournal("EventCommentFragment->checkMode", "commentWithImage")
             }
 
             MODE_COMMENT_WITHOUT_IMAGE -> {
                 binding.imageListCardView.visibility = View.GONE
+                Journal.insertJournal("EventCommentFragment->checkMode", "commentWithoutImage")
             }
         }
     }

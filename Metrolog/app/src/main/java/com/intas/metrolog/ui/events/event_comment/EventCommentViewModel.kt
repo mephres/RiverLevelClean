@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.event.event_photo.EventPhotoItem
+import com.intas.metrolog.util.Journal
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 
@@ -53,6 +54,7 @@ class EventCommentViewModel(application: Application) : AndroidViewModel(applica
                 db.eventPhotoDao().insertEventPhoto(eventComment)
             }
             onEventPhotoSavedSuccess?.invoke(eventId)
+            Journal.insertJournal("EventCommentViewModel->saveEventPhoto", eventId)
         }
     }
 }
