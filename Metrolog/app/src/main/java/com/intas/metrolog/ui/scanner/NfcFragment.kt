@@ -23,6 +23,7 @@ import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.events.select_event.SelectEventFragment
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.ui.requests.add.AddRequestFragment
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
@@ -281,21 +282,25 @@ class NfcFragment : BottomSheetDialogFragment() {
             MODE_SCAN_GET_EVENT_BY_EQUIP -> {
                 equipSerialNumber?.let {
                     showSelectEventByEquipRfid(it)
+                    Journal.insertJournal("NfcFragment->launchMode->getEventByRfid", it)
                 }
             }
             MODE_SCAN_START_EVENT -> {
                 equipSerialNumber?.let {
                     beginEvent(it)
+                    Journal.insertJournal("NfcFragment->launchMode->beginEvent", it)
                 }
             }
             MODE_ADD_TAG_FOR_EQUIP -> {
                 Util.safeLet(equipItem, equipSerialNumber) { equipItem, equipNumber ->
                     setRFIDtoEquip(equipItem, equipNumber)
+                    Journal.insertJournal("NfcFragment->launchMode->setRFIDtoEquip", "equipItem: $equipItem,  number: $equipNumber")
                 }
             }
             MODE_ADD_NEW_REQUEST -> {
                 equipSerialNumber?.let {
                     getEquipByRFID(it)
+                    Journal.insertJournal("NfcFragment->launchMode->getEquipByRFID", it)
                 }
             }
         }

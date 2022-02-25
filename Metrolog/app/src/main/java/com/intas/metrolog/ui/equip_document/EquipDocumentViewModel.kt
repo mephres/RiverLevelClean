@@ -18,6 +18,7 @@ import com.intas.metrolog.R
 import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.document_type.DocumentType
 import com.intas.metrolog.pojo.equip.EquipDocument
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
@@ -120,6 +121,7 @@ class EquipDocumentViewModel(application: Application) : AndroidViewModel(applic
 
                 db.equipDocumentDao().insertEquipDocument(equipDocument)
                 onSavePDFCompleted?.invoke(equipDocument)
+                Journal.insertJournal("EquipDocumentViewModel->generatePDF", equipDocument)
             } catch (e: IOException) {
                 FirebaseCrashlytics.getInstance().recordException(e)
             }

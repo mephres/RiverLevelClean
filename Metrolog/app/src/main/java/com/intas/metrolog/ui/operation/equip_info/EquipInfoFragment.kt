@@ -61,6 +61,7 @@ class EquipInfoFragment : BottomSheetDialogFragment() {
         binding.equipInfoNameTextView.text = equipItem?.equipName
 
         viewModel.getEquipInfoById(equipId).observe(viewLifecycleOwner) {
+            Journal.insertJournal("EquipInfoFragment->getEquipInfoById", list = it)
             equipInfoListAdapter.submitList(it)
         }
     }

@@ -28,6 +28,7 @@ import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
 import com.intas.metrolog.ui.equip_document.adapter.DocumentTypeAdapter
 import com.intas.metrolog.ui.equip_document.adapter.ImageSliderViewAdapter
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.Util.CAMERA_CAPTURE
 import com.intas.metrolog.util.Util.GALLERY_REQUEST
@@ -448,6 +449,7 @@ class EquipDocumentActivity : AppCompatActivity() {
         fun newIntent(context: Context, equipItem: EquipItem): Intent {
             val intent = Intent(context, EquipDocumentActivity::class.java)
             intent.putExtra(EXTRA_EQUIP_ITEM, equipItem)
+            Journal.insertJournal("EquipDocumentActivity->newIntent", equipItem)
             return intent
         }
     }

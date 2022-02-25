@@ -39,6 +39,7 @@ import com.intas.metrolog.ui.requests.add.adapter.DisciplineSpinnerAdapter
 import com.intas.metrolog.ui.requests.add.adapter.OperationTypeSpinnerAdapter
 import com.intas.metrolog.ui.requests.add.adapter.PrioritySpinnerAdapter
 import com.intas.metrolog.util.DateTimeUtil
+import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.intas.metrolog.util.Util.YYYYMMDD_HHMMSS
 import com.intas.metrolog.util.ViewUtil
@@ -451,6 +452,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         viewModel.addRequest(requestItem)
         binding.progressBar.visibility = View.VISIBLE
         viewModel.onRequestSavedSuccess = {
+            Journal.insertJournal("AddRequestFragment->createRequest", requestItem)
             showToast(getString(R.string.add_request_success_title))
             closeFragment()
         }
@@ -472,6 +474,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         viewModel.addEquipInfo(equipInfo)
         binding.progressBar.visibility = View.VISIBLE
         viewModel.onEquipInfoSavedSuccess = {
+            Journal.insertJournal("AddRequestFragment->createEquipInfo", equipInfo)
             showToast(getString(R.string.add_equip_info_success_title))
             closeFragment()
         }
@@ -640,10 +643,12 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             MODE_ADD_REQUEST_WITH_SCAN -> {
                 binding.equipInfoTextView.visibility = View.VISIBLE
                 binding.equipInfoTextView.text = equip?.equipName
+                Journal.insertJournal("AddRequestFragment->addRequestWithScan",  "$equip")
             }
 
             MODE_ADD_REQUEST_WITHOUT_SCAN -> {
                 showToast(getString(R.string.add_request_no_equip_message_title))
+                Journal.insertJournal("AddRequestFragment->addRequestWithoutScan", "")
             }
         }
     }
