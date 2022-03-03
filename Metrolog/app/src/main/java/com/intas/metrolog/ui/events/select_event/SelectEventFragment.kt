@@ -25,9 +25,8 @@ class SelectEventFragment : BottomSheetDialogFragment() {
     private var eventId: Long = 0
     var onCloseListener: ((String) -> Unit)? = null
 
-    private val binding by lazy {
-        FragmentBottomSelectEventBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentBottomSelectEventBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by lazy {
         ViewModelProvider(this)[SelectEventViewModel::class.java]
@@ -45,6 +44,7 @@ class SelectEventFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentBottomSelectEventBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -167,6 +167,11 @@ class SelectEventFragment : BottomSheetDialogFragment() {
             parentFragmentManager.beginTransaction().remove(it).commit()
             onCloseListener?.invoke(it.toString())
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

@@ -33,9 +33,8 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
 
     lateinit var selectedDictData: FieldDictData
 
-    private val binding by lazy {
-        FragmentOperationControlInputValueBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentOperationControlInputValueBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by lazy {
         ViewModelProvider(this)[OperationControlInputValueViewModel::class.java]
@@ -51,6 +50,7 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentOperationControlInputValueBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -330,6 +330,11 @@ class OperationControlInputValueFragment : BottomSheetDialogFragment() {
      */
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

@@ -9,9 +9,8 @@ import com.intas.metrolog.databinding.FragmentBottomSelectBinding
 
 class SelectFragment : BottomSheetDialogFragment() {
 
-    private val binding by lazy {
-        FragmentBottomSelectBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentBottomSelectBinding? = null
+    private val binding get() = _binding!!
 
     var onSelectScannerClickListener: ((View) -> Unit)? = null
     var onSelectWithoutScannerClickListener: ((View) -> Unit)? = null
@@ -25,6 +24,7 @@ class SelectFragment : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentBottomSelectBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -47,6 +47,11 @@ class SelectFragment : BottomSheetDialogFragment() {
         fragment?.let {
             parentFragmentManager.beginTransaction().remove(it).commit()
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

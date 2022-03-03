@@ -40,14 +40,14 @@ class NfcFragment : BottomSheetDialogFragment() {
     private var equipItem: EquipItem? = null
     private var flash = false
     private var qrMode = false
+    private var colorAnimation: ValueAnimator? = null
 
     private val nfcViewModel by lazy {
         ViewModelProvider(this)[NfcViewModel::class.java]
     }
 
-    private val binding by lazy {
-        NfcFragmentBinding.inflate(layoutInflater)
-    }
+    private var _binding: NfcFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val modes = arrayOf(
         MODE_SCAN_GET_EVENT_BY_EQUIP, MODE_SCAN_START_EVENT,
@@ -62,7 +62,8 @@ class NfcFragment : BottomSheetDialogFragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
+    ): View? {
+        _binding = NfcFragmentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -94,6 +95,7 @@ class NfcFragment : BottomSheetDialogFragment() {
         super.onPause()
         binding.qrScannerView.pauseAndWait()
         nfcAdapter?.disableReaderMode(requireActivity())
+        colorAnimation?.cancel()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -172,15 +174,15 @@ class NfcFragment : BottomSheetDialogFragment() {
     private fun setUI() {
         val colorFrom = ContextCompat.getColor(requireContext(), R.color.colorAccent)
         val colorTo = ContextCompat.getColor(requireContext(), R.color.md_white)
-        val colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom)
-        colorAnimation.duration = 3000 // milliseconds
-        colorAnimation.repeatCount = 100
-        colorAnimation.addUpdateListener { valueAnimator: ValueAnimator ->
+        colorAnimation = ValueAnimator.ofObject(ArgbEvaluator(), colorFrom, colorTo, colorFrom)
+        colorAnimation?.duration = 3000 // milliseconds
+        colorAnimation?.repeatCount = 100
+        colorAnimation?.addUpdateListener { valueAnimator: ValueAnimator ->
             binding.logoImageView.setColorFilter(
                 valueAnimator.animatedValue as Int
             )
         }
-        colorAnimation.start()
+        colorAnimation?.start()
 
         binding.qrScannerCardView.visibility = View.INVISIBLE
     }
@@ -418,6 +420,11 @@ class NfcFragment : BottomSheetDialogFragment() {
         fragment?.let {
             parentFragmentManager.beginTransaction().remove(it).commit()
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

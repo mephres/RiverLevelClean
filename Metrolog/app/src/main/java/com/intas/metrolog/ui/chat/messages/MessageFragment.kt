@@ -19,6 +19,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.intas.metrolog.R
+import com.intas.metrolog.databinding.FragmentChatBinding
 import com.intas.metrolog.databinding.FragmentMessageBinding
 import com.intas.metrolog.pojo.UserItem
 import com.intas.metrolog.pojo.chat.MessageItem
@@ -26,14 +27,14 @@ import com.intas.metrolog.ui.chat.messages.adapter.MessageListAdapter
 import com.intas.metrolog.ui.chat.select_user.SelectUserFragment
 import com.intas.metrolog.util.DateTimeUtil
 import com.intas.metrolog.util.Util
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
-class MessageFragment : Fragment() {
+class MessageFragment : Fragment(R.layout.fragment_message) {
     private lateinit var messageListAdapter: MessageListAdapter
     private lateinit var companion: UserItem
     private var onMenuItemClickListener: ((MenuItem, MessageItem) -> Unit)? = null
 
-    private var _binding: FragmentMessageBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding(FragmentMessageBinding::bind)
 
     private val viewModelFactory by lazy {
         MessagesViewModelFactory(companion, requireActivity().application)
@@ -46,14 +47,6 @@ class MessageFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         parseArgs()
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentMessageBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

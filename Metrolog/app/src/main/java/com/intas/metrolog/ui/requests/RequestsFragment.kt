@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.R
+import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.databinding.FragmentRequestsBinding
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.ui.main.MainViewModel
@@ -28,16 +29,15 @@ import com.intas.metrolog.ui.requests.filter.RequestFilter
 import com.intas.metrolog.ui.requests.filter.RequestFilterFragment
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.AppPreferences
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
-class RequestsFragment : Fragment() {
+class RequestsFragment : Fragment(R.layout.fragment_requests) {
     private lateinit var requestListAdapter: RequestListAdapter
     private var searchView: SearchView? = null
     private var requestList = mutableListOf<RequestItem>()
     private var requestFilter: RequestFilter? = null
 
-    private val binding by lazy {
-        FragmentRequestsBinding.inflate(layoutInflater)
-    }
+    private val binding by viewBinding(FragmentRequestsBinding::bind)
 
     private val requestViewModel by lazy {
         ViewModelProvider(this)[RequestViewModel::class.java]
@@ -48,13 +48,6 @@ class RequestsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

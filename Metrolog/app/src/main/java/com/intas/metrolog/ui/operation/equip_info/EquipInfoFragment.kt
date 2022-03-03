@@ -14,6 +14,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import com.intas.metrolog.databinding.FragmentEquipInfoBinding
+import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.equip.EquipInfo
 import com.intas.metrolog.pojo.equip.EquipItem
 import com.intas.metrolog.ui.operation.equip_info.adapter.EquipInfoListAdapter
@@ -22,9 +23,8 @@ import com.intas.metrolog.util.Journal
 class EquipInfoFragment : BottomSheetDialogFragment() {
     private lateinit var equipInfoListAdapter: EquipInfoListAdapter
 
-    private val binding by lazy {
-        FragmentEquipInfoBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentEquipInfoBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel: EquipInfoViewModel by viewModels()
     private var equipItem: EquipItem? = null
@@ -43,6 +43,7 @@ class EquipInfoFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentEquipInfoBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -126,6 +127,11 @@ class EquipInfoFragment : BottomSheetDialogFragment() {
             Snackbar.make(requireView(), "Для подтверждения необходимо отметить элемент списка", Snackbar.LENGTH_LONG)
         snackbar.anchorView = binding.root
         snackbar.show()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

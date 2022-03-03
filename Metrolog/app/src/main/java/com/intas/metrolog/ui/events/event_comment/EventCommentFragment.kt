@@ -25,6 +25,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.BuildConfig
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventCommentBinding
+import com.intas.metrolog.databinding.NfcFragmentBinding
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.CANCELED
 import com.intas.metrolog.pojo.event.event_status.EventStatus.Companion.COMPLETED
 import com.intas.metrolog.ui.bottom_dialog.BottomDialogSheet
@@ -59,9 +60,8 @@ class EventCommentFragment : BottomSheetDialogFragment() {
 
     private var cropImagePosition = 0
 
-    private val binding by lazy {
-        FragmentEventCommentBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentEventCommentBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by lazy {
         ViewModelProvider(this)[EventCommentViewModel::class.java]
@@ -77,6 +77,7 @@ class EventCommentFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentEventCommentBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -487,6 +488,11 @@ class EventCommentFragment : BottomSheetDialogFragment() {
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {
