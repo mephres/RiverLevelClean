@@ -17,28 +17,20 @@ import com.intas.metrolog.ui.events.viewpager.adapter.ViewPagerAdapter
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.ui.scanner.NfcFragment
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
-class EventsFragment : Fragment() {
+class EventsFragment : Fragment(R.layout.fragment_events) {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val eventsViewModel: EventsViewModel by activityViewModels()
     private lateinit var viewPagerAdapter: ViewPagerAdapter
     private var searchView: SearchView? = null
 
-    private val binding by lazy {
-        FragmentEventsBinding.inflate(layoutInflater)
-    }
+    private val binding by viewBinding(FragmentEventsBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

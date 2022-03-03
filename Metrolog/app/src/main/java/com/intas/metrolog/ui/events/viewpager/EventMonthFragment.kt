@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventTodayBinding
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.ui.events.EventsViewModel
@@ -16,29 +17,22 @@ import com.intas.metrolog.ui.events.adapter.EventListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.Journal
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
-class EventMonthFragment : Fragment() {
+class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
 
     private lateinit var eventListAdapter: EventListAdapter
     private val eventViewModel: EventsViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private var eventList = mutableListOf<EventItem>()
-    private val binding by lazy {
-        FragmentEventTodayBinding.inflate(layoutInflater)
-    }
+
+    private val binding by viewBinding(FragmentEventTodayBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             return
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

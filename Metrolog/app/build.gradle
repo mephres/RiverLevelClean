@@ -156,4 +156,10 @@ dependencies {
     //QRcode сканер
     implementation "com.journeyapps:zxing-android-embedded:3.5.0@aar"
     implementation "com.google.zxing:core:3.3.3"
+
+    //fragment viewBinding delegate
+    implementation 'com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0'
+
+    //Фреймворк для проверки на утечки памяти
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }

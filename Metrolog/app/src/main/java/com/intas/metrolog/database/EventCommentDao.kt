@@ -16,9 +16,9 @@ interface EventCommentDao {
     fun getEventCommentByType(type: Int): List<EventComment>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertEventCommentList(commentList: List<EventComment>)
+    suspend fun insertEventCommentList(commentList: List<EventComment>)
 
     @Query("DELETE FROM eventComment")
-    fun deleteAllEventComment()
+    suspend fun deleteAllEventComment()
 
 }

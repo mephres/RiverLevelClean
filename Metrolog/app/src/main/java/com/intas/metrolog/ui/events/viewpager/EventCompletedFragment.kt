@@ -25,30 +25,23 @@ import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 
 
-class EventCompletedFragment : Fragment() {
+class EventCompletedFragment : Fragment(R.layout.fragment_event_today) {
     private lateinit var eventListAdapter: EventListAdapter
     private val eventViewModel: EventsViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private var eventList = mutableListOf<EventItem>()
 
-    private val binding by lazy {
-        FragmentEventTodayBinding.inflate(layoutInflater)
-    }
+
+    private val binding by viewBinding(FragmentEventTodayBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
             return
         }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

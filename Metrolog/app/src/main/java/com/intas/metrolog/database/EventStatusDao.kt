@@ -16,5 +16,5 @@ interface EventStatusDao {
     fun getEventStatusById(id: Int): LiveData<EventStatus>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertEventStatusList(eventStatusList: List<EventStatus>)
+    suspend fun insertEventStatusList(eventStatusList: List<EventStatus>)
 }
