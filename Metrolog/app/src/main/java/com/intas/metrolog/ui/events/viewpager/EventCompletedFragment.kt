@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.intas.metrolog.R
@@ -54,30 +55,33 @@ class EventCompletedFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
+        lifecycleScope.launchWhenResumed {
+            eventViewModel.getEventListCompleted().observe(viewLifecycleOwner, {
+                eventListAdapter.submitList(it)
+                eventList = it.toMutableList()
+                Journal.insertJournal("EventCompletedFragment->eventList", list = eventList)
+            })
 
-        eventViewModel.getEventListCompleted().observe(viewLifecycleOwner, {
-            eventListAdapter.submitList(it)
-            eventList = it.toMutableList()
-            Journal.insertJournal("EventCompletedFragment->eventList", list = eventList)
-        })
-
-        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-            eventListAdapter.submitList(eventList)
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal("EventCompletedFragment->fragmentEventSwipeRefreshLayout", "isRefreshing")
-        }
-
-
-        eventViewModel.searchText.observe(viewLifecycleOwner, {
-            setFilter(it)
-        })
-
-        mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
-            if (it) {
-                eventListAdapter.notifyDataSetChanged()
+            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+                eventListAdapter.submitList(eventList)
+                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+                Journal.insertJournal(
+                    "EventCompletedFragment->fragmentEventSwipeRefreshLayout",
+                    "isRefreshing"
+                )
             }
-        })
+
+            eventViewModel.searchText.observe(viewLifecycleOwner, {
+                setFilter(it)
+            })
+
+            mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
+                if (it) {
+                    eventListAdapter.notifyDataSetChanged()
+                }
+            })
+        }
     }
 
     private fun setFilter(text: String) {
@@ -105,7 +109,7 @@ class EventCompletedFragment : Fragment() {
         eventRecyclerView?.let {
             with(it) {
                 adapter = eventListAdapter
-
+                itemAnimator = null
                 recycledViewPool.setMaxRecycledViews(0, EventListAdapter.MAX_POOL_SIZE)
             }
         }

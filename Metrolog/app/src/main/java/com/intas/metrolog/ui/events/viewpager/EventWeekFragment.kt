@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.intas.metrolog.databinding.FragmentEventTodayBinding
 import com.intas.metrolog.pojo.event.EventItem
@@ -43,40 +44,41 @@ class EventWeekFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+        lifecycleScope.launchWhenResumed {
+            eventViewModel.getEventListWeek().observe(viewLifecycleOwner, {
+                eventListAdapter.submitList(it)
+                eventList = it.toMutableList()
+                Journal.insertJournal("EventWeekFragment->eventList", list = eventList)
+            })
 
-        eventViewModel.getEventListWeek().observe(viewLifecycleOwner, {
-            eventListAdapter.submitList(it)
-            eventList = it.toMutableList()
-            Journal.insertJournal("EventWeekFragment->eventList", list = eventList)
-        })
-
-        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-            binding.eventProgressIndicator.visibility = View.VISIBLE
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-            mainViewModel.getEvent()
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal(
-                "EventWeekFragment->fragmentEventSwipeRefreshLayout",
-                "isRefreshing"
-            )
-        }
-
-
-        eventViewModel.searchText.observe(viewLifecycleOwner, {
-            setFilter(it)
-        })
-
-        eventViewModel.eventList.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                binding.eventProgressIndicator.visibility = View.GONE
+            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+                binding.eventProgressIndicator.visibility = View.VISIBLE
+                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+                mainViewModel.getEvent()
+                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+                Journal.insertJournal(
+                    "EventWeekFragment->fragmentEventSwipeRefreshLayout",
+                    "isRefreshing"
+                )
             }
-        }
 
-        mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
-            if (it) {
-                eventListAdapter.notifyDataSetChanged()
+
+            eventViewModel.searchText.observe(viewLifecycleOwner, {
+                setFilter(it)
+            })
+
+            eventViewModel.eventList.observe(viewLifecycleOwner) {
+                if (it.isNotEmpty()) {
+                    binding.eventProgressIndicator.visibility = View.GONE
+                }
             }
-        })
+
+            mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
+                if (it) {
+                    eventListAdapter.notifyDataSetChanged()
+                }
+            })
+        }
     }
 
     private fun setFilter(text: String) {
@@ -105,7 +107,7 @@ class EventWeekFragment : Fragment() {
         eventRecyclerView?.let {
             with(it) {
                 adapter = eventListAdapter
-
+                itemAnimator = null
                 recycledViewPool.setMaxRecycledViews(0, EventListAdapter.MAX_POOL_SIZE)
             }
         }

@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEquipBinding
@@ -114,19 +115,21 @@ class EquipFragment : Fragment() {
     }
 
     private fun initObserver() {
-        equipViewModel.equipList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                binding.equipProgressIndicator.visibility = View.GONE
-                binding.equipSwipeRefreshLayout.isRefreshing = false
-                equipList = it.toMutableList()
-                equipListAdapter.submitList(it)
-            }
-        })
+        lifecycleScope.launchWhenResumed {
+            equipViewModel.equipList.observe(viewLifecycleOwner, {
+                if (it.isNotEmpty()) {
+                    binding.equipProgressIndicator.visibility = View.GONE
+                    binding.equipSwipeRefreshLayout.isRefreshing = false
+                    equipList = it.toMutableList()
+                    equipListAdapter.submitList(it)
+                }
+            })
 
-        mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
-            showSnackBar(it)
-            binding.equipSwipeRefreshLayout.isRefreshing = false
-        })
+            mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
+                showSnackBar(it)
+                binding.equipSwipeRefreshLayout.isRefreshing = false
+            })
+        }
     }
 
     private fun showSnackBar(message: String) {
@@ -158,6 +161,7 @@ class EquipFragment : Fragment() {
 
         with(binding.equipRecyclerView) {
             adapter = equipListAdapter
+            itemAnimator = null
             recycledViewPool.setMaxRecycledViews(0, EquipListAdapter.MAX_POOL_SIZE)
         }
         setClickListener()

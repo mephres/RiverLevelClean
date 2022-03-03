@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.intas.metrolog.R
@@ -47,30 +48,33 @@ class EventCanceledFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
+        lifecycleScope.launchWhenResumed {
+            eventViewModel.getEventListCanceled().observe(viewLifecycleOwner, {
+                eventListAdapter.submitList(it)
+                eventList = it.toMutableList()
+                Journal.insertJournal("EventCanceledFragment->eventList", list = eventList)
+            })
 
-        eventViewModel.getEventListCanceled().observe(viewLifecycleOwner, {
-            eventListAdapter.submitList(it)
-            eventList = it.toMutableList()
-            Journal.insertJournal("EventCanceledFragment->eventList", list = eventList)
-        })
-
-        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-            eventListAdapter.submitList(eventList)
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal("EventCanceledFragment->fragmentEventSwipeRefreshLayout", "isRefreshing")
-        }
-
-
-        eventViewModel.searchText.observe(viewLifecycleOwner, {
-            setFilter(it)
-        })
-
-        mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
-            if (it) {
-                eventListAdapter.notifyDataSetChanged()
+            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+                eventListAdapter.submitList(eventList)
+                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+                Journal.insertJournal(
+                    "EventCanceledFragment->fragmentEventSwipeRefreshLayout",
+                    "isRefreshing"
+                )
             }
-        })
+
+            eventViewModel.searchText.observe(viewLifecycleOwner, {
+                setFilter(it)
+            })
+
+            mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
+                if (it) {
+                    eventListAdapter.notifyDataSetChanged()
+                }
+            })
+        }
     }
 
     private fun setFilter(text: String) {
@@ -98,7 +102,7 @@ class EventCanceledFragment : Fragment() {
         eventRecyclerView?.let {
             with(it) {
                 adapter = eventListAdapter
-
+                itemAnimator = null
                 recycledViewPool.setMaxRecycledViews(0, EventListAdapter.MAX_POOL_SIZE)
             }
         }

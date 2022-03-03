@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.intas.metrolog.R
@@ -48,24 +49,27 @@ class ChatFragment : Fragment() {
         setupRecyclerView()
         setupSearchViewListener()
 
-        chatViewModel.chatItemList.observe(viewLifecycleOwner) {
-            if (it.isNotEmpty()) {
-                chatItemList = it.toMutableList()
-                chatListAdapter.submitList(it)
+        lifecycleScope.launchWhenResumed {
+
+            chatViewModel.chatItemList.observe(viewLifecycleOwner) {
+                if (it.isNotEmpty()) {
+                    chatItemList = it.toMutableList()
+                    chatListAdapter.submitList(it)
+                }
+                binding.equipProgressIndicator.visibility = View.GONE
             }
-            binding.equipProgressIndicator.visibility = View.GONE
-        }
 
-        binding.chatListSelectUserFab.setOnClickListener {
-            val selectUserFragment = SelectUserFragment.newInstanceAddCompanion()
-            selectUserFragment.show(
-                requireActivity().supportFragmentManager,
-                SelectUserFragment.SELECT_USER_FRAGMENT_TAG
-            )
-        }
+            binding.chatListSelectUserFab.setOnClickListener {
+                val selectUserFragment = SelectUserFragment.newInstanceAddCompanion()
+                selectUserFragment.show(
+                    requireActivity().supportFragmentManager,
+                    SelectUserFragment.SELECT_USER_FRAGMENT_TAG
+                )
+            }
 
-        chatListAdapter.onCurrentListChangedListener = {
-            binding.chatListRecyclerView.scrollToTop()
+            chatListAdapter.onCurrentListChangedListener = {
+                binding.chatListRecyclerView.scrollToTop()
+            }
         }
     }
 
@@ -83,6 +87,7 @@ class ChatFragment : Fragment() {
         chatListAdapter = ChatListAdapter()
         with(binding.chatListRecyclerView) {
             adapter = chatListAdapter
+            itemAnimator = null
             recycledViewPool.setMaxRecycledViews(0, ChatListAdapter.MAX_POOL_SIZE)
         }
         setupClickListener()
