@@ -22,6 +22,7 @@ import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.Journal
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
 class EquipFragment : Fragment(R.layout.fragment_equip) {
     private lateinit var equipListAdapter: EquipListAdapter
@@ -105,7 +106,7 @@ class EquipFragment : Fragment(R.layout.fragment_equip) {
     }
 
     private fun initObserver() {
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
             equipViewModel.equipList.observe(viewLifecycleOwner, {
                 if (it.isNotEmpty()) {
                     binding.equipProgressIndicator.visibility = View.GONE

@@ -20,6 +20,7 @@ import com.intas.metrolog.ui.chat.adapter.ChatListAdapter
 import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.SelectUserFragment
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
 class ChatFragment : Fragment(R.layout.fragment_chat) {
     private var searchView: SearchView? = null
@@ -42,7 +43,7 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         setupRecyclerView()
         setupSearchViewListener()
 
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
 
             chatViewModel.chatItemList.observe(viewLifecycleOwner) {
                 if (it.isNotEmpty()) {

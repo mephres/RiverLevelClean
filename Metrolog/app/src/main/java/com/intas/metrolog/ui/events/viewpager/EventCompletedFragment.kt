@@ -26,6 +26,7 @@ import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
 
 class EventCompletedFragment : Fragment(R.layout.fragment_event_today) {
@@ -49,7 +50,7 @@ class EventCompletedFragment : Fragment(R.layout.fragment_event_today) {
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
 
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
             eventViewModel.getEventListCompleted().observe(viewLifecycleOwner, {
                 eventListAdapter.submitList(it)
                 eventList = it.toMutableList()

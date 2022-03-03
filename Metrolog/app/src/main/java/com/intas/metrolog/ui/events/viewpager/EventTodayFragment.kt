@@ -17,6 +17,7 @@ import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.Journal
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
 class EventTodayFragment : Fragment(R.layout.fragment_event_today) {
 
@@ -38,7 +39,7 @@ class EventTodayFragment : Fragment(R.layout.fragment_event_today) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
             eventViewModel.getEventListToday().observe(viewLifecycleOwner, {
                 eventListAdapter.submitList(it)
                 eventList = it.toMutableList()

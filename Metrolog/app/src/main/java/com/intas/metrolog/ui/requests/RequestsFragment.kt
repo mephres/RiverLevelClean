@@ -30,6 +30,7 @@ import com.intas.metrolog.ui.requests.filter.RequestFilterFragment
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.AppPreferences
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
 class RequestsFragment : Fragment(R.layout.fragment_requests) {
     private lateinit var requestListAdapter: RequestListAdapter
@@ -114,7 +115,7 @@ class RequestsFragment : Fragment(R.layout.fragment_requests) {
     }
 
     private fun initObserver() {
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
             requestViewModel.requestList.observe(viewLifecycleOwner, {
                 if (it.isNotEmpty()) {
                     binding.requestProgressIndicator.visibility = View.GONE
