@@ -37,36 +37,34 @@ class EventsFragment : Fragment(R.layout.fragment_events) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUI()
+        viewPagerAdapter = childFragmentManager.let { ViewPagerAdapter(it) }
 
-        lifecycleScope.launchWhenResumed {
-            viewPagerAdapter = childFragmentManager.let { ViewPagerAdapter(it) }
+        val fragmentList: List<Fragment> =
+            parentFragmentManager.getFragments() as List<Fragment>
 
-            val fragmentList: List<Fragment> =
-                parentFragmentManager.getFragments() as List<Fragment>
+        viewPagerAdapter.addFragment(EventTodayFragment(), "Сегодня", 0)
+        viewPagerAdapter.addFragment(EventWeekFragment(), "Неделя", 1)
+        viewPagerAdapter.addFragment(EventMonthFragment(), "Месяц", 2)
+        viewPagerAdapter.addFragment(EventCompletedFragment(), "Выполненные", 3)
+        viewPagerAdapter.addFragment(EventCanceledFragment(), "Отмененные", 4)
 
-            viewPagerAdapter.addFragment(EventTodayFragment(), "Сегодня", 0)
-            viewPagerAdapter.addFragment(EventWeekFragment(), "Неделя", 1)
-            viewPagerAdapter.addFragment(EventMonthFragment(), "Месяц", 2)
-            viewPagerAdapter.addFragment(EventCompletedFragment(), "Выполненные", 3)
-            viewPagerAdapter.addFragment(EventCanceledFragment(), "Отмененные", 4)
+        binding.eventViewPager.adapter = viewPagerAdapter
+        binding.eventViewPager.offscreenPageLimit = 3
+        binding.eventTabLayout.setupWithViewPager(binding.eventViewPager)
 
-            binding.eventViewPager.adapter = viewPagerAdapter
-            binding.eventViewPager.offscreenPageLimit = 3
-            binding.eventTabLayout.setupWithViewPager(binding.eventViewPager)
+        viewPagerAdapter.notifyDataSetChanged()
 
-            viewPagerAdapter.notifyDataSetChanged()
+        setupClickListener()
+        setSearchViewListener()
 
-            setupClickListener()
-            setSearchViewListener()
+        eventsViewModel.scroll.observe(viewLifecycleOwner, {
+            if (it > 0) {
+                binding.searchEventFab.hide()
+            } else {
+                binding.searchEventFab.show()
+            }
+        })
 
-            eventsViewModel.scroll.observe(viewLifecycleOwner, {
-                if (it > 0) {
-                    binding.searchEventFab.hide()
-                } else {
-                    binding.searchEventFab.show()
-                }
-            })
-        }
     }
 
 
