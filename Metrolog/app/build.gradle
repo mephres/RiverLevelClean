@@ -160,6 +160,4 @@ dependencies {
     //fragment viewBinding delegate
     implementation 'com.github.Zhuinden:fragmentviewbindingdelegate-kt:1.0.0'
 
-    //Фреймворк для проверки на утечки памяти
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }

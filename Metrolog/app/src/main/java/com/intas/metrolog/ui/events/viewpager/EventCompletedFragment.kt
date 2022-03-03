@@ -48,22 +48,13 @@ class EventCompletedFragment : Fragment(R.layout.fragment_event_today) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
+
         lifecycleScope.launchWhenResumed {
             eventViewModel.getEventListCompleted().observe(viewLifecycleOwner, {
                 eventListAdapter.submitList(it)
                 eventList = it.toMutableList()
                 Journal.insertJournal("EventCompletedFragment->eventList", list = eventList)
             })
-
-            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-                eventListAdapter.submitList(eventList)
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-                Journal.insertJournal(
-                    "EventCompletedFragment->fragmentEventSwipeRefreshLayout",
-                    "isRefreshing"
-                )
-            }
 
             eventViewModel.searchText.observe(viewLifecycleOwner, {
                 setFilter(it)
@@ -74,6 +65,16 @@ class EventCompletedFragment : Fragment(R.layout.fragment_event_today) {
                     eventListAdapter.notifyDataSetChanged()
                 }
             })
+        }
+
+        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+            eventListAdapter.submitList(eventList)
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+            Journal.insertJournal(
+                "EventCompletedFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
         }
     }
 

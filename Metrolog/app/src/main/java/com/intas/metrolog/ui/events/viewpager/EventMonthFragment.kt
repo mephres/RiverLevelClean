@@ -38,23 +38,13 @@ class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+
         lifecycleScope.launchWhenResumed {
             eventViewModel.getEventListMonth().observe(viewLifecycleOwner, {
                 eventListAdapter.submitList(it)
                 eventList = it.toMutableList()
                 Journal.insertJournal("EventMonthFragment->eventList", list = eventList)
             })
-
-            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-                binding.eventProgressIndicator.visibility = View.VISIBLE
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-                mainViewModel.getEvent()
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-                Journal.insertJournal(
-                    "EventMonthFragment->fragmentEventSwipeRefreshLayout",
-                    "isRefreshing"
-                )
-            }
 
             eventViewModel.searchText.observe(viewLifecycleOwner, {
                 setFilter(it)
@@ -71,6 +61,17 @@ class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
                     eventListAdapter.notifyDataSetChanged()
                 }
             })
+        }
+
+        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+            mainViewModel.getEvent()
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+            Journal.insertJournal(
+                "EventMonthFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
         }
     }
 

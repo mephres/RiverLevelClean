@@ -37,24 +37,13 @@ class EventWeekFragment : Fragment(R.layout.fragment_event_today) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+
         lifecycleScope.launchWhenResumed {
             eventViewModel.getEventListWeek().observe(viewLifecycleOwner, {
                 eventListAdapter.submitList(it)
                 eventList = it.toMutableList()
                 Journal.insertJournal("EventWeekFragment->eventList", list = eventList)
             })
-
-            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-                binding.eventProgressIndicator.visibility = View.VISIBLE
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-                mainViewModel.getEvent()
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-                Journal.insertJournal(
-                    "EventWeekFragment->fragmentEventSwipeRefreshLayout",
-                    "isRefreshing"
-                )
-            }
-
 
             eventViewModel.searchText.observe(viewLifecycleOwner, {
                 setFilter(it)
@@ -71,6 +60,17 @@ class EventWeekFragment : Fragment(R.layout.fragment_event_today) {
                     eventListAdapter.notifyDataSetChanged()
                 }
             })
+        }
+
+        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+            mainViewModel.getEvent()
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+            Journal.insertJournal(
+                "EventWeekFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
         }
     }
 

@@ -37,6 +37,7 @@ class EventTodayFragment : Fragment(R.layout.fragment_event_today) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
+
         lifecycleScope.launchWhenResumed {
             eventViewModel.getEventListToday().observe(viewLifecycleOwner, {
                 eventListAdapter.submitList(it)
@@ -44,16 +45,6 @@ class EventTodayFragment : Fragment(R.layout.fragment_event_today) {
                 Journal.insertJournal("EventTodayFragment->eventList", list = eventList)
             })
 
-            binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-                binding.eventProgressIndicator.visibility = View.VISIBLE
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-                mainViewModel.getEvent()
-                binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-                Journal.insertJournal(
-                    "EventTodayFragment->fragmentEventSwipeRefreshLayout",
-                    "isRefreshing"
-                )
-            }
             eventViewModel.searchText.observe(viewLifecycleOwner, {
                 setFilter(it)
             })
@@ -68,6 +59,17 @@ class EventTodayFragment : Fragment(R.layout.fragment_event_today) {
                     eventListAdapter.notifyDataSetChanged()
                 }
             })
+        }
+
+        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+            mainViewModel.getEvent()
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+            Journal.insertJournal(
+                "EventTodayFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
         }
     }
 
