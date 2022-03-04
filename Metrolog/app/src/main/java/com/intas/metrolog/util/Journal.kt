@@ -254,4 +254,11 @@ object Journal {
             db.journalDao().deleteAllJournal()
         }
     }
+
+    fun removeAllCallback() {
+        onJournalExportComplete = null
+        onJournalExportFailure = null
+        onJournalExportError = null
+        onJournalExportProcess = null
+    }
 }

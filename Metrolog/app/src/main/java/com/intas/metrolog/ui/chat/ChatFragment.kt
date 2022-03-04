@@ -43,27 +43,24 @@ class ChatFragment : Fragment(R.layout.fragment_chat) {
         setupRecyclerView()
         setupSearchViewListener()
 
-        lifecycleScope.launch {
-
-            chatViewModel.chatItemList.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    chatItemList = it.toMutableList()
-                    chatListAdapter.submitList(it)
-                }
-                binding.equipProgressIndicator.visibility = View.GONE
+        chatViewModel.chatItemList.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                chatItemList = it.toMutableList()
+                chatListAdapter.submitList(it)
             }
+            binding.equipProgressIndicator.visibility = View.GONE
+        }
 
-            binding.chatListSelectUserFab.setOnClickListener {
-                val selectUserFragment = SelectUserFragment.newInstanceAddCompanion()
-                selectUserFragment.show(
-                    requireActivity().supportFragmentManager,
-                    SelectUserFragment.SELECT_USER_FRAGMENT_TAG
-                )
-            }
+        binding.chatListSelectUserFab.setOnClickListener {
+            val selectUserFragment = SelectUserFragment.newInstanceAddCompanion()
+            selectUserFragment.show(
+                requireActivity().supportFragmentManager,
+                SelectUserFragment.SELECT_USER_FRAGMENT_TAG
+            )
+        }
 
-            chatListAdapter.onCurrentListChangedListener = {
-                binding.chatListRecyclerView.scrollToTop()
-            }
+        chatListAdapter.onCurrentListChangedListener = {
+            binding.chatListRecyclerView.scrollToTop()
         }
     }
 

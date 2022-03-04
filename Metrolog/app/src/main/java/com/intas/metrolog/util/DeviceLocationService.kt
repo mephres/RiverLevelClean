@@ -106,7 +106,7 @@ class DeviceLocationService : LifecycleService() {
 
         Journal.insertJournal("DeviceLocationService->initDeviceLocationObserver()", "")
 
-        val deviceLocation = DeviceLocation(this)
+        val deviceLocation = DeviceLocation(applicationContext)
         deviceLocation.setLocationUpdatesActive(true)
         deviceLocation.currentLocation.observe(this) {
 

@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 
 class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
 
-    private lateinit var eventListAdapter: EventListAdapter
+    private var eventListAdapter: EventListAdapter? = null
     private val eventViewModel: EventsViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private var eventList = mutableListOf<EventItem>()
@@ -40,29 +40,27 @@ class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
-        lifecycleScope.launch {
-            eventViewModel.getEventListMonth().observe(viewLifecycleOwner, {
-                eventListAdapter.submitList(it)
-                eventList = it.toMutableList()
-                Journal.insertJournal("EventMonthFragment->eventList", list = eventList)
-            })
+        eventViewModel.getEventListMonth().observe(viewLifecycleOwner, {
+            eventListAdapter?.submitList(it)
+            eventList = it.toMutableList()
+            Journal.insertJournal("EventMonthFragment->eventList", list = eventList)
+        })
 
-            eventViewModel.searchText.observe(viewLifecycleOwner, {
-                setFilter(it)
-            })
+        eventViewModel.searchText.observe(viewLifecycleOwner, {
+            setFilter(it)
+        })
 
-            eventViewModel.eventList.observe(viewLifecycleOwner) {
-                if (it.isNotEmpty()) {
-                    binding.eventProgressIndicator.visibility = View.GONE
-                }
+        eventViewModel.eventList.observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                binding.eventProgressIndicator.visibility = View.GONE
             }
-
-            mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
-                if (it) {
-                    eventListAdapter.notifyDataSetChanged()
-                }
-            })
         }
+
+        mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
+            if (it) {
+                eventListAdapter?.notifyDataSetChanged()
+            }
+        })
 
         binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
             binding.eventProgressIndicator.visibility = View.VISIBLE
@@ -78,14 +76,14 @@ class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
 
     private fun setFilter(text: String) {
         if (text.isEmpty()) {
-            eventListAdapter.submitList(eventList)
+            eventListAdapter?.submitList(eventList)
             return
         }
         if (eventList.isNullOrEmpty()) {
             return
         }
 
-        eventListAdapter.submitList(eventList.filter {
+        eventListAdapter?.submitList(eventList.filter {
             it.name?.contains(text, true) == true || it.equipName?.trim()
                 ?.contains(text, true) == true
         })
@@ -93,6 +91,11 @@ class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
 
     override fun onDetach() {
         super.onDetach()
+    }
+
+    override fun onDestroyView() {
+        eventListAdapter = null
+        super.onDestroyView()
     }
 
     fun setupRecyclerView() {
@@ -113,12 +116,12 @@ class EventMonthFragment : Fragment(R.layout.fragment_event_today) {
 
     private fun setupClickListener() {
 
-        eventListAdapter.onEventClickListener = {
+        eventListAdapter?.onEventClickListener = {
             Journal.insertJournal("EventMonthFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }
 
-        eventListAdapter.onEventLongClickListener = {
+        eventListAdapter?.onEventLongClickListener = {
             val text = "eventId = ${it.opId}\nequipId = ${it.equipId}\n" +
                     "equipName = ${it.equipName}"
             Toast.makeText(requireContext(), text, Toast.LENGTH_LONG).show()

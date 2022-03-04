@@ -46,7 +46,7 @@ class EventListAdapter : ListAdapter<EventItem, EventItemViewHolder>(EventItemDi
     override fun onBindViewHolder(holder: EventItemViewHolder, position: Int) {
 
         val eventItem = getItem(position)
-        val equipItem = db.equipDao().getEquipItemById(eventItem.equipId ?: 0) ?: return
+        val equipItem = eventItem.equip ?: return
 
         holder.equipNameTextView.text = eventItem.equipName
         holder.equipZavNumTextView.text =  if (!equipItem.equipZavNum.isNullOrEmpty()) equipItem.equipZavNum else context.getString(R.string.no_data)

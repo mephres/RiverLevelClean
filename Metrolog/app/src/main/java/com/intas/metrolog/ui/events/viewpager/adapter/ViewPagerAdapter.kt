@@ -32,6 +32,11 @@ class ViewPagerAdapter(manager: FragmentManager) : FragmentPagerAdapter(manager)
         fragmentTitleList.removeAt(position)
     }
 
+    fun removeAllFragments() {
+        fragmentList.clear()
+        fragmentTitleList.clear()
+    }
+
     override fun getPageTitle(position: Int): CharSequence {
         return fragmentTitleList[position]
     }

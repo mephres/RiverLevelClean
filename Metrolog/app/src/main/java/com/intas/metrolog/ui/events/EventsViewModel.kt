@@ -7,9 +7,11 @@ import com.intas.metrolog.database.AppDatabase
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.pojo.event.event_status.EventStatus
 import com.intas.metrolog.util.DateTimeUtil
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class EventsViewModel(application: Application) : AndroidViewModel(application)  {
+class EventsViewModel(application: Application) : AndroidViewModel(application) {
 
     private val db = AppDatabase.getInstance(application)
     val eventList = db.eventDao().getEventList()
@@ -38,6 +40,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
         return db.eventDao().getEventList(startDate, endDate).map {
             it.map {
                 it.operationListSize = db.eventOperationDao().getOperationListSize(it.opId)
+                it.equip = db.equipDao().getEquipItemById(it.equipId ?: 0)
             }
             it
         }
@@ -53,6 +56,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
         return db.eventDao().getEventList(startDate, endDate).map {
             it.map {
                 it.operationListSize = db.eventOperationDao().getOperationListSize(it.opId)
+                it.equip = db.equipDao().getEquipItemById(it.equipId ?: 0)
             }
             it
         }
@@ -60,7 +64,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getEventListMonth(): LiveData<List<EventItem>> {
 
-        val startDate= DateTimeUtil.getFirstDayOfMonth()
+        val startDate = DateTimeUtil.getFirstDayOfMonth()
         val endDate = DateTimeUtil.getLastDayOfMonth()
 
         Log.d("MO_GET_EVENT_MONTH", "startDate: $startDate, endDate: $endDate")
@@ -68,6 +72,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
         return db.eventDao().getEventList(startDate, endDate).map {
             it.map {
                 it.operationListSize = db.eventOperationDao().getOperationListSize(it.opId)
+                it.equip = db.equipDao().getEquipItemById(it.equipId ?: 0)
             }
             it
         }
@@ -75,7 +80,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getEventListCompleted(): LiveData<List<EventItem>> {
 
-        val startDate= DateTimeUtil.getFirstDayOfMonth()
+        val startDate = DateTimeUtil.getFirstDayOfMonth()
         val endDate = DateTimeUtil.getLastDayOfMonth()
 
         Log.d("MO_GET_EVENT_COMPLETED", "startDate: $startDate, endDate: $endDate")
@@ -83,6 +88,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
         return db.eventDao().getEventList(startDate, endDate, EventStatus.COMPLETED).map {
             it.map {
                 it.operationListSize = db.eventOperationDao().getOperationListSize(it.opId)
+                it.equip = db.equipDao().getEquipItemById(it.equipId ?: 0)
             }
             it
         }
@@ -90,7 +96,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
 
     fun getEventListCanceled(): LiveData<List<EventItem>> {
 
-        val startDate= DateTimeUtil.getFirstDayOfMonth()
+        val startDate = DateTimeUtil.getFirstDayOfMonth()
         val endDate = DateTimeUtil.getLastDayOfMonth()
 
         Log.d("MO_GET_EVENT_CANCELED", "startDate: $startDate, endDate: $endDate")
@@ -98,6 +104,7 @@ class EventsViewModel(application: Application) : AndroidViewModel(application) 
         return db.eventDao().getEventList(startDate, endDate, EventStatus.CANCELED).map {
             it.map {
                 it.operationListSize = db.eventOperationDao().getOperationListSize(it.opId)
+                it.equip = db.equipDao().getEquipItemById(it.equipId ?: 0)
             }
             it
         }

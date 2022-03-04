@@ -24,7 +24,7 @@ import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
 import kotlinx.coroutines.launch
 
 class EventCanceledFragment : Fragment(R.layout.fragment_event_today) {
-    private lateinit var eventListAdapter: EventListAdapter
+    private var eventListAdapter: EventListAdapter? = null
     private val eventViewModel: EventsViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private var eventList = mutableListOf<EventItem>()
@@ -43,27 +43,25 @@ class EventCanceledFragment : Fragment(R.layout.fragment_event_today) {
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
 
-        lifecycleScope.launch {
-            eventViewModel.getEventListCanceled().observe(viewLifecycleOwner, {
-                eventListAdapter.submitList(it)
-                eventList = it.toMutableList()
-                Journal.insertJournal("EventCanceledFragment->eventList", list = eventList)
-            })
+        eventViewModel.getEventListCanceled().observe(viewLifecycleOwner, {
+            eventListAdapter?.submitList(it)
+            eventList = it.toMutableList()
+            Journal.insertJournal("EventCanceledFragment->eventList", list = eventList)
+        })
 
-            eventViewModel.searchText.observe(viewLifecycleOwner, {
-                setFilter(it)
-            })
+        eventViewModel.searchText.observe(viewLifecycleOwner, {
+            setFilter(it)
+        })
 
-            mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
-                if (it) {
-                    eventListAdapter.notifyDataSetChanged()
-                }
-            })
-        }
+        mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
+            if (it) {
+                eventListAdapter?.notifyDataSetChanged()
+            }
+        })
 
         binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-            eventListAdapter.submitList(eventList)
+            eventListAdapter?.submitList(eventList)
             binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
             Journal.insertJournal(
                 "EventCanceledFragment->fragmentEventSwipeRefreshLayout",
@@ -74,20 +72,26 @@ class EventCanceledFragment : Fragment(R.layout.fragment_event_today) {
 
     private fun setFilter(text: String) {
         if (text.isEmpty()) {
-            eventListAdapter.submitList(eventList)
+            eventListAdapter?.submitList(eventList)
             return
         }
         if (eventList.isNullOrEmpty()) {
             return
         }
 
-        eventListAdapter.submitList(eventList.filter {
-            it.name?.contains(text, true) == true || it.equipName?.trim()?.contains(text, true) == true
+        eventListAdapter?.submitList(eventList.filter {
+            it.name?.contains(text, true) == true || it.equipName?.trim()
+                ?.contains(text, true) == true
         })
     }
 
     override fun onDetach() {
         super.onDetach()
+    }
+
+    override fun onDestroyView() {
+        eventListAdapter = null
+        super.onDestroyView()
     }
 
     fun setupRecyclerView() {
@@ -108,12 +112,12 @@ class EventCanceledFragment : Fragment(R.layout.fragment_event_today) {
 
     private fun setupClickListener() {
 
-        eventListAdapter.onEventClickListener = {
+        eventListAdapter?.onEventClickListener = {
             Journal.insertJournal("EventCanceledFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, false))
         }
 
-        eventListAdapter.onEventLongClickListener = {
+        eventListAdapter?.onEventLongClickListener = {
             if (it.isSended == 1) deleteEventDialog(it.opId)
         }
     }

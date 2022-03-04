@@ -106,7 +106,7 @@ class EquipFragment : Fragment(R.layout.fragment_equip) {
     }
 
     private fun initObserver() {
-        lifecycleScope.launch {
+
             equipViewModel.equipList.observe(viewLifecycleOwner, {
                 if (it.isNotEmpty()) {
                     binding.equipProgressIndicator.visibility = View.GONE
@@ -120,7 +120,7 @@ class EquipFragment : Fragment(R.layout.fragment_equip) {
                 showSnackBar(it)
                 binding.equipSwipeRefreshLayout.isRefreshing = false
             })
-        }
+
     }
 
     private fun showSnackBar(message: String) {

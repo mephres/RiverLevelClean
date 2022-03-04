@@ -10,21 +10,21 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.lifecycleScope
 import com.intas.metrolog.R
+import com.intas.metrolog.databinding.FragmentBottomDialogSheetBinding
 import com.intas.metrolog.databinding.FragmentEventsBinding
 import com.intas.metrolog.ui.events.viewpager.*
 import com.intas.metrolog.ui.events.viewpager.adapter.ViewPagerAdapter
 import com.intas.metrolog.ui.main.MainViewModel
-import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import java.lang.Exception
 
 class EventsFragment : Fragment(R.layout.fragment_events) {
 
     private val mainViewModel: MainViewModel by activityViewModels()
     private val eventsViewModel: EventsViewModel by activityViewModels()
-    private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private var viewPagerAdapter: ViewPagerAdapter? = null
     private var searchView: SearchView? = null
 
     private val binding by viewBinding(FragmentEventsBinding::bind)
@@ -42,17 +42,17 @@ class EventsFragment : Fragment(R.layout.fragment_events) {
         val fragmentList: List<Fragment> =
             parentFragmentManager.getFragments() as List<Fragment>
 
-        viewPagerAdapter.addFragment(EventTodayFragment(), "Сегодня", 0)
-        viewPagerAdapter.addFragment(EventWeekFragment(), "Неделя", 1)
-        viewPagerAdapter.addFragment(EventMonthFragment(), "Месяц", 2)
-        viewPagerAdapter.addFragment(EventCompletedFragment(), "Выполненные", 3)
-        viewPagerAdapter.addFragment(EventCanceledFragment(), "Отмененные", 4)
+        viewPagerAdapter?.addFragment(EventTodayFragment(), "Сегодня", 0)
+        viewPagerAdapter?.addFragment(EventWeekFragment(), "Неделя", 1)
+        viewPagerAdapter?.addFragment(EventMonthFragment(), "Месяц", 2)
+        viewPagerAdapter?.addFragment(EventCompletedFragment(), "Выполненные", 3)
+        viewPagerAdapter?.addFragment(EventCanceledFragment(), "Отмененные", 4)
 
         binding.eventViewPager.adapter = viewPagerAdapter
         binding.eventViewPager.offscreenPageLimit = 3
         binding.eventTabLayout.setupWithViewPager(binding.eventViewPager)
 
-        viewPagerAdapter.notifyDataSetChanged()
+        viewPagerAdapter?.notifyDataSetChanged()
 
         setupClickListener()
         setSearchViewListener()
@@ -66,7 +66,6 @@ class EventsFragment : Fragment(R.layout.fragment_events) {
         })
 
     }
-
 
     private fun setupClickListener() {
 
@@ -117,10 +116,11 @@ class EventsFragment : Fragment(R.layout.fragment_events) {
     }
 
     override fun onDestroyView() {
+        viewPagerAdapter = null
         super.onDestroyView()
 
         try {
-            eraseEventFragmentList()
+           // eraseEventFragmentList()
         } finally {
         }
     }
@@ -129,17 +129,18 @@ class EventsFragment : Fragment(R.layout.fragment_events) {
      * Удаление фрагментов для отображения списка за день, неделю и месяц из стэка
      */
     private fun eraseEventFragmentList() {
-        try {
-            for (i in 0 until viewPagerAdapter.count) {
-                val eventFragmentTag = "android:switcher:${R.id.eventViewPager}:$i"
-                val findEventFragment =
-                    parentFragmentManager.findFragmentByTag(eventFragmentTag)
-                findEventFragment?.let {
-                    parentFragmentManager.beginTransaction().remove(it).commit()
+
+        for (i in 0 until viewPagerAdapter?.count!!) {
+            val eventFragmentTag = "android:switcher:${R.id.eventViewPager}:$i"
+            val findEventFragment =
+                childFragmentManager.findFragmentByTag(eventFragmentTag)
+            findEventFragment?.let {
+                try {
+                    childFragmentManager.beginTransaction().remove(it).commit()
+                } catch (e: Exception) {
+                    e
                 }
             }
-        } catch (e: Exception) {
-
         }
     }
 }

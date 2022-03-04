@@ -115,52 +115,50 @@ class RequestsFragment : Fragment(R.layout.fragment_requests) {
     }
 
     private fun initObserver() {
-        lifecycleScope.launch {
-            requestViewModel.requestList.observe(viewLifecycleOwner, {
-                if (it.isNotEmpty()) {
-                    binding.requestProgressIndicator.visibility = View.GONE
-                    binding.requestSwipeRefreshLayout.isRefreshing = false
-                    requestList = it.toMutableList()
-                    requestListAdapter.submitList(it.filter {
-                        if (requestFilter != null) {
-                            var dateStart: Long? = null
-                            var dateEnd: Long? = null
-                            if (requestFilter?.dateStart != 0L) dateStart = requestFilter?.dateStart
-                            if (requestFilter?.dateEnd != 0L) dateEnd = requestFilter?.dateEnd
+        requestViewModel.requestList.observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                binding.requestProgressIndicator.visibility = View.GONE
+                binding.requestSwipeRefreshLayout.isRefreshing = false
+                requestList = it.toMutableList()
+                requestListAdapter.submitList(it.filter {
+                    if (requestFilter != null) {
+                        var dateStart: Long? = null
+                        var dateEnd: Long? = null
+                        if (requestFilter?.dateStart != 0L) dateStart = requestFilter?.dateStart
+                        if (requestFilter?.dateEnd != 0L) dateEnd = requestFilter?.dateEnd
 
-                            val a =
-                                requestFilter?.requestDisciplineIdList?.contains(it.discipline) == true &&
-                                        requestFilter?.requestStatusIdList?.contains(it.status) == true &&
-                                        dateStart ?: it.creationDate <= it.creationDate &&
-                                        dateEnd ?: it.creationDate >= it.creationDate
-                            a
-                        } else {
-                            true
-                        }
-                    })
-                }
-            })
+                        val a =
+                            requestFilter?.requestDisciplineIdList?.contains(it.discipline) == true &&
+                                    requestFilter?.requestStatusIdList?.contains(it.status) == true &&
+                                    dateStart ?: it.creationDate <= it.creationDate &&
+                                    dateEnd ?: it.creationDate >= it.creationDate
+                        a
+                    } else {
+                        true
+                    }
+                })
+            }
+        })
 
-            mainViewModel.requestFilter.observe(viewLifecycleOwner, {
+        mainViewModel.requestFilter.observe(viewLifecycleOwner, {
 
-                requestFilter = it
-                var dateStart: Long? = null
-                var dateEnd: Long? = null
-                if (requestFilter?.dateStart != 0L) dateStart = requestFilter?.dateStart
-                if (requestFilter?.dateEnd != 0L) dateEnd = requestFilter?.dateEnd
+            requestFilter = it
+            var dateStart: Long? = null
+            var dateEnd: Long? = null
+            if (requestFilter?.dateStart != 0L) dateStart = requestFilter?.dateStart
+            if (requestFilter?.dateEnd != 0L) dateEnd = requestFilter?.dateEnd
 
-                val result = requestList.filter {
-                    requestFilter?.requestDisciplineIdList?.contains(it.discipline) == true &&
-                            requestFilter?.requestStatusIdList?.contains(it.status) == true &&
-                            dateStart ?: it.creationDate <= it.creationDate &&
-                            dateEnd ?: it.creationDate >= it.creationDate
-                }
+            val result = requestList.filter {
+                requestFilter?.requestDisciplineIdList?.contains(it.discipline) == true &&
+                        requestFilter?.requestStatusIdList?.contains(it.status) == true &&
+                        dateStart ?: it.creationDate <= it.creationDate &&
+                        dateEnd ?: it.creationDate >= it.creationDate
+            }
 
-                result.let {
-                    requestListAdapter.submitList(it)
-                }
-            })
-        }
+            result.let {
+                requestListAdapter.submitList(it)
+            }
+        })
     }
 
     private fun showFilter() {

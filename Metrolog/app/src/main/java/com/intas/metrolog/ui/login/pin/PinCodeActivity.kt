@@ -526,4 +526,9 @@ class PinCodeActivity : AppCompatActivity() {
     private fun showToast(text: String) {
         Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show()
     }
+
+    override fun onDestroy() {
+        BiometricPromptUtils.removeAllCallback()
+        super.onDestroy()
+    }
 }
