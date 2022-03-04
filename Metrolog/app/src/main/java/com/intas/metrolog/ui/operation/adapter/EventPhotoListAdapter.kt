@@ -28,7 +28,7 @@ class EventPhotoListAdapter: ListAdapter<EventPhotoItem, EventPhotoItemViewHolde
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EventPhotoItemViewHolder {
 
         val view = LayoutInflater.from(parent.context).inflate(R.layout.event_photo_item, parent, false)
-        context = parent.context
+        context = parent.context.applicationContext
         return EventPhotoItemViewHolder(view)
     }
 

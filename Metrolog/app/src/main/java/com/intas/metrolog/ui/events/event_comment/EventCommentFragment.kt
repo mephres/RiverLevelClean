@@ -199,7 +199,7 @@ class EventCommentFragment : BottomSheetDialogFragment() {
     private fun checkMode() {
         when (eventCommentMode) {
             MODE_COMMENT_WITH_IMAGE -> {
-                FileUtil.setContext(requireActivity().application)
+                FileUtil.setContext(requireActivity().applicationContext)
                 binding.imageListCardView.visibility = View.VISIBLE
                 Journal.insertJournal("EventCommentFragment->checkMode", "commentWithImage")
             }
