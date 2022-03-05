@@ -146,4 +146,10 @@ object DatabaseUtil {
             out.close()
         }
     }
+
+    fun removeAllCallback() {
+        onBackupComplete = null
+        onBackupProcess = null
+        onBackupError = null
+    }
 }

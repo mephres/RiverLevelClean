@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEventTodayBinding
 import com.intas.metrolog.pojo.event.EventItem
 import com.intas.metrolog.ui.events.EventsViewModel
@@ -14,17 +16,17 @@ import com.intas.metrolog.ui.events.adapter.EventListAdapter
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.Journal
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
-class EventWeekFragment : Fragment() {
+class EventWeekFragment : Fragment(R.layout.fragment_event_today) {
 
-    private lateinit var eventListAdapter: EventListAdapter
+    private var eventListAdapter: EventListAdapter? = null
     private val eventViewModel: EventsViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private var eventList = mutableListOf<EventItem>()
 
-    private val binding by lazy {
-        FragmentEventTodayBinding.inflate(layoutInflater)
-    }
+    private val binding by viewBinding(FragmentEventTodayBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,34 +35,15 @@ class EventWeekFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
 
         eventViewModel.getEventListWeek().observe(viewLifecycleOwner, {
-            eventListAdapter.submitList(it)
+            eventListAdapter?.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventWeekFragment->eventList", list = eventList)
         })
-
-        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-            binding.eventProgressIndicator.visibility = View.VISIBLE
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-            mainViewModel.getEvent()
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal(
-                "EventWeekFragment->fragmentEventSwipeRefreshLayout",
-                "isRefreshing"
-            )
-        }
-
 
         eventViewModel.searchText.observe(viewLifecycleOwner, {
             setFilter(it)
@@ -74,21 +57,32 @@ class EventWeekFragment : Fragment() {
 
         mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
             if (it) {
-                eventListAdapter.notifyDataSetChanged()
+                eventListAdapter?.notifyDataSetChanged()
             }
         })
+
+        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.eventProgressIndicator.visibility = View.VISIBLE
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+            mainViewModel.getEvent()
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+            Journal.insertJournal(
+                "EventWeekFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
+        }
     }
 
     private fun setFilter(text: String) {
         if (text.isEmpty()) {
-            eventListAdapter.submitList(eventList)
+            eventListAdapter?.submitList(eventList)
             return
         }
         if (eventList.isNullOrEmpty()) {
             return
         }
 
-        eventListAdapter.submitList(eventList.filter {
+        eventListAdapter?.submitList(eventList.filter {
             it.name?.contains(text, true) == true || it.equipName?.trim()
                 ?.contains(text, true) == true
         })
@@ -98,6 +92,11 @@ class EventWeekFragment : Fragment() {
         super.onDetach()
     }
 
+    override fun onDestroyView() {
+        eventListAdapter = null
+        super.onDestroyView()
+    }
+
     fun setupRecyclerView() {
 
         val eventRecyclerView = binding.eventRecyclerView
@@ -105,7 +104,7 @@ class EventWeekFragment : Fragment() {
         eventRecyclerView?.let {
             with(it) {
                 adapter = eventListAdapter
-
+                itemAnimator = null
                 recycledViewPool.setMaxRecycledViews(0, EventListAdapter.MAX_POOL_SIZE)
             }
         }
@@ -116,7 +115,7 @@ class EventWeekFragment : Fragment() {
 
     private fun setupClickListener() {
 
-        eventListAdapter.onEventClickListener = {
+        eventListAdapter?.onEventClickListener = {
             Journal.insertJournal("EventWeekFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }

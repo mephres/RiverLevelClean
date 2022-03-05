@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +23,6 @@ import com.intas.metrolog.databinding.FragmentBottomRequestFilterBinding
 import com.intas.metrolog.pojo.discipline.DisciplineItem
 import com.intas.metrolog.pojo.requestStatus.RequestStatusItem
 import com.intas.metrolog.ui.main.MainViewModel
-import com.intas.metrolog.ui.requests.RequestViewModel
 import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.DateTimeUtil
 
@@ -32,9 +30,8 @@ import com.intas.metrolog.util.DateTimeUtil
 class RequestFilterFragment : BottomSheetDialogFragment() {
     private val viewModel: MainViewModel by activityViewModels()
 
-    private val binding by lazy {
-        FragmentBottomRequestFilterBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentBottomRequestFilterBinding? = null
+    private val binding get() = _binding!!
 
     private var dateStart: Long? = null
     private var dateEnd: Long? = null
@@ -70,6 +67,7 @@ class RequestFilterFragment : BottomSheetDialogFragment() {
                 )
             }
         )
+        _binding = FragmentBottomRequestFilterBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -258,6 +256,11 @@ class RequestFilterFragment : BottomSheetDialogFragment() {
         fragment?.let {
             parentFragmentManager.beginTransaction().remove(it).commit()
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

@@ -71,9 +71,8 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
     private var cropImagePosition = 0
 
-    private val binding by lazy {
-        FragmentBottomAddRequestBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentBottomAddRequestBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by lazy {
         ViewModelProvider(this)[AddRequestViewModel::class.java]
@@ -92,6 +91,7 @@ class AddRequestFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentBottomAddRequestBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -185,11 +185,6 @@ class AddRequestFragment : BottomSheetDialogFragment() {
             }
 
         }
-    }
-
-    override fun onDestroyView() {
-
-        super.onDestroyView()
     }
 
     private fun deleteUsedFiles() {
@@ -663,6 +658,11 @@ class AddRequestFragment : BottomSheetDialogFragment() {
 
     private fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     companion object {

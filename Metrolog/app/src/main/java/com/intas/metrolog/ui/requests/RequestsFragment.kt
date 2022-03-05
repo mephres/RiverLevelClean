@@ -13,10 +13,12 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.intas.metrolog.R
+import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.databinding.FragmentRequestsBinding
 import com.intas.metrolog.pojo.request.RequestItem
 import com.intas.metrolog.ui.main.MainViewModel
@@ -27,16 +29,16 @@ import com.intas.metrolog.ui.requests.filter.RequestFilter
 import com.intas.metrolog.ui.requests.filter.RequestFilterFragment
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.AppPreferences
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
-class RequestsFragment : Fragment() {
+class RequestsFragment : Fragment(R.layout.fragment_requests) {
     private lateinit var requestListAdapter: RequestListAdapter
     private var searchView: SearchView? = null
     private var requestList = mutableListOf<RequestItem>()
     private var requestFilter: RequestFilter? = null
 
-    private val binding by lazy {
-        FragmentRequestsBinding.inflate(layoutInflater)
-    }
+    private val binding by viewBinding(FragmentRequestsBinding::bind)
 
     private val requestViewModel by lazy {
         ViewModelProvider(this)[RequestViewModel::class.java]
@@ -47,13 +49,6 @@ class RequestsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -243,6 +238,7 @@ class RequestsFragment : Fragment() {
 
         with(binding.requestRecyclerView) {
             adapter = requestListAdapter
+            itemAnimator = null
             recycledViewPool.setMaxRecycledViews(0, RequestListAdapter.MAX_POOL_SIZE)
         }
         setClickListener()

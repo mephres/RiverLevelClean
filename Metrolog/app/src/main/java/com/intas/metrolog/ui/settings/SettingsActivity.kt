@@ -83,7 +83,7 @@ class SettingsActivity : AppCompatActivity() {
             initJournalUtilCallback()
 
             backupDatabaseButton?.setOnPreferenceClickListener {
-                DatabaseUtil.backupDatabase(requireContext(), viewLifecycleOwner.lifecycleScope)
+                DatabaseUtil.backupDatabase(requireActivity().applicationContext, viewLifecycleOwner.lifecycleScope)
                 true
             }
 
@@ -189,8 +189,11 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         override fun onDestroy() {
-            super.onDestroy()
             loadingSnackBar?.dismiss()
+            Journal.removeAllCallback()
+            BiometricPromptUtils.removeAllCallback()
+            DatabaseUtil.removeAllCallback()
+            super.onDestroy()
         }
 
         private fun initDatabaseUtilCallback() {

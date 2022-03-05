@@ -16,9 +16,8 @@ class EquipMenuFragment : BottomSheetDialogFragment() {
     var onAddRFIDClickListener: ((EquipItem) -> Unit)? = null
     var onCreateDocumentClickListener: ((EquipItem) -> Unit)? = null
 
-    private val binding by lazy {
-        FragmentEquipMenuBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentEquipMenuBinding? = null
+    private val binding get() = _binding!!
 
     private var equipItem: EquipItem? = null
 
@@ -32,6 +31,7 @@ class EquipMenuFragment : BottomSheetDialogFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        _binding = FragmentEquipMenuBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -81,6 +81,10 @@ class EquipMenuFragment : BottomSheetDialogFragment() {
         Journal.insertJournal("EquipMenuFragment->parseArgs", equipItem.toString())
     }
 
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
 
     companion object {
         const val EQUIP_MENU_TAG = "equip_menu_tag"

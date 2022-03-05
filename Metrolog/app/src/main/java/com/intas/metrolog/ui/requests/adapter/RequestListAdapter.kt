@@ -114,11 +114,22 @@ class RequestListAdapter :
             }
         }
 
+        when(requestItem.isSended) {
+            0 -> {
+                holder.requestIsNotSendImageView.visibility = ViewGroup.VISIBLE
+            }
+            1 -> {
+                holder.requestIsNotSendImageView.visibility = ViewGroup.GONE
+            }
+            else -> {
+                holder.requestTypeImageView.visibility = View.VISIBLE
+            }
+        }
+
         when (status?.id) {
             1 -> {
                 holder.requestColorStatusTextView.background
                     .setTint(ContextCompat.getColor(context, R.color.md_yellow_600))
-                holder.requestIsNotSendImageView.visibility = View.GONE
             }
             2 -> {
                 holder.requestColorStatusTextView.background

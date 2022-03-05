@@ -9,37 +9,32 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentChatBinding
+import com.intas.metrolog.databinding.FragmentEquipBinding
 import com.intas.metrolog.pojo.chat.ChatItem
 import com.intas.metrolog.ui.chat.adapter.ChatListAdapter
 import com.intas.metrolog.ui.chat.messages.MessageFragment
 import com.intas.metrolog.ui.chat.select_user.SelectUserFragment
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
-class ChatFragment : Fragment() {
+class ChatFragment : Fragment(R.layout.fragment_chat) {
     private var searchView: SearchView? = null
     private lateinit var chatListAdapter: ChatListAdapter
 
     var chatItemList = mutableListOf<ChatItem>()
 
-    private var _binding: FragmentChatBinding? = null
-    private val binding get() = _binding!!
+    private val binding by viewBinding(FragmentChatBinding::bind)
 
     private val chatViewModel: ChatViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentChatBinding.inflate(inflater, container, false)
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,6 +78,7 @@ class ChatFragment : Fragment() {
         chatListAdapter = ChatListAdapter()
         with(binding.chatListRecyclerView) {
             adapter = chatListAdapter
+            itemAnimator = null
             recycledViewPool.setMaxRecycledViews(0, ChatListAdapter.MAX_POOL_SIZE)
         }
         setupClickListener()
@@ -141,10 +137,5 @@ class ChatFragment : Fragment() {
                         it.companion.position?.contains(text, true) ?: false
             })
         }, 200)
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
     }
 }

@@ -3,15 +3,14 @@ package com.intas.metrolog.ui.equip
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.snackbar.Snackbar
 import com.intas.metrolog.R
 import com.intas.metrolog.databinding.FragmentEquipBinding
@@ -22,15 +21,15 @@ import com.intas.metrolog.ui.equip_document.EquipDocumentActivity
 import com.intas.metrolog.ui.main.MainViewModel
 import com.intas.metrolog.ui.scanner.NfcFragment
 import com.intas.metrolog.util.Journal
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
-class EquipFragment : Fragment() {
+class EquipFragment : Fragment(R.layout.fragment_equip) {
     private lateinit var equipListAdapter: EquipListAdapter
     private var searchView: SearchView? = null
     private var equipList = mutableListOf<EquipItem>()
 
-    private val binding by lazy {
-        FragmentEquipBinding.inflate(layoutInflater)
-    }
+    private val binding by viewBinding(FragmentEquipBinding::bind)
 
     private val equipViewModel by lazy {
         ViewModelProvider(this)[EquipViewModel::class.java]
@@ -41,13 +40,6 @@ class EquipFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -114,19 +106,21 @@ class EquipFragment : Fragment() {
     }
 
     private fun initObserver() {
-        equipViewModel.equipList.observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                binding.equipProgressIndicator.visibility = View.GONE
-                binding.equipSwipeRefreshLayout.isRefreshing = false
-                equipList = it.toMutableList()
-                equipListAdapter.submitList(it)
-            }
-        })
 
-        mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
-            showSnackBar(it)
-            binding.equipSwipeRefreshLayout.isRefreshing = false
-        })
+            equipViewModel.equipList.observe(viewLifecycleOwner, {
+                if (it.isNotEmpty()) {
+                    binding.equipProgressIndicator.visibility = View.GONE
+                    binding.equipSwipeRefreshLayout.isRefreshing = false
+                    equipList = it.toMutableList()
+                    equipListAdapter.submitList(it)
+                }
+            })
+
+            mainViewModel.onErrorMessage.observe(viewLifecycleOwner, {
+                showSnackBar(it)
+                binding.equipSwipeRefreshLayout.isRefreshing = false
+            })
+
     }
 
     private fun showSnackBar(message: String) {
@@ -158,6 +152,7 @@ class EquipFragment : Fragment() {
 
         with(binding.equipRecyclerView) {
             adapter = equipListAdapter
+            itemAnimator = null
             recycledViewPool.setMaxRecycledViews(0, EquipListAdapter.MAX_POOL_SIZE)
         }
         setClickListener()

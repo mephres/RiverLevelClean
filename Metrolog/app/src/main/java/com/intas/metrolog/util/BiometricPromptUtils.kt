@@ -80,4 +80,10 @@ object BiometricPromptUtils {
             true
         } else true
     }
+
+    fun removeAllCallback() {
+        onAuthenticationSucceeded = null
+        onAuthenticationFailed = null
+        onAuthenticationError = null
+    }
 }

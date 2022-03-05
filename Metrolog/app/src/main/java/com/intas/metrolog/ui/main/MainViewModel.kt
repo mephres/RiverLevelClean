@@ -1010,21 +1010,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     insertOperControl(it)
                 }
             }
-
-            updateEventCheckListSize(eventId)
-        }
-    }
-
-    private fun updateEventCheckListSize(eventId: Long) {
-        Journal.insertJournal("MainViewModel->updateEventCheckListSize->eventId", eventId)
-        viewModelScope.launch {
-            val event = db.eventDao().getEvent(eventId)
-
-            event?.apply {
-                operationListSize =
-                    db.eventOperationDao().getOperationListSize(opId)
-                db.eventDao().updateEvent(this)
-            }
         }
     }
 

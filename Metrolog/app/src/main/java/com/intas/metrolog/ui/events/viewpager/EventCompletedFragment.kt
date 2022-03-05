@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.intas.metrolog.R
@@ -24,17 +25,18 @@ import com.intas.metrolog.ui.operation.OperationActivity
 import com.intas.metrolog.util.AppPreferences
 import com.intas.metrolog.util.Journal
 import com.intas.metrolog.util.Util
+import com.zhuinden.fragmentviewbindingdelegatekt.viewBinding
+import kotlinx.coroutines.launch
 
 
-class EventCompletedFragment : Fragment() {
-    private lateinit var eventListAdapter: EventListAdapter
+class EventCompletedFragment : Fragment(R.layout.fragment_event_today) {
+    private var eventListAdapter: EventListAdapter? = null
     private val eventViewModel: EventsViewModel by activityViewModels()
     private val mainViewModel: MainViewModel by activityViewModels()
     private var eventList = mutableListOf<EventItem>()
 
-    private val binding by lazy {
-        FragmentEventTodayBinding.inflate(layoutInflater)
-    }
+
+    private val binding by viewBinding(FragmentEventTodayBinding::bind)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,31 +45,16 @@ class EventCompletedFragment : Fragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerView()
         binding.eventProgressIndicator.visibility = View.GONE
 
         eventViewModel.getEventListCompleted().observe(viewLifecycleOwner, {
-            eventListAdapter.submitList(it)
+            eventListAdapter?.submitList(it)
             eventList = it.toMutableList()
             Journal.insertJournal("EventCompletedFragment->eventList", list = eventList)
         })
-
-        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
-            eventListAdapter.submitList(eventList)
-            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
-            Journal.insertJournal("EventCompletedFragment->fragmentEventSwipeRefreshLayout", "isRefreshing")
-        }
-
 
         eventViewModel.searchText.observe(viewLifecycleOwner, {
             setFilter(it)
@@ -75,27 +62,43 @@ class EventCompletedFragment : Fragment() {
 
         mainViewModel.equipLoaded.observe(viewLifecycleOwner, {
             if (it) {
-                eventListAdapter.notifyDataSetChanged()
+                eventListAdapter?.notifyDataSetChanged()
             }
         })
+
+        binding.fragmentEventSwipeRefreshLayout.setOnRefreshListener {
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = true
+            eventListAdapter?.submitList(eventList)
+            binding.fragmentEventSwipeRefreshLayout.isRefreshing = false
+            Journal.insertJournal(
+                "EventCompletedFragment->fragmentEventSwipeRefreshLayout",
+                "isRefreshing"
+            )
+        }
     }
 
     private fun setFilter(text: String) {
         if (text.isEmpty()) {
-            eventListAdapter.submitList(eventList)
+            eventListAdapter?.submitList(eventList)
             return
         }
         if (eventList.isNullOrEmpty()) {
             return
         }
 
-        eventListAdapter.submitList(eventList.filter {
-            it.name?.contains(text, true) == true || it.equipName?.trim()?.contains(text, true) == true
+        eventListAdapter?.submitList(eventList.filter {
+            it.name?.contains(text, true) == true || it.equipName?.trim()
+                ?.contains(text, true) == true
         })
     }
 
     override fun onDetach() {
         super.onDetach()
+    }
+
+    override fun onDestroyView() {
+        eventListAdapter = null
+        super.onDestroyView()
     }
 
     fun setupRecyclerView() {
@@ -105,7 +108,7 @@ class EventCompletedFragment : Fragment() {
         eventRecyclerView?.let {
             with(it) {
                 adapter = eventListAdapter
-
+                itemAnimator = null
                 recycledViewPool.setMaxRecycledViews(0, EventListAdapter.MAX_POOL_SIZE)
             }
         }
@@ -116,13 +119,13 @@ class EventCompletedFragment : Fragment() {
 
     private fun setupClickListener() {
 
-        eventListAdapter.onEventClickListener = {
+        eventListAdapter?.onEventClickListener = {
             Journal.insertJournal("EventCompletedFragment->onEventClickListener", it)
             startActivity(OperationActivity.newIntent(requireContext(), it.opId, true))
         }
 
-        eventListAdapter.onEventLongClickListener = {
-            if(it.isSended == 1) deleteEventDialog(it.opId)
+        eventListAdapter?.onEventLongClickListener = {
+            if (it.isSended == 1) deleteEventDialog(it.opId)
         }
     }
 

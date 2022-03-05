@@ -15,9 +15,8 @@ private const val DIALOG_NEGATIVE_BUTTON_TEXT = "dialogNegativeButtonText"
 
 class BottomDialogSheet : BottomSheetDialogFragment() {
 
-    private val binding by lazy {
-        FragmentBottomDialogSheetBinding.inflate(layoutInflater)
-    }
+    private var _binding: FragmentBottomDialogSheetBinding? = null
+    private val binding get() = _binding!!
 
     var onPositiveClickListener: ((View) -> Unit)? = null
     var onNegativeClickListener: ((View) -> Unit)? = null
@@ -63,7 +62,13 @@ class BottomDialogSheet : BottomSheetDialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        _binding = FragmentBottomDialogSheetBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     private fun closeDialog() {
