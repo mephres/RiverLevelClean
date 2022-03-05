@@ -116,29 +116,27 @@ class EventsFragment : Fragment(R.layout.fragment_events) {
     }
 
     override fun onDestroyView() {
+        eraseEventFragmentList()
         viewPagerAdapter = null
-        super.onDestroyView()
 
-        try {
-           // eraseEventFragmentList()
-        } finally {
-        }
+        super.onDestroyView()
     }
 
     /**
      * Удаление фрагментов для отображения списка за день, неделю и месяц из стэка
      */
     private fun eraseEventFragmentList() {
-
-        for (i in 0 until viewPagerAdapter?.count!!) {
-            val eventFragmentTag = "android:switcher:${R.id.eventViewPager}:$i"
-            val findEventFragment =
-                childFragmentManager.findFragmentByTag(eventFragmentTag)
-            findEventFragment?.let {
-                try {
-                    childFragmentManager.beginTransaction().remove(it).commit()
-                } catch (e: Exception) {
-                    e
+        viewPagerAdapter?.count?.let {
+            for (i in 0 until it) {
+                val eventFragmentTag = "android:switcher:${R.id.eventViewPager}:$i"
+                val findEventFragment =
+                    childFragmentManager.findFragmentByTag(eventFragmentTag)
+                findEventFragment?.let {
+                    try {
+                        childFragmentManager.beginTransaction().remove(it).commit()
+                    } catch (e: Exception) {
+                        e
+                    }
                 }
             }
         }
