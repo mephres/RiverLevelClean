@@ -40,7 +40,7 @@
 
         <provider
             android:name=".util.provider.GenericFileProvider"
-            android:authorities="${applicationId}.provider"
+            android:authorities="com.intas.metrolog.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
