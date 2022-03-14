@@ -52,6 +52,7 @@ class RiverMapper @Inject constructor() {
                     val waterLevel = tdElements[3].toString().html2text()
                     val levelChange = tdElements[4].toString().html2text()
                     val waterTemperature = tdElements[5].toString().html2text()
+                    val dateTimeNow = DateTimeUtil.getUnixDateTimeNow()
                     val river = RiverLevelDto(
                         id = count,
                         name = name,
@@ -60,8 +61,8 @@ class RiverMapper @Inject constructor() {
                         waterLevel = waterLevel,
                         levelChange = levelChange,
                         waterTemperature = waterTemperature,
-                        lastUpdate = DateTimeUtil.getUnixDateTimeNow(),
-                        dateTime = ""
+                        lastUpdate = dateTimeNow,
+                        dateTime = DateTimeUtil.getLongDateFromMili(dateTimeNow)
                     )
                     count++
                     riverArrayList.add(river)

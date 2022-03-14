@@ -13,7 +13,7 @@ object ApiFactory {
         .addConverterFactory(ScalarsConverterFactory.create())
         //.addConverterFactory(GsonConverterFactory.create(gson))
         //.addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-        .addConverterFactory(ToStringConverterFactory())
+        //.addConverterFactory(ToStringConverterFactory())
         .baseUrl(BASE_URL)
         .build()
 

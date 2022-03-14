@@ -4,9 +4,11 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
+import com.bumptech.glide.Glide
 import me.kdv.riverlevel.R
 import me.kdv.riverlevel.databinding.ItemRiverInfoBinding
 import me.kdv.riverlevel.domain.RiverInfo
+import kotlin.math.absoluteValue
 
 class RiverInfoAdapter(private var context: Context) : ListAdapter<RiverInfo, RiverInfoViewHolder>(
     RiverInfoDiffCallback()
@@ -24,19 +26,35 @@ class RiverInfoAdapter(private var context: Context) : ListAdapter<RiverInfo, Ri
 
         with(holder.binding) {
             with(river) {
-                /*val symbolsTemplate = context.resources.getString(R.string.symbols_template)
-                val updateTimeTemplate = context.resources.getString(R.string.update_time_template)
-                Picasso.get().load(coin.imageUrl).into(logoCoinImageView)*/
+
                 tvName.text = river.name
-                    //String.format(symbolsTemplate, fromSymbol, toSymbol)
-                /*priceTextView.text = price.toString()
-                updateTimeTextView.text = String.format(updateTimeTemplate, coin.lastUpdate)*/
+                Glide.with(context).load(R.drawable.ic_baseline_location_on_24).into(ivLocation)
+                tvLocation.text = river.location
+                tvFloodplane.text = river.floodplain
+                tvWaterLevel.text = river.waterLevel
+
+                tvLevelChange.text = river.levelChange.toInt().absoluteValue.toString()
+                val arrowIcon = getLevelChangeIcon(river.levelChange.toInt())
+                Glide.with(context).load(arrowIcon).into(ivLevelChange)
+
+                val tempPattern = context.resources.getString(R.string.river_info_water_temperature_pattern)
+                tvWaterTemperature.text = "Н/Д"
+                river.waterTemperature?.toIntOrNull()?.let {
+                    tvWaterTemperature.text = String.format(tempPattern, it)
+                }
+                tvUpdateDateTime.text = river.dateTime
             }
 
             root.setOnClickListener {
                 onRiverItemClickListener?.invoke(river)
             }
         }
+    }
+
+    private fun getLevelChangeIcon(levelChange: Int) = if (levelChange >= 0) {
+        R.drawable.ic_baseline_arrow_drop_up_24
+    } else {
+        R.drawable.ic_baseline_arrow_drop_down_24
     }
 
     companion object {
