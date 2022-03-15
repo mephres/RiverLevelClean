@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <dimen name="pin_digit_height">40dp</dimen>
-    <dimen name="pin_digit_width">54dp</dimen>
-    <dimen name="viewpager_next_item_visible">16dp</dimen>
-    <dimen name="viewpager_current_item_horizontal_margin">20dp</dimen>
-</resources>
