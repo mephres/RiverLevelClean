@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">RiverLevel</string>
+    <string name="river_info_floodplain_title">Выход на пойму, см:</string>
+    <string name="river_info_water_level_title">Уровень воды, см:</string>
+    <string name="river_info_level_change_title">Изменение уровня за сутки, см:</string>
+    <string name="river_info_water_temperature_pattern">%s&#176;C</string>
+    <string name="river_info_water_update_date_time_title">Данные обновлены:</string>
+
+</resources>
