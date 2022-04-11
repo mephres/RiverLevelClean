@@ -39,7 +39,7 @@ class RiverInfoAdapter(private var context: Context) : ListAdapter<RiverInfo, Ri
 
                 val tempPattern = context.resources.getString(R.string.river_info_water_temperature_pattern)
                 tvWaterTemperature.text = "Н/Д"
-                river.waterTemperature?.toIntOrNull()?.let {
+                river.waterTemperature?.let {
                     tvWaterTemperature.text = String.format(tempPattern, it)
                 }
                 tvUpdateDateTime.text = river.dateTime
