@@ -9,8 +9,9 @@ import me.kdv.riverlevel.data.database.RiverLevelDao
 import me.kdv.riverlevel.data.database.mapper.RiverMapper
 import me.kdv.riverlevel.data.network.ApiFactory
 import me.kdv.riverlevel.data.network.ApiService
+import javax.inject.Inject
 
-class RefreshDataWorkerFactory(
+class RefreshDataWorkerFactory @Inject constructor(
     private val riverLevelDao: RiverLevelDao,
     private val apiService: ApiService,
     private val mapper: RiverMapper
