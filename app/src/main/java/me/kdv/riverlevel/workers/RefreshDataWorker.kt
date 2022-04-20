@@ -8,20 +8,24 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkerParameters
 import kotlinx.coroutines.delay
 import me.kdv.riverlevel.data.database.AppDatabase
+import me.kdv.riverlevel.data.database.RiverLevelDao
 import me.kdv.riverlevel.data.database.mapper.RiverMapper
 import me.kdv.riverlevel.data.network.ApiFactory
+import me.kdv.riverlevel.data.network.ApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RefreshDataWorker(context: Context, workerParameters: WorkerParameters): CoroutineWorker(context, workerParameters) {
-    private val riverLevelDao = AppDatabase.getInstance(context).riverLevelDao()
-    private val apiService = ApiFactory.apiService
-
-    private val mapper = RiverMapper()
+class RefreshDataWorker(
+    context: Context,
+    workerParameters: WorkerParameters,
+    private val riverLevelDao: RiverLevelDao,
+    private val apiService: ApiService,
+    private val mapper: RiverMapper
+) : CoroutineWorker(context, workerParameters) {
 
     override suspend fun doWork(): Result {
-         while (true) {
+        while (true) {
             try {
                 val response = apiService.getRiverLevel().string()
                 val riverLevelDtoList = mapper.mapHtmlContainerToListRiverLevel(response)
