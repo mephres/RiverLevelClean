@@ -15,11 +15,11 @@ object DateTimeUtil {
     }
 
     @SuppressLint("SimpleDateFormat")
-    fun getLongDateFromMili(timeInMili: Long): String {
+    fun getLongDateFromMilli(timeInMilli: Long): String {
         val simpleDateFormat = SimpleDateFormat("dd.MM.yyyy HH:mm:ss")
         simpleDateFormat.timeZone = timeZone
         val calendar = GregorianCalendar(timeZone)
-        calendar.timeInMillis = timeInMili * 1000L
+        calendar.timeInMillis = timeInMilli * 1000L
         return simpleDateFormat.format(calendar.time)
     }
 }

@@ -1,17 +1,14 @@
 package me.kdv.riverlevel.data.database.mapper
 
-import android.os.SystemClock
 import android.util.Log
 import me.kdv.riverlevel.data.database.RiverLevelDbModel
 import me.kdv.riverlevel.data.network.model.RiverLevelDto
-import me.kdv.riverlevel.data.network.model.RiverLevelHtmlDto
 import me.kdv.riverlevel.domain.RiverInfo
 import me.kdv.riverlevel.utils.DateTimeUtil
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.util.ArrayList
 import javax.inject.Inject
-import org.jsoup.Jsoup
 
 class RiverMapper @Inject constructor() {
     fun mapDtoToDbModel(riverLevelDto: RiverLevelDto): RiverLevelDbModel {
@@ -62,7 +59,7 @@ class RiverMapper @Inject constructor() {
                         levelChange = levelChange,
                         waterTemperature = waterTemperature,
                         lastUpdate = dateTimeNow,
-                        dateTime = DateTimeUtil.getLongDateFromMili(dateTimeNow)
+                        dateTime = DateTimeUtil.getLongDateFromMilli(dateTimeNow)
                     )
                     count++
                     riverArrayList.add(river)
